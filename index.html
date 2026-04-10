@@ -101,12 +101,42 @@ tr:hover .ra{opacity:1}
 .prog-bar{height:8px;background:var(--pri);border-radius:999px;width:0%;transition:width .25s}
 @keyframes sp{to{transform:rotate(360deg)}}
 /* RESPONSIVE */
-@media(max-width:640px){
+@media(max-width:768px){
   aside{display:none}
   .kgrid{grid-template-columns:1fr 1fr}
   .cgrid{grid-template-columns:1fr}
-  .scroll{padding:1rem}
+  .scroll{padding:1rem;padding-bottom:5rem}
+  .main{margin-left:0!important}
+  .bnav{display:flex!important}
+  .hdr{padding:.5rem 1rem}
 }
+
+/* ── BOTTOM NAV MOBILE ─────────────────────────────────── */
+.bnav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--sur);
+  border-top: 1px solid var(--bor);
+  z-index: 200;
+  padding: .25rem 0 calc(.25rem + env(safe-area-inset-bottom));
+}
+.bnav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .15rem;
+  padding: .4rem .25rem;
+  background: none;
+  border: none;
+  color: var(--mu);
+  font-size: .55rem;
+  cursor: pointer;
+  transition: color .15s;
+}
+.bnav-btn .bico { font-size: 1.2rem; line-height: 1; }
+.bnav-btn.on { color: var(--pri); }
 
 /* ── CALENDÁRIO ────────────────────────────────────────── */
 .cal-table { width:100%; border-collapse:separate; border-spacing:4px; table-layout:fixed; }
@@ -138,7 +168,12 @@ tr:hover .ra{opacity:1}
 
 <!-- goTo carregado ANTES de tudo: navegação nunca falha -->
 <script>
+function bnavUpdate(p) {
+  var btns = document.querySelectorAll('.bnav-btn');
+  btns.forEach(function(b){ b.classList.toggle('on', b.dataset.p === p); });
+}
 function goTo(p) {
+  bnavUpdate(p);
   var ps = document.querySelectorAll('.pg');
   for (var i=0;i<ps.length;i++) ps[i].style.display='none';
   var el = document.getElementById('pg-'+p);
@@ -292,6 +327,24 @@ function goTo(p) {
             style="width:100%;background:var(--bg);border:1px solid var(--bor);border-radius:.5rem;padding:.45rem .75rem;color:var(--tx);font-family:var(--mono);font-size:.8125rem;outline:none;box-sizing:border-box"
             oninput="API_FOOTBALL_KEY=this.value;localStorage.setItem('apiFootballKey',this.value)">
           <div style="font-size:.7rem;color:var(--mu);margin-top:.375rem">✓ Gratuito até 100 req/dia · Atualiza resultados de futebol pendentes automaticamente</div>
+        </div>
+
+        <!-- SYNC GITHUB GIST -->
+        <div style="background:var(--sur2);border:1px solid var(--bor);border-radius:.625rem;padding:.875rem 1rem;margin-bottom:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+            <label style="font-size:.75rem;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.06em">🔄 Sincronização PC ↔ Celular</label>
+            <a href="https://github.com/settings/tokens/new?scopes=gist&description=CLV+Tracker+Sync" target="_blank" style="font-size:.7rem;color:var(--pri);text-decoration:none">→ Criar token gratuito</a>
+          </div>
+          <input type="password" id="gistToken" placeholder="GitHub Token (ghp_...)"
+            style="width:100%;background:var(--bg);border:1px solid var(--bor);border-radius:.5rem;padding:.45rem .75rem;color:var(--tx);font-family:var(--mono);font-size:.8125rem;outline:none;box-sizing:border-box;margin-bottom:.5rem">
+          <input type="text" id="gistId" placeholder="Gist ID (preenchido automaticamente após 1º envio)"
+            style="width:100%;background:var(--bg);border:1px solid var(--bor);border-radius:.5rem;padding:.45rem .75rem;color:var(--tx);font-family:var(--mono);font-size:.8125rem;outline:none;box-sizing:border-box;margin-bottom:.5rem">
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn btn-s" onclick="saveGistConfig()" style="font-size:.75rem">💾 Salvar config</button>
+            <button class="btn btn-p" onclick="syncUpload()" style="font-size:.75rem">☁️ Enviar dados</button>
+            <button class="btn btn-s" onclick="syncDownload()" style="font-size:.75rem">⬇️ Baixar dados</button>
+          </div>
+          <div style="font-size:.7rem;color:var(--mu);margin-top:.5rem">✓ Gratuito · Envie do PC, baixe no celular (e vice-versa)</div>
         </div>
 
         <!-- CONFIG UNIDADE -->
@@ -1660,7 +1713,70 @@ function renderCal() {
   if (el) el.innerHTML = html;
 }
 
+
+// ── SYNC VIA GITHUB GIST ──────────────────────────────────────
+var GIST_TOKEN = localStorage.getItem('gistToken') || '';
+var GIST_ID    = localStorage.getItem('gistId')    || '';
+
+function saveGistConfig() {
+  var t = document.getElementById('gistToken');
+  var g = document.getElementById('gistId');
+  if (t) { GIST_TOKEN = t.value.trim(); localStorage.setItem('gistToken', GIST_TOKEN); }
+  if (g) { GIST_ID    = g.value.trim(); localStorage.setItem('gistId',    GIST_ID); }
+  alert('✅ Configuração de sync salva!');
+}
+
+async function syncUpload() {
+  if (!GIST_TOKEN) { alert('Configure seu GitHub Token para usar o sync.'); return; }
+  var payload = { files: { 'clv-data.json': { content: JSON.stringify(D) } } };
+  var method = 'POST', url = 'https://api.github.com/gists';
+  if (GIST_ID) { method = 'PATCH'; url = 'https://api.github.com/gists/' + GIST_ID; }
+  var resp = await fetch(url, {
+    method: method,
+    headers: { 'Authorization': 'token ' + GIST_TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  var data = await resp.json();
+  if (data.id) {
+    GIST_ID = data.id;
+    localStorage.setItem('gistId', GIST_ID);
+    var el = document.getElementById('gistId');
+    if (el) el.value = GIST_ID;
+    alert('✅ Dados enviados! ID: ' + GIST_ID);
+  } else {
+    alert('❌ Erro: ' + JSON.stringify(data.message || data));
+  }
+}
+
+async function syncDownload() {
+  if (!GIST_ID) { alert('Configure o Gist ID para baixar os dados.'); return; }
+  var resp = await fetch('https://api.github.com/gists/' + GIST_ID, {
+    headers: GIST_TOKEN ? { 'Authorization': 'token ' + GIST_TOKEN } : {}
+  });
+  var data = await resp.json();
+  if (data.files && data.files['clv-data.json']) {
+    var raw = data.files['clv-data.json'].content;
+    try {
+      D = JSON.parse(raw);
+      sv();
+      fillFilters();
+      renderTabela();
+      renderDash();
+      alert('✅ Dados sincronizados! ' + D.length + ' apostas carregadas.');
+    } catch(e) {
+      alert('❌ Erro ao processar dados: ' + e.message);
+    }
+  } else {
+    alert('❌ Arquivo não encontrado no Gist.');
+  }
+}
+
 // ── INIT ─────────────────────────────────────────────────────
+// Restaurar config Sync
+var savedGistToken = localStorage.getItem('gistToken');
+var savedGistId    = localStorage.getItem('gistId');
+if (savedGistToken) { GIST_TOKEN = savedGistToken; var gtEl = document.getElementById('gistToken'); if(gtEl) gtEl.value = savedGistToken; }
+if (savedGistId)    { GIST_ID    = savedGistId;    var giEl = document.getElementById('gistId');    if(giEl) giEl.value = savedGistId; }
 // Restaurar chave API-Football
 var savedApiKey = localStorage.getItem('apiFootballKey');
 if (savedApiKey) {
@@ -1694,5 +1810,23 @@ if (savedKey) {
 renderDash();
 fillFilters();
 </script>
+  <!-- BOTTOM NAV MOBILE -->
+  <div class="bnav" id="bnav">
+    <button class="bnav-btn on" data-p="dashboard" onclick="goTo('dashboard');bnavUpdate('dashboard')">
+      <span class="bico">📊</span>Dashboard
+    </button>
+    <button class="bnav-btn" data-p="apostas" onclick="goTo('apostas');bnavUpdate('apostas')">
+      <span class="bico">📋</span>Apostas
+    </button>
+    <button class="bnav-btn" data-p="analytics" onclick="goTo('analytics');bnavUpdate('analytics')">
+      <span class="bico">📈</span>Analytics
+    </button>
+    <button class="bnav-btn" data-p="scanner" onclick="goTo('scanner');bnavUpdate('scanner')">
+      <span class="bico">🔍</span>Scanner
+    </button>
+    <button class="bnav-btn" data-p="banca" onclick="goTo('banca');bnavUpdate('banca')">
+      <span class="bico">💰</span>Banca
+    </button>
+  </div>
 </body>
 </html>

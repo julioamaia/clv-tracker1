@@ -1840,13 +1840,10 @@ fillFilters();
       const data = await res.json();
       const fileKey = Object.keys(data.files)[0];
       const content = JSON.parse(data.files[fileKey].content);
-      const local   = JSON.parse(localStorage.getItem('clv') || '[]');
-      if (content.length !== local.length) {
-        localStorage.setItem('clv', JSON.stringify(content));
-        location.reload(); // recarrega para mostrar novos dados
-      }
+      localStorage.setItem('clv', JSON.stringify(content));
+      location.reload();
     } catch (_) {}
-  }, 30000); // verifica a cada 30 segundos
+  }, 30000);
 </script>
 </body>
 </html>

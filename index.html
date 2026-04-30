@@ -165,6 +165,10 @@ tr:hover .ra{opacity:1}
 .cal-pos { color:var(--ok); }
 .cal-neg { color:var(--er); }
 .cal-zero { color:var(--mu); }
+.rtab{padding:5px 14px;border-radius:20px;border:1px solid var(--bor);background:transparent;color:var(--mu);cursor:pointer;font-size:.78rem;font-family:'Inter',sans-serif;font-weight:500;transition:.15s;display:inline-flex;align-items:center;gap:4px;}
+.rtab:hover,.rtab.on{background:var(--pri);color:#fff;border-color:var(--pri);}
+.rtab .rcnt{background:rgba(255,255,255,.22);border-radius:999px;padding:0 6px;font-size:.68rem;font-weight:700;min-width:18px;text-align:center;}
+.rtab:not(.on) .rcnt{background:var(--sur2);color:var(--mu);}
 </style>
 
 <!-- goTo carregado ANTES de tudo: navegação nunca falha -->
@@ -260,14 +264,22 @@ function goTo(p) {
 
     <!-- APOSTAS -->
     <section class="pg" id="pg-apostas" style="display:none">
+           <div id="res-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center">
+        <button class="rtab on" data-v="" onclick="setResTab(this,'')">Todas <span class="rcnt" id="cnt-all">0</span></button>
+        <button class="rtab" data-v="Pendente" onclick="setResTab(this,'Pendente')">⏳ Pendentes <span class="rcnt" id="cnt-Pendente">0</span></button>
+        <button class="rtab" data-v="Win" onclick="setResTab(this,'Win')">✅ Win <span class="rcnt" id="cnt-Win">0</span></button>
+        <button class="rtab" data-v="Loss" onclick="setResTab(this,'Loss')">❌ Loss <span class="rcnt" id="cnt-Loss">0</span></button>
+        <button class="rtab" data-v="Cashout" onclick="setResTab(this,'Cashout')">💰 Cashout <span class="rcnt" id="cnt-Cashout">0</span></button>
+        <button class="rtab" data-v="Anulada" onclick="setResTab(this,'Anulada')">🚫 Anulada <span class="rcnt" id="cnt-Anulada">0</span></button>
+        <input type="hidden" id="fr" value="">
+      </div>
       <div class="tb">
         <div class="srch">🔎 <input type="text" id="q" placeholder="Buscar jogo ou mercado..." oninput="renderTabela()"></div>
         <select class="fsl" id="fe" onchange="renderTabela()"><option value="">Todos esportes</option></select>
         <select class="fsl" id="fc" onchange="renderTabela()"><option value="">Todas as casas</option></select>
-        <select class="fsl" id="fr" onchange="renderTabela()">
-          <option value="">Todos resultados</option>
-          <option>Win</option><option>Loss</option><option>Pendente</option>
-        </select>
+        <input type="date" class="fsl" id="fd1" onchange="renderTabela()" title="Data início" style="cursor:pointer">
+        <input type="date" class="fsl" id="fd2" onchange="renderTabela()" title="Data fim" style="cursor:pointer">
+        <button class="btn btn-s" onclick="clearDateFilters()" style="padding:.4rem .6rem;font-size:.75rem">✕ Datas</button>
         <span class="tcnt" id="tcnt"></span>
         <button class="btn btn-s" onclick="delAll()" style="margin-left:auto;font-size:.75rem;padding:.35rem .75rem;color:var(--er);border-color:var(--er)">🗑 Excluir todas</button>
       </div>
@@ -694,10 +706,28 @@ function renderAnalytics() {
 function fillFilters() {
   var esps=[...new Set(D.map(function(a){return a.esp;}).filter(Boolean))];
   var css=[...new Set(D.map(function(a){return a.casa;}).filter(Boolean))];
-  var fe=document.getElementById('fe'),fc=document.getElementById('fc'),ve=fe.value,vc=fc.value;
-  fe.innerHTML='<option value="">Todos esportes</option>'+esps.map(function(e){return '<option>'+e+'</option>';}).join('');
-  fc.innerHTML='<option value="">Todas as casas</option>'+css.map(function(c){return '<option>'+c+'</option>';}).join('');
-  fe.value=ve;fc.value=vc;
+  var fe=document.getElementById('fe'),fc=document.getElementById('fc');
+  var ve=fe?fe.value:'',vc=fc?fc.value:'';
+  if(fe)fe.innerHTML='<option value="">Todos esportes</option>'+esps.map(function(e){return '<option>'+e+'</option>';}).join('');
+  if(fc)fc.innerHTML='<option value="">Todas as casas</option>'+css.map(function(c){return '<option>'+c+'</option>';}).join('');
+  if(fe)fe.value=ve; if(fc)fc.value=vc;
+  var tots={all:D.length,Pendente:0,Win:0,Loss:0,Cashout:0,Anulada:0};
+  D.forEach(function(a){if(tots[a.res]!==undefined)tots[a.res]++;});
+  var el=document.getElementById('cnt-all');if(el)el.textContent=tots.all;
+  ['Pendente','Win','Loss','Cashout','Anulada'].forEach(function(k){
+    var el=document.getElementById('cnt-'+k);if(el)el.textContent=tots[k];
+  });
+}
+function setResTab(btn,val){
+  document.querySelectorAll('.rtab').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  var fr=document.getElementById('fr');if(fr)fr.value=val;
+  renderTabela();
+}
+function clearDateFilters(){
+  var fd1=document.getElementById('fd1'),fd2=document.getElementById('fd2');
+  if(fd1)fd1.value='';if(fd2)fd2.value='';
+  renderTabela();
 }
 function renderTabela() {
   var q=(document.getElementById('q').value||'').toLowerCase();
@@ -706,7 +736,11 @@ function renderTabela() {
   if(q)f=f.filter(function(a){return (a.jogo+a.mkt).toLowerCase().indexOf(q)>=0;});
   if(esp)f=f.filter(function(a){return a.esp===esp;});
   if(casa)f=f.filter(function(a){return a.casa===casa;});
-  if(res)f=f.filter(function(a){return a.res===res;});
+    if(res)f=f.filter(function(a){return a.res===res;});
+  var fd1=document.getElementById('fd1')?document.getElementById('fd1').value:'';
+  var fd2=document.getElementById('fd2')?document.getElementById('fd2').value:'';
+  if(fd1)f=f.filter(function(a){return a.dt>=fd1;});
+  if(fd2)f=f.filter(function(a){return a.dt<=fd2;});
   document.getElementById('tcnt').textContent=f.length+' apostas';
   var tb=document.getElementById('tbody'),em=document.getElementById('tempty');
   if(!f.length){tb.innerHTML='';em.style.display='flex';return;}

@@ -1828,64 +1828,68 @@ fillFilters();
       <span class="bico">💰</span>Banca
     </button>
   </div>
-  <script>
-  const GIST_ID    = localStorage.getItem('gistId');
-  const GIST_TOKEN = localStorage.getItem('gistToken');
+<script>
+  // Auto-sync CLV Tracker ↔ GitHub Gist
+  let ultimaAtualizacao = Date.now();
+  let sincronizando = false;
 
-  // Salva no Gist sempre que o localStorage 'clv' mudar
-  async function syncParaGist() {
-    if (!GIST_ID || !GIST_TOKEN) return;
-    try {
-      const apostas = JSON.parse(localStorage.getItem('clv') || '[]');
-      await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `token ${GIST_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          files: { 'clv-data.json': { content: JSON.stringify(apostas, null, 2) } }
-        })
-      });
-      console.log('[Sync] Gist atualizado:', apostas.length, 'apostas');
-    } catch (e) { console.warn('[Sync] Erro ao salvar no Gist:', e.message); }
+  async function getCredenciais() {
+    return {
+      gistId:    localStorage.getItem('gistId'),
+      gistToken: localStorage.getItem('gistToken')
+    };
   }
 
-  // Intercepta o sv() original para sincronizar após salvar
-  document.addEventListener('DOMContentLoaded', () => {
-    if (typeof sv === 'function') {
-      const svOriginal = sv;
-      window.sv = function() {
-        svOriginal();
-        syncParaGist();
-      };
+  async function syncParaGist(apostas) {
+    const { gistId, gistToken } = await getCredenciais();
+    if (!gistId || !gistToken) return;
+    ultimaAtualizacao = Date.now();
+    await fetch(`https://api.github.com/gists/${gistId}`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `token ${gistToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ files: { 'clv-data.json': { content: JSON.stringify(apostas, null, 2) } } })
+    });
+  }
+
+  // Monitora qualquer mudança no localStorage['clv']
+  const _setItem = localStorage.setItem.bind(localStorage);
+  localStorage.setItem = function(key, value) {
+    _setItem(key, value);
+    if (key === 'clv' && !sincronizando) {
+      try {
+        const apostas = JSON.parse(value);
+        syncParaGist(apostas);
+      } catch (_) {}
     }
-  });
+  };
 
-  // Busca do Gist automaticamente a cada 30 segundos
-  // Só atualiza se o Gist for mais recente que o último sync
-  let ultimaAtualizacao = Date.now();
-
+  // Busca do Gist a cada 30s — só aplica se veio aposta NOVA
   setInterval(async () => {
-    if (!GIST_ID || !GIST_TOKEN) return;
+    const { gistId, gistToken } = await getCredenciais();
+    if (!gistId || !gistToken) return;
     try {
-      const res  = await fetch(`https://api.github.com/gists/${GIST_ID}`,
-        { headers: { 'Authorization': `token ${GIST_TOKEN}` } });
+      const res  = await fetch(`https://api.github.com/gists/${gistId}`,
+        { headers: { 'Authorization': `token ${gistToken}` } });
       const data = await res.json();
       const updatedAt = new Date(data.updated_at).getTime();
+      if (updatedAt <= ultimaAtualizacao) return; // nada novo
 
-      if (updatedAt > ultimaAtualizacao) {
+      const file   = data.files['clv-data.json'];
+      if (!file) return;
+      const remoto = JSON.parse(file.content);
+      const local  = JSON.parse(localStorage.getItem('clv') || '[]');
+
+      // Só aplica se veio aposta nova — não sobrescreve exclusões
+      const idsLocais  = new Set(local.map(a => a.id));
+      const apostasNovas = remoto.filter(a => !idsLocais.has(a.id));
+
+      if (apostasNovas.length > 0) {
+        sincronizando = true;
+        const merged = [...apostasNovas, ...local];
+        _setItem('clv', JSON.stringify(merged));
+        sincronizando = false;
         ultimaAtualizacao = updatedAt;
-        const file    = data.files['clv-data.json'];
-        if (!file) return;
-        const remoto  = JSON.parse(file.content);
-        const local   = JSON.parse(localStorage.getItem('clv') || '[]');
-
-        // Só atualiza se veio aposta NOVA (mais itens que o local)
-        if (remoto.length > local.length) {
-          localStorage.setItem('clv', JSON.stringify(remoto));
-          location.reload();
-        }
+        location.reload();
       }
     } catch (_) {}
   }, 30000);

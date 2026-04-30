@@ -1533,13 +1533,24 @@ function saveOf(id, val) {
   sv(); renderTabela(); renderDash();
 }
 function saveRes(id, val, sel) {
-  var i = D.findIndex(function(x){ return String(x.id)===String(id); });
-  if (i < 0) return;
-  D[i].res = val;
-  var colors = {Win:'var(--ok)',Loss:'var(--er)',Cashout:'#818cf8',Anulada:'#94a3b8',Pendente:'var(--wa)'};
-  sel.style.color = colors[val] || 'var(--tx)';
-  sv(); renderTabela(); renderDash();
-  if (typeof renderBanca === 'function') renderBanca();
+  var i=D.findIndex(function(x){return String(x.id)===String(id);});
+  if(i>-1){D[i].res=val;}
+  var colors={Win:'var(--ok)',Loss:'var(--er)',Cashout:'#818cf8',Anulada:'#94a3b8',Pendente:'var(--wa)'};
+  if(sel)sel.style.color=colors[val]||'var(--tx)';
+  sv();
+  fillFilters();
+  renderTabela();
+  renderDash();
+  // Sincroniza com Gist imediatamente
+  const gistId=localStorage.getItem('gistId');
+  const gistToken=localStorage.getItem('gistToken');
+  if(gistId&&gistToken){
+    fetch('https://api.github.com/gists/'+gistId,{
+      method:'PATCH',
+      headers:{'Authorization':'token '+gistToken,'Content-Type':'application/json'},
+      body:JSON.stringify({files:{'clv-data.json':{content:JSON.stringify(D,null,2)}}})
+    }).catch(function(){});
+  }
 }
 function saveCo(id, val) {
   val = parseFloat(val);

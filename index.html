@@ -792,6 +792,23 @@ async function delAll() {
     } catch(e) {}
   }
 }
+  function editA(id){openModal(id);}
+async function delA(id) {
+  if (!confirm('Excluir esta aposta?')) return;
+  D = D.filter(function(a) { return String(a.id) !== String(id); });
+  sv(); fillFilters(); renderTabela(); renderDash();
+  const gistId = localStorage.getItem('gistId');
+  const gistToken = localStorage.getItem('gistToken');
+  if (gistId && gistToken) {
+    try {
+      await fetch(`https://api.github.com/gists/${gistId}`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `token ${gistToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: { 'clv-data.json': { content: JSON.stringify(D, null, 2) } } })
+      });
+    } catch(e) {}
+  }
+}
 
 // ── ATUALIZAÇÃO AUTOMÁTICA DE RESULTADOS ──────────────────────
 var API_FOOTBALL_KEY = localStorage.getItem('apiFootballKey')||'';

@@ -757,27 +757,21 @@ function calcPrev(){
   if(e>1&&f>1){var c=clv(e,f);el.style.display='flex';vl.textContent=(c>=0?'+':'')+c.toFixed(2)+'%';vl.style.color=c>=0?'var(--ok)':'var(--er)';tl.textContent=c>=0?'✓ Acima do fechamento':'✗ Abaixo do fechamento';}
   else el.style.display='none';
 }
-function save(){
+async function save(){
   var a={id:EID||uid(),dt:document.getElementById('m_dt').value,jogo:document.getElementById('m_jogo').value.trim(),mkt:document.getElementById('m_mkt').value.trim(),esp:document.getElementById('m_esp').value.trim(),casa:document.getElementById('m_casa').value.trim(),oe:parseFloat(document.getElementById('m_odde').value)||null,of:parseFloat(document.getElementById('m_oddf').value)||null,stk:parseFloat(document.getElementById('m_stk').value)||null,un:parseFloat(document.getElementById('m_un').value)||null,hora:document.getElementById('m_hora').value||'',res:document.getElementById('m_res').value,co:parseFloat(document.getElementById('m_co').value)||null,obs:document.getElementById('m_obs').value.trim()};
   if(!a.dt||!a.jogo||!a.mkt){alert('Preencha data, jogo e mercado.');return;}
   if(EID){var i=D.findIndex(function(x){return String(x.id)===String(EID);});if(i>-1)D[i]=a;}else D.unshift(a);
   sv();closeModal();fillFilters();renderTabela();renderDash();
-}
-function editA(id){openModal(id);}
-async function delA(id) {
-  if (!confirm('Excluir esta aposta?')) return;
-  D = D.filter(function(a) { return String(a.id) !== String(id); });
-  sv(); fillFilters(); renderTabela(); renderDash();
-  const gistId = localStorage.getItem('gistId');
-  const gistToken = localStorage.getItem('gistToken');
-  if (gistId && gistToken) {
-    try {
-      await fetch(`https://api.github.com/gists/${gistId}`, {
-        method: 'PATCH',
-        headers: { 'Authorization': `token ${gistToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ files: { 'clv-data.json': { content: JSON.stringify(D, null, 2) } } })
+  const gistId=localStorage.getItem('gistId');
+  const gistToken=localStorage.getItem('gistToken');
+  if(gistId&&gistToken){
+    try{
+      await fetch(`https://api.github.com/gists/${gistId}`,{
+        method:'PATCH',
+        headers:{'Authorization':`token ${gistToken}`,'Content-Type':'application/json'},
+        body:JSON.stringify({files:{'clv-data.json':{content:JSON.stringify(D,null,2)}}})
       });
-    } catch(e) {}
+    }catch(e){}
   }
 }
 

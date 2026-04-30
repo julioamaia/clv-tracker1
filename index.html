@@ -739,8 +739,8 @@ function renderTabela() {
   var q=(document.getElementById('q').value||'').toLowerCase();
   var esp=document.getElementById('fe').value, casa=document.getElementById('fc').value, res=document.getElementById('fr').value;
   var f=D.slice().sort(function(a,b){
-  var da=(a.dt||'')+(a.hora?'T'+a.hora:'T00:00');
-  var db=(b.dt||'')+(b.hora?'T'+b.hora:'T00:00');
+  var da=(a.dt||'')+('T'+((a.hora&&a.hora.trim())?a.hora.trim():'00:00'));
+  var db=(b.dt||'')+('T'+((b.hora&&b.hora.trim())?b.hora.trim():'00:00'));
   return SORT_ASC ? da.localeCompare(db) : db.localeCompare(da);
 });
   if(q)f=f.filter(function(a){return (a.jogo+a.mkt).toLowerCase().indexOf(q)>=0;});

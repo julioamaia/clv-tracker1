@@ -1829,7 +1829,8 @@ fillFilters();
     </button>
   </div>
 <script>
-  // Auto-sync do Gist a cada 30 segundos
+  let ultimoSync = Date.now();
+
   setInterval(async () => {
     const gistId    = localStorage.getItem('gistId');
     const gistToken = localStorage.getItem('gistToken');
@@ -1838,11 +1839,16 @@ fillFilters();
       const res  = await fetch(`https://api.github.com/gists/${gistId}`,
         { headers: { 'Authorization': `token ${gistToken}` } });
       const data = await res.json();
-      const fileKey = Object.keys(data.files)[0];
-      const content = JSON.parse(data.files[fileKey].content);
-      localStorage.setItem('clv', JSON.stringify(content));
-      location.reload();
+      const updatedAt = new Date(data.updated_at).getTime();
+      if (updatedAt > ultimoSync) {
+        ultimoSync = updatedAt;
+        const fileKey = Object.keys(data.files)[0];
+        const content = JSON.parse(data.files[fileKey].content);
+        localStorage.setItem('clv', JSON.stringify(content));
+        location.reload();
+      }
     } catch (_) {}
   }, 30000);
-</script></body>
+</script>
+</body>
 </html>

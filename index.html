@@ -555,9 +555,35 @@ function goTo(p) {
 <!-- APP -->
 <script>
 // ── DADOS ────────────────────────────────────────────────────
-var D = JSON.parse(localStorage.getItem('clv') || '[]');
+var D = [];
 var EID = null;
 var CH = {};
+
+// Carrega do Gist ao abrir, com fallback para localStorage
+(async function() {
+  const gistId    = localStorage.getItem('gistId');
+  const gistToken = localStorage.getItem('gistToken');
+  if (gistId && gistToken) {
+    try {
+      const res  = await fetch(`https://api.github.com/gists/${gistId}`, {
+        headers: { 'Authorization': `token ${gistToken}` }
+      });
+      const data = await res.json();
+      const file = data.files['clv-data.json'];
+      if (file) {
+        D = JSON.parse(file.content);
+        localStorage.setItem('clv', JSON.stringify(D));
+      }
+    } catch(e) {
+      D = JSON.parse(localStorage.getItem('clv') || '[]');
+    }
+  } else {
+    D = JSON.parse(localStorage.getItem('clv') || '[]');
+  }
+  fillFilters();
+  renderTabela();
+  renderDash();
+})();
 
 if (!D.length) D = [
   {id:1, dt:'2026-03-01',jogo:'Flamengo x Palmeiras',       mkt:'Over 2.5',         esp:'Futebol',   casa:'Bet365',   oe:2.10,of:1.95,stk:15,  res:'Win',    obs:''},

@@ -779,7 +779,9 @@ async function save(){
 // ── EXCLUIR TODAS ─────────────────────────────────────────────
 async function delAll() {
   if (!confirm('Excluir TODAS as apostas?')) return;
-  D = []; sv(); fillFilters(); renderTabela(); renderDash();
+  D = [];
+  sv();
+  localStorage.removeItem('D'); // limpa cache local também
   const gistId = localStorage.getItem('gistId');
   const gistToken = localStorage.getItem('gistToken');
   if (gistId && gistToken) {
@@ -1879,12 +1881,15 @@ setInterval(async () => {
     const remoto = JSON.parse(file.content);
     // Só atualiza se vier aposta nova do bot
     const idsLocais = new Set(D.map(a => String(a.id)));
-    const novas = remoto.filter(a => !idsLocais.has(String(a.id)));
-    if (novas.length > 0) {
-      D = [...novas, ...D];
-      sv(); fillFilters(); renderTabela(); renderDash();
-      console.log(`✅ ${novas.length} aposta(s) nova(s) sincronizada(s)!`);
-    }
+    // DEPOIS — substitui D inteiro pelo remoto
+if (JSON.stringify(remoto) !== JSON.stringify(D)) {
+  D = remoto;
+  sv();
+  fillFilters();
+  renderTabela();
+  renderDash();
+  console.log('Dados sincronizados do Gist!');
+}
   } catch(_) {}
 }, 30000);
 </script>

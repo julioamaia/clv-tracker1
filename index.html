@@ -1749,26 +1749,24 @@ async function syncUpload() {
 }
 
 async function syncDownload() {
-  if (!GIST_ID) { alert('Configure o Gist ID para baixar os dados.'); return; }
-  var resp = await fetch('https://api.github.com/gists/' + GIST_ID, {
-    headers: GIST_TOKEN ? { 'Authorization': 'token ' + GIST_TOKEN } : {}
-  });
-  var data = await resp.json();
-  if (data.files && data.files['clv-data.json']) {
-    var raw = data.files['clv-data.json'].content;
-    try {
+  const gistId    = localStorage.getItem('gistId');
+  const gistToken = localStorage.getItem('gistToken');
+  if (!gistId)    { alert('Configure o Gist ID primeiro.'); return; }
+  if (!gistToken) { alert('Configure o Token primeiro.'); return; }
+  try {
+    const resp = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${gistToken}` }
+    });
+    const data = await resp.json();
+    if (data.files && data.files['clv-data.json']) {
+      const raw = data.files['clv-data.json'].content;
       D = JSON.parse(raw);
-      sv();
-      fillFilters();
-      renderTabela();
-      renderDash();
-      alert('✅ Dados sincronizados! ' + D.length + ' apostas carregadas.');
-    } catch(e) {
-      alert('❌ Erro ao processar dados: ' + e.message);
+      sv(); fillFilters(); renderTabela(); renderDash();
+      alert(`Dados sincronizados! ${D.length} apostas carregadas.`);
+    } else {
+      alert('Arquivo não encontrado no Gist.');
     }
-  } else {
-    alert('❌ Arquivo não encontrado no Gist.');
-  }
+  } catch(e) { alert('Erro: ' + e.message); }
 }
 
 // ── INIT ─────────────────────────────────────────────────────

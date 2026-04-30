@@ -1828,5 +1828,25 @@ fillFilters();
       <span class="bico">💰</span>Banca
     </button>
   </div>
+<script>
+  // Auto-sync do Gist a cada 30 segundos
+  setInterval(async () => {
+    const gistId    = localStorage.getItem('gistId');
+    const gistToken = localStorage.getItem('gistToken');
+    if (!gistId || !gistToken) return;
+    try {
+      const res  = await fetch(`https://api.github.com/gists/${gistId}`,
+        { headers: { 'Authorization': `token ${gistToken}` } });
+      const data = await res.json();
+      const fileKey = Object.keys(data.files)[0];
+      const content = JSON.parse(data.files[fileKey].content);
+      const local   = JSON.parse(localStorage.getItem('clv') || '[]');
+      if (content.length !== local.length) {
+        localStorage.setItem('clv', JSON.stringify(content));
+        location.reload(); // recarrega para mostrar novos dados
+      }
+    } catch (_) {}
+  }, 30000); // verifica a cada 30 segundos
+</script>
 </body>
 </html>

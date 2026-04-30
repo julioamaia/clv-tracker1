@@ -286,7 +286,7 @@ function goTo(p) {
       <div class="tcard">
         <div class="tscr">
           <table>
-            <thead><tr><th>Data</th><th>Jogo</th><th>Mercado</th><th>Esporte</th><th>Casa</th><th>Odd Ent.</th><th>Odd Fech.</th><th>CLV</th><th>Stake</th><th>Un.</th><th>Resultado</th><th></th></tr></thead>
+            <thead><tr><th id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th><th>Jogo</th><th>Mercado</th><th>Esporte</th><th>Casa</th><th>Odd Ent.</th><th>Odd Fech.</th><th>CLV</th><th>Stake</th><th>Un.</th><th>Resultado</th><th></th></tr></thead>
             <tbody id="tbody"></tbody>
           </table>
         </div>
@@ -729,10 +729,16 @@ function clearDateFilters(){
   if(fd1)fd1.value='';if(fd2)fd2.value='';
   renderTabela();
 }
+var SORT_ASC = false;
+function toggleSort(){
+  SORT_ASC = !SORT_ASC;
+  document.getElementById('sort-icon').textContent = SORT_ASC ? '↑' : '↓';
+  renderTabela();
+}
 function renderTabela() {
   var q=(document.getElementById('q').value||'').toLowerCase();
   var esp=document.getElementById('fe').value, casa=document.getElementById('fc').value, res=document.getElementById('fr').value;
-  var f=D.slice().sort(function(a,b){return b.dt.localeCompare(a.dt);});
+  var f=D.slice().sort(function(a,b){return SORT_ASC ? a.dt.localeCompare(b.dt) : b.dt.localeCompare(a.dt);});
   if(q)f=f.filter(function(a){return (a.jogo+a.mkt).toLowerCase().indexOf(q)>=0;});
   if(esp)f=f.filter(function(a){return a.esp===esp;});
   if(casa)f=f.filter(function(a){return a.casa===casa;});

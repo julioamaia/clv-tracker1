@@ -1828,5 +1828,67 @@ fillFilters();
       <span class="bico">💰</span>Banca
     </button>
   </div>
+  <script>
+  const GIST_ID    = localStorage.getItem('gistId');
+  const GIST_TOKEN = localStorage.getItem('gistToken');
+
+  // Salva no Gist sempre que o localStorage 'clv' mudar
+  async function syncParaGist() {
+    if (!GIST_ID || !GIST_TOKEN) return;
+    try {
+      const apostas = JSON.parse(localStorage.getItem('clv') || '[]');
+      await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `token ${GIST_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          files: { 'clv-data.json': { content: JSON.stringify(apostas, null, 2) } }
+        })
+      });
+      console.log('[Sync] Gist atualizado:', apostas.length, 'apostas');
+    } catch (e) { console.warn('[Sync] Erro ao salvar no Gist:', e.message); }
+  }
+
+  // Intercepta o sv() original para sincronizar após salvar
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof sv === 'function') {
+      const svOriginal = sv;
+      window.sv = function() {
+        svOriginal();
+        syncParaGist();
+      };
+    }
+  });
+
+  // Busca do Gist automaticamente a cada 30 segundos
+  // Só atualiza se o Gist for mais recente que o último sync
+  let ultimaAtualizacao = Date.now();
+
+  setInterval(async () => {
+    if (!GIST_ID || !GIST_TOKEN) return;
+    try {
+      const res  = await fetch(`https://api.github.com/gists/${GIST_ID}`,
+        { headers: { 'Authorization': `token ${GIST_TOKEN}` } });
+      const data = await res.json();
+      const updatedAt = new Date(data.updated_at).getTime();
+
+      if (updatedAt > ultimaAtualizacao) {
+        ultimaAtualizacao = updatedAt;
+        const file    = data.files['clv-data.json'];
+        if (!file) return;
+        const remoto  = JSON.parse(file.content);
+        const local   = JSON.parse(localStorage.getItem('clv') || '[]');
+
+        // Só atualiza se veio aposta NOVA (mais itens que o local)
+        if (remoto.length > local.length) {
+          localStorage.setItem('clv', JSON.stringify(remoto));
+          location.reload();
+        }
+      }
+    } catch (_) {}
+  }, 30000);
+</script>
 </body>
 </html>

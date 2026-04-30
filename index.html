@@ -1852,5 +1852,29 @@ fillFilters();
       <span class="bico">💰</span>Banca
     </button>
   </div>
+  <script>
+setInterval(async () => {
+  const gistId    = localStorage.getItem('gistId');
+  const gistToken = localStorage.getItem('gistToken');
+  if (!gistId || !gistToken) return;
+  try {
+    const resp = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${gistToken}` }
+    });
+    const data = await resp.json();
+    const file = data.files['clv-data.json'];
+    if (!file) return;
+    const remoto = JSON.parse(file.content);
+    // Só atualiza se vier aposta nova do bot
+    const idsLocais = new Set(D.map(a => String(a.id)));
+    const novas = remoto.filter(a => !idsLocais.has(String(a.id)));
+    if (novas.length > 0) {
+      D = [...novas, ...D];
+      sv(); fillFilters(); renderTabela(); renderDash();
+      console.log(`✅ ${novas.length} aposta(s) nova(s) sincronizada(s)!`);
+    }
+  } catch(_) {}
+}, 30000);
+</script>
 </body>
 </html>

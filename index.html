@@ -738,7 +738,11 @@ function toggleSort(){
 function renderTabela() {
   var q=(document.getElementById('q').value||'').toLowerCase();
   var esp=document.getElementById('fe').value, casa=document.getElementById('fc').value, res=document.getElementById('fr').value;
-  var f=D.slice().sort(function(a,b){return SORT_ASC ? a.dt.localeCompare(b.dt) : b.dt.localeCompare(a.dt);});
+  var f=D.slice().sort(function(a,b){
+  var da=(a.dt||'')+(a.hora?'T'+a.hora:'T00:00');
+  var db=(b.dt||'')+(b.hora?'T'+b.hora:'T00:00');
+  return SORT_ASC ? da.localeCompare(db) : db.localeCompare(da);
+});
   if(q)f=f.filter(function(a){return (a.jogo+a.mkt).toLowerCase().indexOf(q)>=0;});
   if(esp)f=f.filter(function(a){return a.esp===esp;});
   if(casa)f=f.filter(function(a){return a.casa===casa;});

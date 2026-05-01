@@ -1,3 +1,4 @@
+<!-- v2 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -164,6 +165,10 @@ tr:hover .ra{opacity:1}
 .cal-pos { color:var(--ok); }
 .cal-neg { color:var(--er); }
 .cal-zero { color:var(--mu); }
+.rtab{padding:5px 14px;border-radius:20px;border:1px solid var(--bor);background:transparent;color:var(--mu);cursor:pointer;font-size:.78rem;font-family:'Inter',sans-serif;font-weight:500;transition:.15s;display:inline-flex;align-items:center;gap:4px;}
+.rtab:hover,.rtab.on{background:var(--pri);color:#fff;border-color:var(--pri);}
+.rtab .rcnt{background:rgba(255,255,255,.22);border-radius:999px;padding:0 6px;font-size:.68rem;font-weight:700;min-width:18px;text-align:center;}
+.rtab:not(.on) .rcnt{background:var(--sur2);color:var(--mu);}
 </style>
 
 <!-- goTo carregado ANTES de tudo: navegação nunca falha -->
@@ -208,6 +213,7 @@ function goTo(p) {
     <button class="nb on" data-p="dashboard" onclick="goTo('dashboard')">📊 Dashboard</button>
     <button class="nb"    data-p="apostas"   onclick="goTo('apostas')">📋 Apostas</button>
     <button class="nb"    data-p="analytics" onclick="goTo('analytics')">📈 Analytics</button>
+    <button class="nb"    data-p="scanner"   onclick="goTo('scanner')">🔍 Scanner OCR</button>
     <button class="nb"    data-p="banca"     onclick="goTo('banca')">💰 Banca</button>
     <button class="nb"    data-p="csv"       onclick="goTo('csv')">⬆ Importar CSV</button>
   </nav>
@@ -258,21 +264,29 @@ function goTo(p) {
 
     <!-- APOSTAS -->
     <section class="pg" id="pg-apostas" style="display:none">
+           <div id="res-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center">
+        <button class="rtab on" data-v="" onclick="setResTab(this,'')">Todas <span class="rcnt" id="cnt-all">0</span></button>
+        <button class="rtab" data-v="Pendente" onclick="setResTab(this,'Pendente')">⏳ Pendentes <span class="rcnt" id="cnt-Pendente">0</span></button>
+        <button class="rtab" data-v="Win" onclick="setResTab(this,'Win')">✅ Win <span class="rcnt" id="cnt-Win">0</span></button>
+        <button class="rtab" data-v="Loss" onclick="setResTab(this,'Loss')">❌ Loss <span class="rcnt" id="cnt-Loss">0</span></button>
+        <button class="rtab" data-v="Cashout" onclick="setResTab(this,'Cashout')">💰 Cashout <span class="rcnt" id="cnt-Cashout">0</span></button>
+        <button class="rtab" data-v="Anulada" onclick="setResTab(this,'Anulada')">🚫 Anulada <span class="rcnt" id="cnt-Anulada">0</span></button>
+        <input type="hidden" id="fr" value="">
+      </div>
       <div class="tb">
         <div class="srch">🔎 <input type="text" id="q" placeholder="Buscar jogo ou mercado..." oninput="renderTabela()"></div>
         <select class="fsl" id="fe" onchange="renderTabela()"><option value="">Todos esportes</option></select>
         <select class="fsl" id="fc" onchange="renderTabela()"><option value="">Todas as casas</option></select>
-        <select class="fsl" id="fr" onchange="renderTabela()">
-          <option value="">Todos resultados</option>
-          <option>Win</option><option>Loss</option><option>Pendente</option>
-        </select>
+        <input type="date" class="fsl" id="fd1" onchange="renderTabela()" title="Data início" style="cursor:pointer">
+        <input type="date" class="fsl" id="fd2" onchange="renderTabela()" title="Data fim" style="cursor:pointer">
+        <button class="btn btn-s" onclick="clearDateFilters()" style="padding:.4rem .6rem;font-size:.75rem">✕ Datas</button>
         <span class="tcnt" id="tcnt"></span>
         <button class="btn btn-s" onclick="delAll()" style="margin-left:auto;font-size:.75rem;padding:.35rem .75rem;color:var(--er);border-color:var(--er)">🗑 Excluir todas</button>
       </div>
       <div class="tcard">
         <div class="tscr">
           <table>
-            <thead><tr><th>Data</th><th>Jogo</th><th>Mercado</th><th>Esporte</th><th>Casa</th><th>Odd Ent.</th><th>Odd Fech.</th><th>CLV</th><th>Stake</th><th>Un.</th><th>Resultado</th><th></th></tr></thead>
+            <thead><tr><th id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th><th>Jogo</th><th>Mercado</th><th>Esporte</th><th>Casa</th><th>Odd Ent.</th><th>Odd Fech.</th><th>CLV</th><th>Stake</th><th>Un.</th><th>Resultado</th><th></th></tr></thead>
             <tbody id="tbody"></tbody>
           </table>
         </div>
@@ -553,9 +567,35 @@ function goTo(p) {
 <!-- APP -->
 <script>
 // ── DADOS ────────────────────────────────────────────────────
-var D = JSON.parse(localStorage.getItem('clv') || '[]');
+var D = [];
 var EID = null;
 var CH = {};
+
+// Carrega do Gist ao abrir, com fallback para localStorage
+(async function() {
+  const gistId    = localStorage.getItem('gistId');
+  const gistToken = localStorage.getItem('gistToken');
+  if (gistId && gistToken) {
+    try {
+      const res  = await fetch(`https://api.github.com/gists/${gistId}`, {
+        headers: { 'Authorization': `token ${gistToken}` }
+      });
+      const data = await res.json();
+      const file = data.files['clv-data.json'];
+      if (file) {
+        D = JSON.parse(file.content);
+        localStorage.setItem('clv', JSON.stringify(D));
+      }
+    } catch(e) {
+      D = JSON.parse(localStorage.getItem('clv') || '[]');
+    }
+  } else {
+    D = JSON.parse(localStorage.getItem('clv') || '[]');
+  }
+  fillFilters();
+  renderTabela();
+  renderDash();
+})();
 
 if (!D.length) D = [
   {id:1, dt:'2026-03-01',jogo:'Flamengo x Palmeiras',       mkt:'Over 2.5',         esp:'Futebol',   casa:'Bet365',   oe:2.10,of:1.95,stk:15,  res:'Win',    obs:''},
@@ -666,19 +706,51 @@ function renderAnalytics() {
 function fillFilters() {
   var esps=[...new Set(D.map(function(a){return a.esp;}).filter(Boolean))];
   var css=[...new Set(D.map(function(a){return a.casa;}).filter(Boolean))];
-  var fe=document.getElementById('fe'),fc=document.getElementById('fc'),ve=fe.value,vc=fc.value;
-  fe.innerHTML='<option value="">Todos esportes</option>'+esps.map(function(e){return '<option>'+e+'</option>';}).join('');
-  fc.innerHTML='<option value="">Todas as casas</option>'+css.map(function(c){return '<option>'+c+'</option>';}).join('');
-  fe.value=ve;fc.value=vc;
+  var fe=document.getElementById('fe'),fc=document.getElementById('fc');
+  var ve=fe?fe.value:'',vc=fc?fc.value:'';
+  if(fe)fe.innerHTML='<option value="">Todos esportes</option>'+esps.map(function(e){return '<option>'+e+'</option>';}).join('');
+  if(fc)fc.innerHTML='<option value="">Todas as casas</option>'+css.map(function(c){return '<option>'+c+'</option>';}).join('');
+  if(fe)fe.value=ve; if(fc)fc.value=vc;
+  var tots={all:D.length,Pendente:0,Win:0,Loss:0,Cashout:0,Anulada:0};
+  D.forEach(function(a){if(tots[a.res]!==undefined)tots[a.res]++;});
+  var el=document.getElementById('cnt-all');if(el)el.textContent=tots.all;
+  ['Pendente','Win','Loss','Cashout','Anulada'].forEach(function(k){
+    var el=document.getElementById('cnt-'+k);if(el)el.textContent=tots[k];
+  });
+}
+function setResTab(btn,val){
+  document.querySelectorAll('.rtab').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  var fr=document.getElementById('fr');if(fr)fr.value=val;
+  renderTabela();
+}
+function clearDateFilters(){
+  var fd1=document.getElementById('fd1'),fd2=document.getElementById('fd2');
+  if(fd1)fd1.value='';if(fd2)fd2.value='';
+  renderTabela();
+}
+var SORT_ASC = false;
+function toggleSort(){
+  SORT_ASC = !SORT_ASC;
+  document.getElementById('sort-icon').textContent = SORT_ASC ? '↑' : '↓';
+  renderTabela();
 }
 function renderTabela() {
   var q=(document.getElementById('q').value||'').toLowerCase();
   var esp=document.getElementById('fe').value, casa=document.getElementById('fc').value, res=document.getElementById('fr').value;
-  var f=D.slice().sort(function(a,b){return b.dt.localeCompare(a.dt);});
+  var f=D.slice().sort(function(a,b){
+  var da=(a.dt||'')+('T'+((a.hora&&a.hora.trim())?a.hora.trim():'00:00'));
+  var db=(b.dt||'')+('T'+((b.hora&&b.hora.trim())?b.hora.trim():'00:00'));
+  return SORT_ASC ? da.localeCompare(db) : db.localeCompare(da);
+});
   if(q)f=f.filter(function(a){return (a.jogo+a.mkt).toLowerCase().indexOf(q)>=0;});
   if(esp)f=f.filter(function(a){return a.esp===esp;});
   if(casa)f=f.filter(function(a){return a.casa===casa;});
-  if(res)f=f.filter(function(a){return a.res===res;});
+    if(res)f=f.filter(function(a){return a.res===res;});
+  var fd1=document.getElementById('fd1')?document.getElementById('fd1').value:'';
+  var fd2=document.getElementById('fd2')?document.getElementById('fd2').value:'';
+  if(fd1)f=f.filter(function(a){return a.dt>=fd1;});
+  if(fd2)f=f.filter(function(a){return a.dt<=fd2;});
   document.getElementById('tcnt').textContent=f.length+' apostas';
   var tb=document.getElementById('tbody'),em=document.getElementById('tempty');
   if(!f.length){tb.innerHTML='';em.style.display='flex';return;}
@@ -717,7 +789,7 @@ function renderTabela() {
       : '';
 
     return '<tr data-id="'+a.id+'">'
-      +'<td style="white-space:nowrap">'+a.dt+(a.hora?' <span style="font-size:.7rem;color:var(--mu)">'+a.hora+'</span>':'')+'</td>'
+      +'<td style="white-space:nowrap">'+(a.dt?a.dt.split('-').reverse().join('/'):'—')+(a.hora?' <span style="font-size:.7rem;color:var(--mu)">'+a.hora+'</span>':'')+'</td>'
       +'<td style="max-width:220px;white-space:normal;word-break:break-word;line-height:1.4" title="'+a.jogo+'">'+a.jogo+'</td>'
       +'<td>'+a.mkt+'</td>'
       +'<td>'+a.esp+'</td>'
@@ -756,19 +828,58 @@ function calcPrev(){
   if(e>1&&f>1){var c=clv(e,f);el.style.display='flex';vl.textContent=(c>=0?'+':'')+c.toFixed(2)+'%';vl.style.color=c>=0?'var(--ok)':'var(--er)';tl.textContent=c>=0?'✓ Acima do fechamento':'✗ Abaixo do fechamento';}
   else el.style.display='none';
 }
-function save(){
+async function save(){
   var a={id:EID||uid(),dt:document.getElementById('m_dt').value,jogo:document.getElementById('m_jogo').value.trim(),mkt:document.getElementById('m_mkt').value.trim(),esp:document.getElementById('m_esp').value.trim(),casa:document.getElementById('m_casa').value.trim(),oe:parseFloat(document.getElementById('m_odde').value)||null,of:parseFloat(document.getElementById('m_oddf').value)||null,stk:parseFloat(document.getElementById('m_stk').value)||null,un:parseFloat(document.getElementById('m_un').value)||null,hora:document.getElementById('m_hora').value||'',res:document.getElementById('m_res').value,co:parseFloat(document.getElementById('m_co').value)||null,obs:document.getElementById('m_obs').value.trim()};
   if(!a.dt||!a.jogo||!a.mkt){alert('Preencha data, jogo e mercado.');return;}
   if(EID){var i=D.findIndex(function(x){return String(x.id)===String(EID);});if(i>-1)D[i]=a;}else D.unshift(a);
   sv();closeModal();fillFilters();renderTabela();renderDash();
+  const gistId=localStorage.getItem('gistId');
+  const gistToken=localStorage.getItem('gistToken');
+  if(gistId&&gistToken){
+    try{
+      await fetch(`https://api.github.com/gists/${gistId}`,{
+        method:'PATCH',
+        headers:{'Authorization':`token ${gistToken}`,'Content-Type':'application/json'},
+        body:JSON.stringify({files:{'clv-data.json':{content:JSON.stringify(D,null,2)}}})
+      });
+    }catch(e){}
+  }
 }
-function editA(id){openModal(id);}
-function delA(id){if(!confirm('Excluir esta aposta?'))return;D=D.filter(function(a){return String(a.id)!==String(id);});sv();fillFilters();renderTabela();renderDash();}
 
 // ── EXCLUIR TODAS ─────────────────────────────────────────────
-function delAll(){
-  if(!confirm('Excluir TODAS as apostas? Esta ação não pode ser desfeita.'))return;
-  D=[];sv();fillFilters();renderTabela();renderDash();
+async function delAll() {
+  if (!confirm('Excluir TODAS as apostas?')) return;
+  D = [];
+  sv();
+  localStorage.removeItem('D'); // limpa cache local também
+  const gistId = localStorage.getItem('gistId');
+  const gistToken = localStorage.getItem('gistToken');
+  if (gistId && gistToken) {
+    try {
+      await fetch(`https://api.github.com/gists/${gistId}`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `token ${gistToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: { 'clv-data.json': { content: '[]' } } })
+      });
+    } catch(e) {}
+  }
+}
+  function editA(id){openModal(id);}
+async function delA(id) {
+  if (!confirm('Excluir esta aposta?')) return;
+  D = D.filter(function(a) { return String(a.id) !== String(id); });
+  sv(); fillFilters(); renderTabela(); renderDash();
+  const gistId = localStorage.getItem('gistId');
+  const gistToken = localStorage.getItem('gistToken');
+  if (gistId && gistToken) {
+    try {
+      await fetch(`https://api.github.com/gists/${gistId}`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `token ${gistToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: { 'clv-data.json': { content: JSON.stringify(D, null, 2) } } })
+      });
+    } catch(e) {}
+  }
 }
 
 // ── ATUALIZAÇÃO AUTOMÁTICA DE RESULTADOS ──────────────────────
@@ -1432,13 +1543,24 @@ function saveOf(id, val) {
   sv(); renderTabela(); renderDash();
 }
 function saveRes(id, val, sel) {
-  var i = D.findIndex(function(x){ return String(x.id)===String(id); });
-  if (i < 0) return;
-  D[i].res = val;
-  var colors = {Win:'var(--ok)',Loss:'var(--er)',Cashout:'#818cf8',Anulada:'#94a3b8',Pendente:'var(--wa)'};
-  sel.style.color = colors[val] || 'var(--tx)';
-  sv(); renderTabela(); renderDash();
-  if (typeof renderBanca === 'function') renderBanca();
+  var i=D.findIndex(function(x){return String(x.id)===String(id);});
+  if(i>-1){D[i].res=val;}
+  var colors={Win:'var(--ok)',Loss:'var(--er)',Cashout:'#818cf8',Anulada:'#94a3b8',Pendente:'var(--wa)'};
+  if(sel)sel.style.color=colors[val]||'var(--tx)';
+  sv();
+  fillFilters();
+  renderTabela();
+  renderDash();
+  // Sincroniza com Gist imediatamente
+  const gistId=localStorage.getItem('gistId');
+  const gistToken=localStorage.getItem('gistToken');
+  if(gistId&&gistToken){
+    fetch('https://api.github.com/gists/'+gistId,{
+      method:'PATCH',
+      headers:{'Authorization':'token '+gistToken,'Content-Type':'application/json'},
+      body:JSON.stringify({files:{'clv-data.json':{content:JSON.stringify(D,null,2)}}})
+    }).catch(function(){});
+  }
 }
 function saveCo(id, val) {
   val = parseFloat(val);
@@ -1748,26 +1870,24 @@ async function syncUpload() {
 }
 
 async function syncDownload() {
-  if (!GIST_ID) { alert('Configure o Gist ID para baixar os dados.'); return; }
-  var resp = await fetch('https://api.github.com/gists/' + GIST_ID, {
-    headers: GIST_TOKEN ? { 'Authorization': 'token ' + GIST_TOKEN } : {}
-  });
-  var data = await resp.json();
-  if (data.files && data.files['clv-data.json']) {
-    var raw = data.files['clv-data.json'].content;
-    try {
+  const gistId    = localStorage.getItem('gistId');
+  const gistToken = localStorage.getItem('gistToken');
+  if (!gistId)    { alert('Configure o Gist ID primeiro.'); return; }
+  if (!gistToken) { alert('Configure o Token primeiro.'); return; }
+  try {
+    const resp = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${gistToken}` }
+    });
+    const data = await resp.json();
+    if (data.files && data.files['clv-data.json']) {
+      const raw = data.files['clv-data.json'].content;
       D = JSON.parse(raw);
-      sv();
-      fillFilters();
-      renderTabela();
-      renderDash();
-      alert('✅ Dados sincronizados! ' + D.length + ' apostas carregadas.');
-    } catch(e) {
-      alert('❌ Erro ao processar dados: ' + e.message);
+      sv(); fillFilters(); renderTabela(); renderDash();
+      alert(`Dados sincronizados! ${D.length} apostas carregadas.`);
+    } else {
+      alert('Arquivo não encontrado no Gist.');
     }
-  } else {
-    alert('❌ Arquivo não encontrado no Gist.');
-  }
+  } catch(e) { alert('Erro: ' + e.message); }
 }
 
 // ── INIT ─────────────────────────────────────────────────────
@@ -1808,48 +1928,6 @@ if (savedKey) {
 }
 renderDash();
 fillFilters();
-
-// ── AUTO-SYNC A CADA 3s ───────────────────────────────────────
-setInterval(async function() {
-  var gistId    = localStorage.getItem('gistId');
-  var gistToken = localStorage.getItem('gistToken');
-  if (!gistId || !gistToken) return;
-  try {
-    var resp = await fetch('https://api.github.com/gists/' + gistId, {
-      headers: { 'Authorization': 'token ' + gistToken }
-    });
-    var data = await resp.json();
-    var file = data.files && data.files['clv-data.json'];
-    if (!file) return;
-    var remoto = JSON.parse(file.content);
-    if (JSON.stringify(remoto) === JSON.stringify(D)) return;
-
-    var idsLocais = new Map(D.map(function(a){ return [String(a.id), a]; }));
-    var idsRemoto = new Map(remoto.map(function(a){ return [String(a.id), a]; }));
-
-    var merged = remoto.map(function(a) {
-      var local = idsLocais.get(String(a.id));
-      if (!local) return a;
-      return Object.assign({}, a, {
-        res: local.res !== 'Pendente' ? local.res : a.res,
-        of:  local.of  != null       ? local.of  : a.of,
-        co:  local.co  != null       ? local.co  : a.co
-      });
-    });
-
-    D.forEach(function(a) {
-      if (!idsRemoto.has(String(a.id))) merged.unshift(a);
-    });
-
-    D = merged;
-    sv();
-    fillFilters();
-    renderTabela();
-    renderDash();
-    console.log('Sync: ' + D.length + ' apostas');
-  } catch(_) {}
-}, 3000);
-
 </script>
   <!-- BOTTOM NAV MOBILE -->
   <div class="bnav" id="bnav">
@@ -1862,9 +1940,39 @@ setInterval(async function() {
     <button class="bnav-btn" data-p="analytics" onclick="goTo('analytics');bnavUpdate('analytics')">
       <span class="bico">📈</span>Analytics
     </button>
+    <button class="bnav-btn" data-p="scanner" onclick="goTo('scanner');bnavUpdate('scanner')">
+      <span class="bico">🔍</span>Scanner
+    </button>
     <button class="bnav-btn" data-p="banca" onclick="goTo('banca');bnavUpdate('banca')">
       <span class="bico">💰</span>Banca
     </button>
   </div>
+  <script>
+setInterval(async () => {
+  const gistId    = localStorage.getItem('gistId');
+  const gistToken = localStorage.getItem('gistToken');
+  if (!gistId || !gistToken) return;
+  try {
+    const resp = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${gistToken}` }
+    });
+    const data = await resp.json();
+    const file = data.files['clv-data.json'];
+    if (!file) return;
+    const remoto = JSON.parse(file.content);
+    // Só atualiza se vier aposta nova do bot
+    const idsLocais = new Set(D.map(a => String(a.id)));
+    // DEPOIS — substitui D inteiro pelo remoto
+if (JSON.stringify(remoto) !== JSON.stringify(D)) {
+  D = remoto;
+  sv();
+  fillFilters();
+  renderTabela();
+  renderDash();
+  console.log('Dados sincronizados do Gist!');
+}
+  } catch(_) {}
+}, 30000);
+</script>
 </body>
 </html>

@@ -174,8 +174,8 @@ async function init() {
   fillFilters();
   renderDash();
   renderTabela();
-  setInterval(autoSync, 3000); // Auto-sync 3s
-  log('🚀 CLV Tracker v3.0 iniciado');
+  setInterval(autoSync, 3000);
+  log('🚀 CLV Tracker v3.1 - Filtros corrigidos');
 }
 window.onload = init;
 
@@ -209,19 +209,20 @@ async function gistSave(data) {
   } catch(e) { log('Gist save falhou: ' + e.message); }
 }
 
-async function autoSync() {
-  try {
-    const raw = await gistFetch();
-    const gistD = JSON.parse(raw);
-    if (gistD.length > D.length) {
-      D = gistD;
-      sv();
-      fillFilters();
-      renderTabela();
-      renderDash();
-      log('🔄 Auto-sync: ' + D.length + ' apostas');
-    }
-  } catch(e) { log('Auto-sync: ' + e.message); }
+function autoSync() {
+  gistFetch().then(raw => {
+    try {
+      const gistD = JSON.parse(raw);
+      if (gistD.length !== D.length || JSON.stringify(gistD) !== JSON.stringify(D)) {
+        D = gistD;
+        sv();
+        fillFilters();
+        renderTabela();
+        renderDash();
+        log('🔄 Auto-sync: ' + D.length + ' apostas | Tipsters: ' + [...new Set(D.map(a=>a.tipster))]);
+      }
+    } catch(e) { log('Auto-sync erro: ' + e.message); }
+  }).catch(e => log('Sync falhou: ' + e.message));
 }
 
 // ── LOCAL STORAGE ────────────────────────────────────────────
@@ -269,15 +270,15 @@ function fillFilters() {
   var res = ['Pendente','Win','Loss','HalfWin','HalfLoss','Cashout','Anulada'];
   
   var html = `
-    <select id="f-res" onchange="FILTROS.res=this.value;renderTabela()">
-      <option value="">Todos Resultados</option>
+    <select id="f-res" onchange="FILTROS.res=this.value;renderTabela();">
+      <option value="">📋 Todos Resultados</option>
       ${res.map(r=>`<option value="${r}" ${FILTROS.res===r?'selected':''}>${BADGEMAP[r]||r}</option>`).join('')}
     </select>
-    <select id="f-tipster" onchange="FILTROS.tipster=this.value;renderTabela()">
-      <option value="">Todos Tipsters</option>
+    <select id="f-tipster" onchange="FILTROS.tipster=this.value;renderTabela();">
+      <option value="">👥 Todos Tipsters (${tips.length})</option>
       ${tips.map(t=>`<option value="${t}" ${FILTROS.tipster===t?'selected':''}>${t}</option>`).join('')}
     </select>
-    <button class="btn" onclick="FILTROS={res:'',tipster:'',q:''};document.getElementById('q').value='';renderTabela();fillFilters()">🔄 Limpar</button>
+    <button class="btn" onclick="FILTROS={res:'',tipster:'',q:''};document.getElementById('q').value='';fillFilters();renderTabela();">🔄 Limpar Filtros</button>
   `;
   document.getElementById('filtros').innerHTML = html;
 }
@@ -334,6 +335,8 @@ function addAposta() {
   renderTabela();
   renderDash();
   fillFilters();
+    fillFilters();  // Atualiza filtros após dashboard
+}
   log('➕ Nova aposta #' + nova.id);
 }
 

@@ -790,7 +790,7 @@ function renderTabela() {
 
     return '<tr data-id="'+a.id+'">'
       +'<td style="white-space:nowrap">'+(a.dt?a.dt.split('-').reverse().join('/'):'—')+(a.hora?' <span style="font-size:.7rem;color:var(--mu)">'+a.hora+'</span>':'')+'</td>'
-      +'<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+a.jogo+'">'+a.jogo+'</td>'
+      +'<td style="max-width:220px;white-space:normal;word-break:break-word;line-height:1.4" title="'+a.jogo+'">'+a.jogo+'</td>'
       +'<td>'+a.mkt+'</td>'
       +'<td>'+a.esp+'</td>'
       +'<td>'+a.casa+'</td>'

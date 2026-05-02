@@ -262,54 +262,37 @@ function goTo(p) {
     </section>
 
     <!-- APOSTAS -->
-<section class="pg" id="pg-apostas" style="display:none">
-  <div id="res-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center">
-    <button class="rtab on" data-v="" onclick="setResTab(this,'')">Todas <span class="rcnt" id="cnt-all">0</span></button>
-    <button class="rtab" data-v="Pendente" onclick="setResTab(this,'Pendente')">⏳ Pendentes <span class="rcnt" id="cnt-Pendente">0</span></button>
-    <button class="rtab" data-v="Win" onclick="setResTab(this,'Win')">✅ Win <span class="rcnt" id="cnt-Win">0</span></button>
-    <button class="rtab" data-v="Loss" onclick="setResTab(this,'Loss')">❌ Loss <span class="rcnt" id="cnt-Loss">0</span></button>
-    <button class="rtab" data-v="Cashout" onclick="setResTab(this,'Cashout')">💰 Cashout <span class="rcnt" id="cnt-Cashout">0</span></button>
-    <button class="rtab" data-v="Anulada" onclick="setResTab(this,'Anulada')">🚫 Anulada <span class="rcnt" id="cnt-Anulada">0</span></button>
-    <input type="hidden" id="fr" value="">
-  </div>
+    <section class="pg" id="pg-apostas" style="display:none">
+           <div id="res-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center">
+        <button class="rtab on" data-v="" onclick="setResTab(this,'')">Todas <span class="rcnt" id="cnt-all">0</span></button>
+        <button class="rtab" data-v="Pendente" onclick="setResTab(this,'Pendente')">⏳ Pendentes <span class="rcnt" id="cnt-Pendente">0</span></button>
+        <button class="rtab" data-v="Win" onclick="setResTab(this,'Win')">✅ Win <span class="rcnt" id="cnt-Win">0</span></button>
+        <button class="rtab" data-v="Loss" onclick="setResTab(this,'Loss')">❌ Loss <span class="rcnt" id="cnt-Loss">0</span></button>
+        <button class="rtab" data-v="Cashout" onclick="setResTab(this,'Cashout')">💰 Cashout <span class="rcnt" id="cnt-Cashout">0</span></button>
+        <button class="rtab" data-v="Anulada" onclick="setResTab(this,'Anulada')">🚫 Anulada <span class="rcnt" id="cnt-Anulada">0</span></button>
+        <input type="hidden" id="fr" value="">
+      </div>
+      <div class="tb">
+        <div class="srch">🔎 <input type="text" id="q" placeholder="Buscar jogo ou mercado..." oninput="renderTabela()"></div>
+        <select class="fsl" id="fe" onchange="renderTabela()"><option value="">Todos esportes</option></select>
+        <select class="fsl" id="fc" onchange="renderTabela()"><option value="">Todas as casas</option></select>
+        <input type="date" class="fsl" id="fd1" onchange="renderTabela()" title="Data início" style="cursor:pointer">
+        <input type="date" class="fsl" id="fd2" onchange="renderTabela()" title="Data fim" style="cursor:pointer">
+        <button class="btn btn-s" onclick="clearDateFilters()" style="padding:.4rem .6rem;font-size:.75rem">✕ Datas</button>
+        <span class="tcnt" id="tcnt"></span>
+        <button class="btn btn-s" onclick="delAll()" style="margin-left:auto;font-size:.75rem;padding:.35rem .75rem;color:var(--er);border-color:var(--er)">🗑 Excluir todas</button>
+      </div>
+      <div class="tcard">
+        <div class="tscr">
+          <table>
+            <thead><tr><th id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th><th>Jogo</th><th>Mercado</th><th>Esporte</th><th>Casa</th><th>Odd Ent.</th><th>Odd Fech.</th><th>CLV</th><th>Stake</th><th>Un.</th><th>Resultado</th><th></th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="tempty" style="display:none">Nenhuma aposta encontrada</div>
+      </div>
+    </section>
 
-  <div class="tb">
-    <div class="srch">🔎 <input type="text" id="q" placeholder="Buscar jogo ou mercado..." oninput="renderTabela()"></div>
-    <select class="fsl" id="fe" onchange="renderTabela()"><option value="">Todos esportes</option></select>
-    <select class="fsl" id="fc" onchange="renderTabela()"><option value="">Todas as casas</option></select>
-    <select class="fsl" id="ftipster" onchange="renderTabela()"><option value="">Todos tipsters</option></select>
-    <input type="date" class="fsl" id="fd1" onchange="renderTabela()" title="Data início" style="cursor:pointer">
-    <input type="date" class="fsl" id="fd2" onchange="renderTabela()" title="Data fim" style="cursor:pointer">
-    <button class="btn btn-s" onclick="clearDateFilters()" style="padding:.4rem .6rem;font-size:.75rem">✕ Datas</button>
-    <span class="tcnt" id="tcnt"></span>
-    <button class="btn btn-s" onclick="delAll()" style="margin-left:auto;font-size:.75rem;padding:.35rem .75rem;color:var(--er);border-color:var(--er)">🗑 Excluir todas</button>
-  </div>
-
-  <div class="tcard">
-    <div class="tscr">
-      <table>
-        <thead>
-          <tr>
-            <th id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th>
-            <th>Jogo</th>
-            <th>Mercado</th>
-            <th>Esporte</th>
-            <th>Casa</th>
-            <th>Odd Ent.</th>
-            <th>Odd Fech.</th>
-            <th>CLV</th>
-            <th>Stake</th>
-            <th>Un.</th>
-            <th>Resultado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-    <div class="empty" id="tempty" style="display:none">Nenhuma aposta encontrada</div>
-  </div>
-</section>
     <!-- ANALYTICS -->
     <section class="pg" id="pg-analytics" style="display:none">
       <div class="kgrid" id="akgrid"></div>
@@ -643,30 +626,27 @@ function uid() { return Date.now()+'_'+Math.random().toString(36).slice(2,7); }
 
 // ── KPI ──────────────────────────────────────────────────────
 function kpis(elId) {
-  var v = D.filter(function(a){ return a.oe && a.of; });
-  var cs = v.map(function(a){ return clv(a.oe, a.of); }).filter(function(a){ return a !== null; });
-  var avg = cs.length ? cs.reduce(function(a,b){ return a+b; },0) / cs.length : 0;
-  var pct = cs.length ? (cs.filter(function(c){ return c > 0; }).length / cs.length) * 100 : 0;
-  var wins = D.filter(function(a){ return a.res === 'Win' || a.res === 'HalfWin'; }).length;
-  var tot = D.filter(function(a){ return a.res !== 'Pendente'; }).length;
-  var wr = tot ? (wins / tot) * 100 : 0;
-  var luc = 0, stk = 0;
-  D.filter(function(a){ return a.res !== 'Pendente'; }).forEach(function(a){
-    var u = a.stk || 0;
-    stk += u;
-    luc += lucroAposta(a);
+  var v=D.filter(function(a){return a.oe&&a.of;});
+  var cs=v.map(function(a){return clv(a.oe,a.of);});
+  var avg=cs.length?cs.reduce(function(a,b){return a+b;},0)/cs.length:0;
+  var pct=cs.length?(cs.filter(function(c){return c>0;}).length/cs.length)*100:0;
+  var wins=D.filter(function(a){return a.res==='Win';}).length;
+  var tot=D.filter(function(a){return a.res!=='Pendente';}).length;
+  var wr=tot?(wins/tot)*100:0;
+  var luc=0,stk=0;
+  D.filter(function(a){return a.res!=='Pendente';}).forEach(function(a){
+    stk+=a.stk||0; luc+=a.res==='Win'?(a.oe-1)*(a.stk||0):-(a.stk||0);
   });
-  var roi = stk ? (luc / stk) * 100 : 0;
-  function s(v){ return v >= 0 ? '+' : ''; }
-  var el = document.getElementById(elId);
-  if (!el) return;
-  el.innerHTML =
-    kc('CLV Médio', s(avg) + avg.toFixed(2) + '%', avg >= 0 ? 'pos' : 'neg', v.length + ' com fechamento') +
-    kc('CLV Positivo', pct.toFixed(0) + '%', 'neu', 'bateram o fechamento') +
-    kc('Win Rate', wr.toFixed(1) + '%', wr >= 50 ? 'pos' : 'neg', wins + ' wins / ' + tot + ' resolvidas') +
-    kc('ROI', s(roi) + roi.toFixed(2) + '%', roi >= 0 ? 'pos' : 'neg', D.length + ' apostas totais') +
-    kc('Lucro em Unidades', s(luc / getUnit()) + (luc / getUnit()).toFixed(2) + 'u', luc >= 0 ? 'pos' : 'neg', '1u = R$' + getUnit());
+  var roi=stk?(luc/stk)*100:0;
+  function s(v){return v>=0?'+':'';}
+  document.getElementById(elId).innerHTML=
+    kc('CLV Médio',s(avg)+avg.toFixed(2)+'%',avg>=0?'pos':'neg',v.length+' com fechamento')+
+    kc('CLV Positivo',pct.toFixed(0)+'%','neu','bateram o fechamento')+
+    kc('Win Rate',wr.toFixed(1)+'%',wr>=50?'pos':'neg',wins+' wins / '+tot+' resolvidas')+
+    kc('ROI',s(roi)+roi.toFixed(2)+'%',roi>=0?'pos':'neg',D.length+' apostas totais')+
+    kc('Lucro em Unidades',s(luc/getUnit())+(luc/getUnit()).toFixed(2)+'u',luc>=0?'pos':'neg','1u = R$'+getUnit());
 }
+function kc(l,v,c,s){return '<div class="kc"><div class="kl">'+l+'</div><div class="kv '+c+'">'+v+'</div><div class="ks">'+s+'</div></div>';}
 
 // ── CHARTS ───────────────────────────────────────────────────
 var PAL=['#4f98a3','#6daa45','#e8af34','#d163a7','#bb653b','#5591c7','#a86fdf'];
@@ -723,20 +703,19 @@ function renderAnalytics() {
 
 // ── TABELA ───────────────────────────────────────────────────
 function fillFilters() {
-  var q = document.getElementById('q');
-  var fe = document.getElementById('fe');
-  var fc = document.getElementById('fc');
-  var ft = document.getElementById('ftipster');
-
-  var esp = [...new Set(D.map(a => a.esp).filter(Boolean))].sort();
-  var casa = [...new Set(D.map(a => a.casa).filter(Boolean))].sort();
-  var tip = [...new Set(D.map(a => a.tipster).filter(Boolean))].sort();
-
-  if (fe) fe.innerHTML = '<option value="">Todos esportes</option>' + esp.map(v => `<option value="${v}">${v}</option>`).join('');
-  if (fc) fc.innerHTML = '<option value="">Todas as casas</option>' + casa.map(v => `<option value="${v}">${v}</option>`).join('');
-  if (ft) ft.innerHTML = '<option value="">Todos tipsters</option>' + tip.map(v => `<option value="${v}">${v}</option>`).join('');
-
-  if (q && q.value === undefined) q.value = '';
+  var esps=[...new Set(D.map(function(a){return a.esp;}).filter(Boolean))];
+  var css=[...new Set(D.map(function(a){return a.casa;}).filter(Boolean))];
+  var fe=document.getElementById('fe'),fc=document.getElementById('fc');
+  var ve=fe?fe.value:'',vc=fc?fc.value:'';
+  if(fe)fe.innerHTML='<option value="">Todos esportes</option>'+esps.map(function(e){return '<option>'+e+'</option>';}).join('');
+  if(fc)fc.innerHTML='<option value="">Todas as casas</option>'+css.map(function(c){return '<option>'+c+'</option>';}).join('');
+  if(fe)fe.value=ve; if(fc)fc.value=vc;
+  var tots={all:D.length,Pendente:0,Win:0,Loss:0,Cashout:0,Anulada:0};
+  D.forEach(function(a){if(tots[a.res]!==undefined)tots[a.res]++;});
+  var el=document.getElementById('cnt-all');if(el)el.textContent=tots.all;
+  ['Pendente','Win','Loss','Cashout','Anulada'].forEach(function(k){
+    var el=document.getElementById('cnt-'+k);if(el)el.textContent=tots[k];
+  });
 }
 function setResTab(btn,val){
   document.querySelectorAll('.rtab').forEach(function(b){b.classList.remove('on');});
@@ -756,60 +735,73 @@ function toggleSort(){
   renderTabela();
 }
 function renderTabela() {
-  var tb = document.getElementById('tbody');
-  var te = document.getElementById('tempty');
-  if (!tb) return;
+  var q=(document.getElementById('q').value||'').toLowerCase();
+  var esp=document.getElementById('fe').value, casa=document.getElementById('fc').value, res=document.getElementById('fr').value;
+  var f=D.slice().sort(function(a,b){
+  var da=(a.dt||'')+('T'+((a.hora&&a.hora.trim())?a.hora.trim():'00:00'));
+  var db=(b.dt||'')+('T'+((b.hora&&b.hora.trim())?b.hora.trim():'00:00'));
+  return SORT_ASC ? da.localeCompare(db) : db.localeCompare(da);
+});
+  if(q)f=f.filter(function(a){return (a.jogo+a.mkt).toLowerCase().indexOf(q)>=0;});
+  if(esp)f=f.filter(function(a){return a.esp===esp;});
+  if(casa)f=f.filter(function(a){return a.casa===casa;});
+    if(res)f=f.filter(function(a){return a.res===res;});
+  var fd1=document.getElementById('fd1')?document.getElementById('fd1').value:'';
+  var fd2=document.getElementById('fd2')?document.getElementById('fd2').value:'';
+  if(fd1)f=f.filter(function(a){return a.dt>=fd1;});
+  if(fd2)f=f.filter(function(a){return a.dt<=fd2;});
+  document.getElementById('tcnt').textContent=f.length+' apostas';
+  var tb=document.getElementById('tbody'),em=document.getElementById('tempty');
+  if(!f.length){tb.innerHTML='';em.style.display='flex';return;}
+  em.style.display='none';
+  tb.innerHTML=f.map(function(a){
+    var c=a.oe&&a.of?clv(a.oe,a.of):null;
+    var cs=c!==null?'<span class="'+(c>=0?'cp':'cn')+'">'+(c>=0?'+':'')+c.toFixed(2)+'%</span>':'<span class="cu">—</span>';
+    var b=a.res==='Win'?'<span class="bdg bw">Win</span>':a.res==='Loss'?'<span class="bdg bl">Loss</span>':a.res==='Cashout'?'<span class="bdg bc">Cashout</span>':a.res==='Anulada'?'<span class="bdg ba">Anulada</span>':'<span class="bdg bp">Pendente</span>';
+    return (function(a){
+    var c = a.oe && a.of ? clv(a.oe, a.of) : null;
+    var cs = c !== null
+      ? '<span class="'+(c>=0?'cp':'cn')+'">'+(c>=0?'+':'')+c.toFixed(2)+'%</span>'
+      : '<span class="cu">—</span>';
+    var inlineStyle = 'background:transparent;border:none;border-bottom:1px dashed var(--bor);color:var(--tx);font-family:var(--mono);font-size:.8125rem;text-align:center;outline:none;padding:2px 4px;width:';
 
-  var arr = D.slice().filter(filtData);
-  arr.sort(function(a,b){
-    return SORT_ASC ? (a.dt || '').localeCompare(b.dt || '') : (b.dt || '').localeCompare(a.dt || '');
-  });
+    // Input odd fechamento inline
+    var ofInput = '<input type="number" value="'+(a.of||'')+'" placeholder="—" min="1.01" step="0.01"'
+      +' style="'+inlineStyle+'62px"'
+      +' onchange="saveOf(\''+a.id+'\',this.value)"'
+      +' onfocus="this.style.borderColor=\'var(--pri)\'"'
+      +' onblur="this.style.borderColor=\'\'"/>';
 
-  var cnt = document.getElementById('tcnt');
-  if (cnt) cnt.textContent = arr.length + ' apostas';
+    // Select resultado inline
+    var opts = ['Pendente','Win','Loss','Cashout','Anulada'];
+    var colors = {Win:'var(--ok)',Loss:'var(--er)',Cashout:'#818cf8',Anulada:'#94a3b8',Pendente:'var(--wa)'};
+    var selRes = '<select style="'+inlineStyle+'90px;cursor:pointer;color:'+(colors[a.res]||'var(--tx)')+';"'
+      +' onchange="saveRes(\''+a.id+'\',this.value,this)">'
+      + opts.map(function(o){ return '<option value="'+o+'"'+(a.res===o?' selected':'')+'>'+o+'</option>'; }).join('')
+      +'</select>';
 
-  var cAll = D.length;
-  var cPend = D.filter(a => a.res === 'Pendente').length;
-  var cWin = D.filter(a => a.res === 'Win').length;
-  var cLoss = D.filter(a => a.res === 'Loss').length;
-  var cCash = D.filter(a => a.res === 'Cashout').length;
-  var cAn = D.filter(a => a.res === 'Anulada').length;
-  var cHW = D.filter(a => a.res === 'HalfWin').length;
-  var cHL = D.filter(a => a.res === 'HalfLoss').length;
+    // Input odd fechamento para cashout
+    var cashoutInput = a.res === 'Cashout'
+      ? ' <input type="number" value="'+(a.co||'')+'" placeholder="R$ CO" min="0" step="0.01"'
+        +' style="'+inlineStyle+'70px"'
+        +' onchange="saveCo(\''+a.id+'\',this.value)"/>'
+      : '';
 
-  var el = id => document.getElementById(id);
-  if (el('cnt-all')) el('cnt-all').textContent = cAll;
-  if (el('cnt-Pendente')) el('cnt-Pendente').textContent = cPend;
-  if (el('cnt-Win')) el('cnt-Win').textContent = cWin;
-  if (el('cnt-Loss')) el('cnt-Loss').textContent = cLoss;
-  if (el('cnt-Cashout')) el('cnt-Cashout').textContent = cCash;
-  if (el('cnt-Anulada')) el('cnt-Anulada').textContent = cAn;
-  if (el('cnt-HalfWin')) el('cnt-HalfWin').textContent = cHW;
-  if (el('cnt-HalfLoss')) el('cnt-HalfLoss').textContent = cHL;
-
-  tb.innerHTML = arr.map(function(a){
-    var cl = clv(a.oe, a.of);
-    var cltxt = cl === null ? '-' : (cl >= 0 ? '<span class="cp">+' + cl.toFixed(2) + '%</span>' : '<span class="cn">' + cl.toFixed(2) + '%</span>');
-    var resClass = a.res === 'Win' ? 'bw' : a.res === 'Loss' ? 'bl' : a.res === 'Cashout' ? 'bp' : '';
-    var lucro = lucroAposta(a);
-    var lucroTxt = a.res === 'Pendente' ? '-' : (lucro >= 0 ? '<span class="cp">+' + lucro.toFixed(2) + '</span>' : '<span class="cn">' + lucro.toFixed(2) + '</span>');
-    return '<tr>' +
-      '<td>' + (a.dt || '') + '</td>' +
-      '<td>' + (a.jogo || '') + '</td>' +
-      '<td>' + (a.mkt || '') + '</td>' +
-      '<td>' + (a.esp || '') + '</td>' +
-      '<td>' + (a.casa || '') + '</td>' +
-      '<td>' + (a.oe ?? '') + '</td>' +
-      '<td>' + (a.of ?? '') + '</td>' +
-      '<td>' + cltxt + '</td>' +
-      '<td>' + (a.stk ?? '') + '</td>' +
-      '<td>' + ((a.stk || 0) / getUnit()).toFixed(2) + '</td>' +
-      '<td><span class="bdg ' + resClass + '">' + (a.res || 'Pendente') + '</span></td>' +
-      '<td>' + lucroTxt + '</td>' +
-    '</tr>';
-  }).join('');
-
-  if (te) te.style.display = arr.length ? 'none' : 'flex';
+    return '<tr data-id="'+a.id+'">'
+      +'<td style="white-space:nowrap">'+(a.dt?a.dt.split('-').reverse().join('/'):'—')+(a.hora?' <span style="font-size:.7rem;color:var(--mu)">'+a.hora+'</span>':'')+'</td>'
+      +'<td style="max-width:220px;white-space:normal;word-break:break-word;line-height:1.4" title="'+a.jogo+'">'+a.jogo+'</td>'
+      +'<td>'+a.mkt+'</td>'
+      +'<td>'+a.esp+'</td>'
+      +'<td>'+a.casa+'</td>'
+      +'<td style="font-family:var(--mono)">'+(a.oe||'—')+'</td>'
+      +'<td>'+ofInput+'</td>'
+      +'<td class="clv-cell">'+cs+'</td>'
+      +'<td style="font-family:var(--mono)">'+(a.stk?'R$'+a.stk:'—')+'</td>'
+      +'<td style="font-family:var(--mono);color:var(--mu)">'+(a.un||(a.stk?+(a.stk/getUnit()).toFixed(2):'—'))+'u</td>'
+      +'<td>'+selRes+cashoutInput+'</td>'
+      +'<td><div class="ra"><button class="ab" onclick="editA(\''+a.id+'\')">✏ Editar</button><button class="ab d" onclick="delA(\''+a.id+'\')">🗑</button></div></td>'
+      +'</tr>';
+  })(a);}).join('');
 }
 
 // ── MODAL ─────────────────────────────────────────────────────
@@ -835,45 +827,24 @@ function calcPrev(){
   if(e>1&&f>1){var c=clv(e,f);el.style.display='flex';vl.textContent=(c>=0?'+':'')+c.toFixed(2)+'%';vl.style.color=c>=0?'var(--ok)':'var(--er)';tl.textContent=c>=0?'✓ Acima do fechamento':'✗ Abaixo do fechamento';}
   else el.style.display='none';
 }
-function save() {
-  var o = {
-    id: EID || uid(),
-    dt: document.getElementById('mdt').value,
-    hora: document.getElementById('mhora').value || '',
-    esp: document.getElementById('mesp').value || '',
-    jogo: document.getElementById('mjogo').value || '',
-    mkt: document.getElementById('mmkt').value || '',
-    casa: document.getElementById('mcasa').value || '',
-    stk: parseFloat(document.getElementById('mstk').value || 0),
-    un: parseFloat(document.getElementById('mun').value || 0),
-    oe: parseFloat(document.getElementById('modde').value || 0),
-    of: parseFloat(document.getElementById('moddf').value || 0),
-    res: document.getElementById('mres').value || 'Pendente',
-    co: parseFloat(document.getElementById('mco').value || 0),
-    obs: document.getElementById('mobs').value || '',
-    tipster: document.getElementById('mtipster') ? document.getElementById('mtipster').value : ''
-  };
-
-  if (!o.un && o.stk) o.un = o.stk / getUnit();
-  if (!o.stk && o.un) o.stk = o.un * getUnit();
-
-  var idx = D.findIndex(x => String(x.id) === String(o.id));
-  if (idx >= 0) D[idx] = o; else D.unshift(o);
-  sv();
-  fillFilters();
-  renderTabela();
-  renderDash();
-  closeModal();
+async function save(){
+  var a={id:EID||uid(),dt:document.getElementById('m_dt').value,jogo:document.getElementById('m_jogo').value.trim(),mkt:document.getElementById('m_mkt').value.trim(),esp:document.getElementById('m_esp').value.trim(),casa:document.getElementById('m_casa').value.trim(),oe:parseFloat(document.getElementById('m_odde').value)||null,of:parseFloat(document.getElementById('m_oddf').value)||null,stk:parseFloat(document.getElementById('m_stk').value)||null,un:parseFloat(document.getElementById('m_un').value)||null,hora:document.getElementById('m_hora').value||'',res:document.getElementById('m_res').value,co:parseFloat(document.getElementById('m_co').value)||null,obs:document.getElementById('m_obs').value.trim()};
+  if(!a.dt||!a.jogo||!a.mkt){alert('Preencha data, jogo e mercado.');return;}
+  if(EID){var i=D.findIndex(function(x){return String(x.id)===String(EID);});if(i>-1)D[i]=a;}else D.unshift(a);
+  sv();closeModal();fillFilters();renderTabela();renderDash();
+  const gistId=localStorage.getItem('gistId');
+  const gistToken=localStorage.getItem('gistToken');
+  if(gistId&&gistToken){
+    try{
+      await fetch(`https://api.github.com/gists/${gistId}`,{
+        method:'PATCH',
+        headers:{'Authorization':`token ${gistToken}`,'Content-Type':'application/json'},
+        body:JSON.stringify({files:{'clv-data.json':{content:JSON.stringify(D,null,2)}}})
+      });
+    }catch(e){}
+  }
 }
-function lucroAposta(a) {
-  var u = a.stk || 0;
-  if (a.res === 'Win') return (a.oe - 1) * u;
-  if (a.res === 'Loss') return -u;
-  if (a.res === 'HalfWin') return 0.5 * (a.oe - 1) * u;
-  if (a.res === 'HalfLoss') return -0.5 * u;
-  if (a.res === 'Cashout') return a.co ? (a.co - u) : 0;
-  return 0;
-}
+
 // ── EXCLUIR TODAS ─────────────────────────────────────────────
 async function delAll() {
   if (!confirm('Excluir TODAS as apostas?')) return;
@@ -921,21 +892,27 @@ function saveApiKey(){
   alert('Chave salva!');
 }
 
-function autoResultados() {
-  var pend = D.filter(function(a){ return a.res === 'Pendente'; });
-  var changed = false;
-  pend.forEach(function(a){
-    if (a.autoRes) {
-      a.res = a.autoRes;
-      changed = true;
-    }
-  });
-  if (changed) {
-    sv();
-    renderTabela();
-    renderDash();
-  }
-}
+async function autoResultados(){
+  var pendentes = D.filter(function(a){ return a.res==='Pendente' && a.esp && a.esp.toLowerCase().indexOf('futebol')>=0; });
+  if(!pendentes.length){ alert('Nenhuma aposta de futebol pendente encontrada.'); return; }
+  if(!API_FOOTBALL_KEY){ alert('Configure sua chave da API-Football nas configurações.'); return; }
+
+  var btn = document.getElementById('btnAutoRes');
+  if(btn){ btn.disabled=true; btn.textContent='🔄 Buscando...'; }
+
+  var atualizados=0, erros=0;
+
+  for(var i=0;i<pendentes.length;i++){
+    var ap = pendentes[i];
+    try {
+      // Extrair data no formato YYYY-MM-DD
+      var dt = ap.dt;
+      // Buscar fixtures por data
+      var url = 'https://v3.football.api-sports.io/fixtures?date='+dt+'&timezone=America%2FSao_Paulo';
+      var resp = await fetch(url, { headers:{ 'x-apisports-key': API_FOOTBALL_KEY } });
+      var data = await resp.json();
+
+      if(!data.response || !data.response.length) continue;
 
       // Tentar encontrar o jogo pelo nome
       var jogoLower = (ap.jogo||'').toLowerCase();

@@ -68,16 +68,33 @@ nav{padding:1rem .75rem;flex:1;display:flex;flex-direction:column;gap:2px}
 .tcnt{font-size:.7rem;color:var(--mu);margin-left:auto}
 .tcard{background:var(--sur);border:1px solid var(--bor);border-radius:.875rem;overflow:hidden}
 .tscr{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.75rem}
-thead th{padding:.625rem 1rem;text-align:left;font-size:.63rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor);white-space:nowrap}
-tbody td{padding:.625rem 1rem;border-bottom:1px solid var(--bor)}
+table{width:100%;border-collapse:collapse;font-size:.75rem;table-layout:fixed}
+thead th{padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor);white-space:nowrap;overflow:hidden}
+tbody td{padding:.5rem .75rem;border-bottom:1px solid var(--bor);vertical-align:middle;overflow:hidden}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:var(--sur2)}
+/* Column widths - fixed layout */
+.col-dt   { width:110px; }
+.col-jogo { width:160px; }
+.col-mkt  { width:140px; }
+.col-esp  { width:70px; }
+.col-casa { width:80px; }
+.col-tip  { width:90px; }
+.col-oe   { width:60px; }
+.col-of   { width:75px; }
+.col-clv  { width:68px; }
+.col-stk  { width:60px; }
+.col-un   { width:45px; }
+.col-res  { width:130px; }
+.col-act  { width:100px; }
 .cp{color:var(--ok);font-family:var(--mono);font-weight:600}
 .cn{color:var(--er);font-family:var(--mono);font-weight:600}
 .cu{color:var(--mu);font-family:var(--mono)}
 .ra{display:flex;gap:.25rem;opacity:0;transition:opacity .12s}
+.cell-txt{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:100%}
 tr:hover .ra{opacity:1}
+tr td.col-act .ra{opacity:.5}
+tr:hover td.col-act .ra{opacity:1}
 .ab{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:.3rem;font-size:.68rem;cursor:pointer;border:1px solid var(--bor);background:var(--sur2);color:var(--mu);font-family:'Inter',sans-serif}
 .ab:hover{color:var(--pri);border-color:var(--pri)}
 .ab.d:hover{color:var(--er);border-color:var(--er)}
@@ -288,7 +305,7 @@ function goTo(p) {
       <div class="tcard">
         <div class="tscr">
           <table>
-            <thead><tr><th id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th><th>Jogo</th><th>Mercado</th><th>Esporte</th><th>Casa</th><th>Tipster</th><th>Odd Ent.</th><th>Odd Fech.</th><th>CLV</th><th>Stake</th><th>Un.</th><th>Resultado</th><th></th></tr></thead>
+            <thead><tr><th class="col-dt" id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th><th class="col-jogo">Jogo</th><th class="col-mkt">Mercado</th><th class="col-esp">Esporte</th><th class="col-casa">Casa</th><th class="col-tip">Tipster</th><th class="col-oe">Odd Ent.</th><th class="col-of">Odd Fech.</th><th class="col-clv">CLV</th><th class="col-stk">Stake</th><th class="col-un">Un.</th><th class="col-res">Resultado</th><th class="col-act"></th></tr></thead>
             <tbody id="tbody"></tbody>
           </table>
         </div>
@@ -501,10 +518,63 @@ var CH = {};
   } else {
     D = JSON.parse(localStorage.getItem('clv') || '[]');
   }
+  D = D.map(normalizeBet);
   fillFilters();
   renderTabela();
   renderDash();
 })();
+
+// Normalize bet fields from bot (handles different casing/names from Telegram bot)
+function normalizeBet(a) {
+  // Tipster: bot may send as Tipster, tipster, tipsterName, tipster_name, etc.
+  if (!a.tipster) {
+    a.tipster = a.Tipster || a.tipsterName || a.tipster_name || a.TIPSTER || '';
+  }
+  // Odd entrada: bot may send as oe, odd, odd_entrada, oddEntrada, Odd
+  if (!a.oe) {
+    a.oe = a.odd || a.odd_entrada || a.oddEntrada || a.Odd || a.OE || null;
+    if (a.oe) a.oe = parseFloat(a.oe) || null;
+  }
+  // Odd fechamento: bot may send as of, odd_fechamento, oddFechamento
+  if (!a.of) {
+    a.of = a.odd_fechamento || a.oddFechamento || a.OF || null;
+    if (a.of) a.of = parseFloat(a.of) || null;
+  }
+  // Stake: bot may send as stk, stake, Stake
+  if (!a.stk) {
+    a.stk = a.stake || a.Stake || a.STK || null;
+    if (a.stk) a.stk = parseFloat(a.stk) || null;
+  }
+  // Result: bot may send as res, resultado, Resultado, result
+  if (!a.res) {
+    a.res = a.resultado || a.Resultado || a.result || a.Result || 'Pendente';
+  }
+  // Date: bot may send as dt, data, Data, date
+  if (!a.dt) {
+    a.dt = a.data || a.Data || a.date || '';
+  }
+  // Game/match: bot may send as jogo, Jogo, game, match
+  if (!a.jogo) {
+    a.jogo = a.Jogo || a.game || a.match || '';
+  }
+  // Market: bot may send as mkt, mercado, Mercado, market
+  if (!a.mkt) {
+    a.mkt = a.mercado || a.Mercado || a.market || '';
+  }
+  // Sport: bot may send as esp, esporte, Esporte, sport
+  if (!a.esp) {
+    a.esp = a.esporte || a.Esporte || a.sport || 'Futebol';
+  }
+  // House: bot may send as casa, Casa, house
+  if (!a.casa) {
+    a.casa = a.Casa || a.house || '';
+  }
+  // Hora: bot may send as hora, Hora, time, horario
+  if (!a.hora) {
+    a.hora = a.Hora || a.horario || a.time || '';
+  }
+  return a;
+}
 
 if (!D.length) D = [
   {id:1, dt:'2026-03-01',jogo:'Flamengo x Palmeiras',       mkt:'Over 2.5',         esp:'Futebol',   casa:'Bet365',   oe:2.10,of:1.95,stk:15,  res:'Win',    obs:''},
@@ -709,20 +779,23 @@ function renderTabela() {
         +' onchange="saveCo(\''+a.id+'\',this.value)"/>'
       : '';
 
+    var jogoTitle = (a.jogo||'—');
+    var mktTitle  = (a.mkt||'—');
+    var tipTitle  = (a.tipster||'');
     return '<tr data-id="'+a.id+'">'
-      +'<td style="white-space:nowrap">'+(a.dt?a.dt.split('-').reverse().join('/'):'—')+(a.hora?' <span style="font-size:.7rem;color:var(--mu)">'+a.hora+'</span>':'')+'</td>'
-      +'<td style="max-width:220px;white-space:normal;word-break:break-word;line-height:1.4" title="'+a.jogo+'">'+a.jogo+'</td>'
-      +'<td>'+a.mkt+'</td>'
-      +'<td>'+a.esp+'</td>'
-      +'<td>'+a.casa+'</td>'
-      +'<td style="color:var(--mu);font-size:.75rem">'+(a.tipster||'<span style="opacity:.4">—</span>')+'</td>'
-      +'<td style="font-family:var(--mono)">'+(a.oe||'—')+'</td>'
-      +'<td>'+ofInput+'</td>'
-      +'<td class="clv-cell">'+cs+'</td>'
-      +'<td style="font-family:var(--mono)">'+(a.stk?'R$'+a.stk:'—')+'</td>'
-      +'<td style="font-family:var(--mono);color:var(--mu)">'+(a.un||(a.stk?+(a.stk/getUnit()).toFixed(2):'—'))+'u</td>'
-      +'<td>'+selRes+cashoutInput+'</td>'
-      +'<td><div class="ra"><button class="ab" onclick="editA(\''+a.id+'\')">✏ Editar</button><button class="ab d" onclick="delA(\''+a.id+'\')">🗑</button></div></td>'
+      +'<td class="col-dt" title="'+(a.dt||'')+(a.hora?' '+a.hora:'')+'">'+(a.dt?a.dt.split('-').reverse().join('/'):'—')+(a.hora?' <span style="font-size:.65rem;color:var(--mu)">'+a.hora+'</span>':'')+'</td>'
+      +'<td class="col-jogo" title="'+jogoTitle+'"><span class="cell-txt">'+jogoTitle+'</span></td>'
+      +'<td class="col-mkt"  title="'+mktTitle+'"><span class="cell-txt">'+mktTitle+'</span></td>'
+      +'<td class="col-esp"  title="'+(a.esp||'')+'"><span class="cell-txt">'+(a.esp||'—')+'</span></td>'
+      +'<td class="col-casa" title="'+(a.casa||'')+'"><span class="cell-txt">'+(a.casa||'—')+'</span></td>'
+      +'<td class="col-tip"  title="'+tipTitle+'" style="color:var(--mu)"><span class="cell-txt">'+(tipTitle||'<span style="opacity:.35">—</span>')+'</span></td>'
+      +'<td class="col-oe"   style="font-family:var(--mono)">'+(a.oe||'—')+'</td>'
+      +'<td class="col-of">'+ofInput+'</td>'
+      +'<td class="col-clv clv-cell">'+cs+'</td>'
+      +'<td class="col-stk" style="font-family:var(--mono)">'+(a.stk?'R$'+a.stk:'—')+'</td>'
+      +'<td class="col-un"  style="font-family:var(--mono);color:var(--mu)">'+(a.un||(a.stk?+(a.stk/getUnit()).toFixed(2):'—'))+'u</td>'
+      +'<td class="col-res">'+selRes+(cashoutInput?' '+cashoutInput:'')+'</td>'
+      +'<td class="col-act"><div class="ra"><button class="ab" onclick="editA(\''+a.id+'\')">✏</button><button class="ab d" onclick="delA(\''+a.id+'\')">🗑</button></div></td>'
       +'</tr>';
   })(a);}).join('');
 }
@@ -917,7 +990,7 @@ function importCSV(el){
       var c=line.split(',').map(function(x){return x.replace(/^"|"$/g,'').trim();});
       if(c.length<9)return;
       var a={id:uid(),dt:c[0],jogo:c[1],mkt:c[2],esp:c[3],casa:c[4],oe:parseFloat(c[5])||null,of:parseFloat(c[6])||null,stk:parseFloat(c[7])||null,res:c[8]||'Pendente',obs:c[9]||''};
-      if(a.dt&&a.jogo){D.push(a);n++;}
+      if(a.dt&&a.jogo){D.push(normalizeBet(a));n++;}
     });
     sv();alert(n+' apostas importadas!');fillFilters();renderTabela();renderDash();
   };
@@ -1809,7 +1882,7 @@ async function syncDownload() {
     const data = await resp.json();
     if (data.files && data.files['clv-data.json']) {
       const raw = data.files['clv-data.json'].content;
-      D = JSON.parse(raw);
+      D = JSON.parse(raw).map(normalizeBet);
       sv(); fillFilters(); renderTabela(); renderDash();
       alert(`Dados sincronizados! ${D.length} apostas carregadas.`);
     } else {
@@ -1890,7 +1963,7 @@ setInterval(async () => {
     const data = await resp.json();
     const file = data.files['clv-data.json'];
     if (!file) return;
-    const remoto = JSON.parse(file.content);
+    const remoto = JSON.parse(file.content).map(normalizeBet);
     const now = new Date().toLocaleTimeString('pt-BR');
     if (JSON.stringify(remoto) !== JSON.stringify(D)) {
       D = remoto;

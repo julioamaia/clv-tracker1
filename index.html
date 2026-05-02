@@ -544,16 +544,32 @@ var CH = {};
 
 // Normalize bet fields from bot (handles different casing/names from Telegram bot)
 function normalizeBet(a) {
-  // Tipster: aggressive scan — check every known variation AND full key scan
+  // Tipster: check known fields AND extract from obs field if format is [tipster]
   var tipsterVal = '';
-  // Direct known field names first
+
+  // 1) Direct known field names
   var tipsterKeys = ['tipster','Tipster','TIPSTER','tipsterName','tipster_name',
-    'tipper','Tipper','tip','TIP','quem','Quem','fonte','Fonte','analyst','Analyst',
+    'tipper','Tipper','quem','Quem','fonte','Fonte','analyst','Analyst',
     'author','Author','picker','Picker','capper','Capper'];
   for (var _ti = 0; _ti < tipsterKeys.length; _ti++) {
     if (a[tipsterKeys[_ti]]) { tipsterVal = String(a[tipsterKeys[_ti]]); break; }
   }
-  // If still empty, scan ALL keys for anything tipster-like
+
+  // 2) Extract from obs if format is "[tipster name]" or "[tipster] extra obs"
+  // The bot uses obs: "[Eu + Bot VV]" — extract tipster from [brackets]
+  if (!tipsterVal && a.obs) {
+    var obsStr = String(a.obs).trim();
+    // Match [tipster] at start or as entire obs value
+    var obsMatch = obsStr.match(/^\[(.+?)\](.*)$/);
+    if (obsMatch) {
+      tipsterVal = obsMatch[1].trim();
+      // Keep any text after the bracket as real obs
+      var remainingObs = obsMatch[2].trim();
+      a.obs = remainingObs;
+    }
+  }
+
+  // 3) Scan ALL keys for anything tipster-like
   if (!tipsterVal) {
     Object.keys(a).forEach(function(k) {
       if (!tipsterVal && /tipster|tipper|quem|fonte|picker|capper/i.test(k) && a[k]) {
@@ -561,6 +577,7 @@ function normalizeBet(a) {
       }
     });
   }
+
   a.tipster = tipsterVal;
   // Odd entrada: bot may send as oe, odd, odd_entrada, oddEntrada, Odd
   if (!a.oe) {
@@ -2119,15 +2136,21 @@ async function doSync() {
     if (remoto.length > 0) {
       var dbg = document.getElementById('debugFields');
       if (dbg) {
-        // Show raw keys (before normalization) from original parsed data
         try {
           var rawArr = JSON.parse(file.content);
           var lastRaw = rawArr[rawArr.length - 1] || {};
-          var lines = Object.keys(lastRaw).map(function(k) {
-            return k + ': ' + JSON.stringify(lastRaw[k]);
+          var lastNorm = remoto[remoto.length - 1] || {};
+          var lines = ['── CAMPOS BRUTOS (do bot) ──'];
+          Object.keys(lastRaw).forEach(function(k) {
+            lines.push(k + ': ' + JSON.stringify(lastRaw[k]));
           });
+          lines.push('');
+          lines.push('── APÓS NORMALIZAÇÃO ──');
+          lines.push('tipster: ' + JSON.stringify(lastNorm.tipster || ''));
+          lines.push('obs: ' + JSON.stringify(lastNorm.obs || ''));
+          lines.push('res: ' + JSON.stringify(lastNorm.res || ''));
           dbg.textContent = lines.join('\n');
-        } catch(e) { dbg.textContent = 'Erro ao parsear: ' + e.message; }
+        } catch(e) { dbg.textContent = 'Erro: ' + e.message; }
       }
     }
 

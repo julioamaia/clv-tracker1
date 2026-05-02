@@ -276,6 +276,7 @@ function goTo(p) {
         <div class="srch">🔎 <input type="text" id="q" placeholder="Buscar jogo ou mercado..." oninput="renderTabela()"></div>
         <select class="fsl" id="fe" onchange="renderTabela()"><option value="">Todos esportes</option></select>
         <select class="fsl" id="fc" onchange="renderTabela()"><option value="">Todas as casas</option></select>
+        <select class="fsl" id="ftipster" onchange="renderTabela()"><option value="">Todos tipsters</option></select>
         <input type="date" class="fsl" id="fd1" onchange="renderTabela()" title="Data início" style="cursor:pointer">
         <input type="date" class="fsl" id="fd2" onchange="renderTabela()" title="Data fim" style="cursor:pointer">
         <button class="btn btn-s" onclick="clearDateFilters()" style="padding:.4rem .6rem;font-size:.75rem">✕ Datas</button>
@@ -426,8 +427,13 @@ function goTo(p) {
             <div class="fg"><label>Odd Entrada</label><input type="number" id="s_odd" min="1.01" step="0.01" oninput="calcSclv()"></div>
             <div class="fg"><label>Resultado</label>
               <select id="s_res" onchange="toggleCashout('s_co',this.value)">
-                <option>Pendente</option><option>Win</option><option>Loss</option>
-                <option>Cashout</option><option>Anulada</option>
+                <option>Pendente</option>
+<option>Win</option>
+<option>Loss</option>
+<option>HalfWin</option>
+<option>HalfLoss</option>
+<option>Cashout</option>
+<option>Anulada</option>
               </select>
             </div>
             <div class="fg" id="s_co_box" style="display:none">
@@ -705,15 +711,19 @@ function renderAnalytics() {
 function fillFilters() {
   var esps=[...new Set(D.map(function(a){return a.esp;}).filter(Boolean))];
   var css=[...new Set(D.map(function(a){return a.casa;}).filter(Boolean))];
-  var fe=document.getElementById('fe'),fc=document.getElementById('fc');
-  var ve=fe?fe.value:'',vc=fc?fc.value:'';
+  var tips=[...new Set(D.map(function(a){return a.tipster;}).filter(Boolean))];
+  var fe=document.getElementById('fe'),fc=document.getElementById('fc'),ft=document.getElementById('ftipster');
+  var ve=fe?fe.value:'',vc=fc?fc.value:'',vt=ft?ft.value:'';
   if(fe)fe.innerHTML='<option value="">Todos esportes</option>'+esps.map(function(e){return '<option>'+e+'</option>';}).join('');
   if(fc)fc.innerHTML='<option value="">Todas as casas</option>'+css.map(function(c){return '<option>'+c+'</option>';}).join('');
-  if(fe)fe.value=ve; if(fc)fc.value=vc;
-  var tots={all:D.length,Pendente:0,Win:0,Loss:0,Cashout:0,Anulada:0};
+  if(ft)ft.innerHTML='<option value="">Todos tipsters</option>'+tips.map(function(t){return '<option>'+t+'</option>';}).join('');
+  if(fe)fe.value=ve;
+  if(fc)fc.value=vc;
+  if(ft)ft.value=vt;
+  var tots={all:D.length,Pendente:0,Win:0,Loss:0,Cashout:0,Anulada:0,HalfWin:0,HalfLoss:0};
   D.forEach(function(a){if(tots[a.res]!==undefined)tots[a.res]++;});
   var el=document.getElementById('cnt-all');if(el)el.textContent=tots.all;
-  ['Pendente','Win','Loss','Cashout','Anulada'].forEach(function(k){
+  ['Pendente','Win','Loss','Cashout','Anulada','HalfWin','HalfLoss'].forEach(function(k){
     var el=document.getElementById('cnt-'+k);if(el)el.textContent=tots[k];
   });
 }
@@ -736,7 +746,7 @@ function toggleSort(){
 }
 function renderTabela() {
   var q=(document.getElementById('q').value||'').toLowerCase();
-  var esp=document.getElementById('fe').value, casa=document.getElementById('fc').value, res=document.getElementById('fr').value;
+  var esp=document.getElementById('fe').value, casa=document.getElementById('fc').value, tip=document.getElementById('ftipster')?document.getElementById('ftipster').value:'', res=document.getElementById('fr').value;
   var f=D.slice().sort(function(a,b){
   var da=(a.dt||'')+('T'+((a.hora&&a.hora.trim())?a.hora.trim():'00:00'));
   var db=(b.dt||'')+('T'+((b.hora&&b.hora.trim())?b.hora.trim():'00:00'));
@@ -745,7 +755,8 @@ function renderTabela() {
   if(q)f=f.filter(function(a){return (a.jogo+a.mkt).toLowerCase().indexOf(q)>=0;});
   if(esp)f=f.filter(function(a){return a.esp===esp;});
   if(casa)f=f.filter(function(a){return a.casa===casa;});
-    if(res)f=f.filter(function(a){return a.res===res;});
+  if(tip)f=f.filter(function(a){return a.tipster===tip;});
+  if(res)f=f.filter(function(a){return a.res===res;});
   var fd1=document.getElementById('fd1')?document.getElementById('fd1').value:'';
   var fd2=document.getElementById('fd2')?document.getElementById('fd2').value:'';
   if(fd1)f=f.filter(function(a){return a.dt>=fd1;});
@@ -828,18 +839,60 @@ function calcPrev(){
   else el.style.display='none';
 }
 async function save(){
-  var a={id:EID||uid(),dt:document.getElementById('m_dt').value,jogo:document.getElementById('m_jogo').value.trim(),mkt:document.getElementById('m_mkt').value.trim(),esp:document.getElementById('m_esp').value.trim(),casa:document.getElementById('m_casa').value.trim(),oe:parseFloat(document.getElementById('m_odde').value)||null,of:parseFloat(document.getElementById('m_oddf').value)||null,stk:parseFloat(document.getElementById('m_stk').value)||null,un:parseFloat(document.getElementById('m_un').value)||null,hora:document.getElementById('m_hora').value||'',res:document.getElementById('m_res').value,co:parseFloat(document.getElementById('m_co').value)||null,obs:document.getElementById('m_obs').value.trim()};
-  if(!a.dt||!a.jogo||!a.mkt){alert('Preencha data, jogo e mercado.');return;}
-  if(EID){var i=D.findIndex(function(x){return String(x.id)===String(EID);});if(i>-1)D[i]=a;}else D.unshift(a);
-  sv();closeModal();fillFilters();renderTabela();renderDash();
-  const gistId=localStorage.getItem('gistId');
-  const gistToken=localStorage.getItem('gistToken');
-  if(gistId&&gistToken){
+  var a = {
+    id: EID || uid(),
+    dt: document.getElementById('m_dt').value,
+    jogo: document.getElementById('m_jogo').value.trim(),
+    mkt: document.getElementById('m_mkt').value.trim(),
+    esp: document.getElementById('m_esp').value.trim(),
+    casa: document.getElementById('m_casa').value.trim(),
+    tipster: document.getElementById('m_tipster') ? document.getElementById('m_tipster').value.trim() : '',
+    oe: parseFloat(document.getElementById('m_odde').value) || null,
+    of: parseFloat(document.getElementById('m_oddf').value) || null,
+    stk: parseFloat(document.getElementById('m_stk').value) || null,
+    un: parseFloat(document.getElementById('m_un').value) || null,
+    hora: document.getElementById('m_hora').value || '',
+    res: document.getElementById('m_res').value,
+    co: parseFloat(document.getElementById('m_co').value) || null,
+    obs: document.getElementById('m_obs').value.trim()
+  };
+
+  if(!a.dt || !a.jogo || !a.mkt){
+    alert('Preencha data, jogo e mercado.');
+    return;
+  }
+
+  if(EID){
+    var i = D.findIndex(function(x){ return String(x.id) === String(EID); });
+    if(i > -1) D[i] = a;
+  } else {
+    D.unshift(a);
+  }
+
+  sv();
+  closeModal();
+  fillFilters();
+  renderTabela();
+  renderDash();
+
+  const gistId = localStorage.getItem('gistId');
+  const gistToken = localStorage.getItem('gistToken');
+
+  if(gistId && gistToken){
     try{
-      await fetch(`https://api.github.com/gists/${gistId}`,{
-        method:'PATCH',
-        headers:{'Authorization':`token ${gistToken}`,'Content-Type':'application/json'},
-        body:JSON.stringify({files:{'clv-data.json':{content:JSON.stringify(D,null,2)}}})
+      await fetch('https://api.github.com/gists/' + gistId, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': 'token ' + gistToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          files: {
+            'clv-data.json': {
+              content: JSON.stringify(D, null, 2)
+            }
+          }
+        })
       });
     }catch(e){}
   }
@@ -1614,9 +1667,11 @@ function renderBanca() {
   var pontos = [{x:'Início', y:bi}];
   apostas.forEach(function(a) {
     var s = parseFloat(a.stk)||0, pl = 0;
-    if      (a.res==='Win')     pl = ((parseFloat(a.oe)||0) - 1) * s;
-    else if (a.res==='Loss')    pl = -s;
-    else if (a.res==='Cashout') pl = (parseFloat(a.co)||0) - s;
+    if      (a.res==='Win')      pl = ((parseFloat(a.oe)||0) - 1) * s;
+else if (a.res==='Loss')     pl = -s;
+else if (a.res==='HalfWin')  pl = 0.5 * ((parseFloat(a.oe)||0) - 1) * s;
+else if (a.res==='HalfLoss') pl = -0.5 * s;
+else if (a.res==='Cashout')  pl = (parseFloat(a.co)||0) - s;
     lucroTotal += pl;
     var dtLabel = (a.dt||'').slice(0,10) + (a.hora?' '+a.hora:'');
     pontos.push({x: dtLabel, y:+(bi+lucroTotal).toFixed(2)});
@@ -1858,14 +1913,20 @@ async function syncUpload() {
   });
   var data = await resp.json();
   if (data.id) {
-    GIST_ID = data.id;
-    localStorage.setItem('gistId', GIST_ID);
-    var el = document.getElementById('gistId');
-    if (el) el.value = GIST_ID;
-    alert('✅ Dados enviados! ID: ' + GIST_ID);
-  } else {
-    alert('❌ Erro: ' + JSON.stringify(data.message || data));
-  }
+  GIST_ID = data.id;
+  localStorage.setItem('gistId', GIST_ID);
+
+  var el = document.getElementById('gistId');
+  if (el) el.value = GIST_ID;
+
+  fillFilters();
+  renderTabela();
+  renderDash();
+
+  alert('✅ Dados enviados! ID: ' + GIST_ID);
+} else {
+  alert('❌ Erro: ' + JSON.stringify(data.message || data));
+}
 }
 
 async function syncDownload() {
@@ -1947,31 +2008,38 @@ fillFilters();
     </button>
   </div>
   <script>
+let lastGistHash = '';
+
 setInterval(async () => {
-  const gistId    = localStorage.getItem('gistId');
+  const gistId = localStorage.getItem('gistId');
   const gistToken = localStorage.getItem('gistToken');
   if (!gistId || !gistToken) return;
+
   try {
-    const resp = await fetch(`https://api.github.com/gists/${gistId}`, {
-      headers: { 'Authorization': `token ${gistToken}` }
+    const resp = await fetch('https://api.github.com/gists/' + gistId, {
+      headers: { 'Authorization': 'token ' + gistToken }
     });
     const data = await resp.json();
-    const file = data.files['clv-data.json'];
+    const file = data.files && data.files['clv-data.json'];
     if (!file) return;
-    const remoto = JSON.parse(file.content);
-    // Só atualiza se vier aposta nova do bot
-    const idsLocais = new Set(D.map(a => String(a.id)));
-    // DEPOIS — substitui D inteiro pelo remoto
-if (JSON.stringify(remoto) !== JSON.stringify(D)) {
-  D = remoto;
-  sv();
-  fillFilters();
-  renderTabela();
-  renderDash();
-  console.log('Dados sincronizados do Gist!');
-}
+
+    const remoteText = file.content || '';
+    const remoteHash = String(remoteText.length) + ':' + remoteText.slice(0, 50);
+
+    if (remoteHash === lastGistHash) return;
+    lastGistHash = remoteHash;
+
+    const remoto = JSON.parse(remoteText);
+    if (JSON.stringify(remoto) !== JSON.stringify(D)) {
+      D = remoto;
+      sv();
+      fillFilters();
+      renderTabela();
+      renderDash();
+      console.log('Dados sincronizados do Gist!');
+    }
   } catch(_) {}
-}, 30000);
+}, 5000);
 </script>
 </body>
 </html>

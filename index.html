@@ -262,6 +262,25 @@ tr:hover td.col-act .ra{opacity:1}
 .bk-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:997;opacity:0;pointer-events:none;transition:opacity .18s}
 .bk-modal-bg.on{opacity:1;pointer-events:all}
 .bk-modal{background:var(--sur);border:1px solid var(--bor);border-radius:.875rem;padding:1.5rem;width:100%;max-width:400px}
+
+/* ── SAQUE / DEPÓSITO ─────────────────────────────── */
+.bk-txn-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;z-index:998;
+  opacity:0;pointer-events:none;transition:opacity .18s}
+.bk-txn-modal-bg.on{opacity:1;pointer-events:all}
+.bk-txn-modal{background:var(--sur);border:1px solid var(--bor);border-radius:.875rem;
+  padding:1.5rem;width:100%;max-width:380px}
+.txn-type-tabs{display:flex;gap:.5rem;margin-bottom:1rem}
+.txn-tab{flex:1;padding:.45rem;border-radius:.5rem;border:1px solid var(--bor);
+  background:var(--sur2);color:var(--mu);font-size:.8rem;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
+.txn-tab.on{border-color:var(--pri);background:rgba(79,152,163,.12);color:var(--pri)}
+.bk-hist-mini{border-top:1px solid var(--bor);margin-top:.625rem;padding-top:.5rem}
+.bk-hist-mini-row{display:flex;justify-content:space-between;align-items:center;
+  padding:.25rem 0;border-bottom:1px solid rgba(128,128,128,.07);font-size:.72rem}
+.bk-hist-mini-row:last-child{border-bottom:none}
+.txn-pill{display:inline-flex;padding:.1rem .4rem;border-radius:4px;font-size:.65rem;font-weight:700}
+.txn-saque{background:rgba(209,99,167,.15);color:#d163a7}
+.txn-dep{background:rgba(109,170,69,.15);color:#6daa45}
 </style>
 
 <!-- goTo carregado ANTES de tudo: navegação nunca falha -->
@@ -549,6 +568,38 @@ function goTo(p) {
 
       <!-- Cards das casas -->
       <div class="bk-grid" id="bk-grid"></div>
+
+      <!-- Histórico de Transações -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="stitle">🏦 Histórico de Saques e Depósitos</div>
+        <div style="display:flex;gap:.5rem;margin-bottom:.875rem;flex-wrap:wrap;align-items:center">
+          <select class="fsl" id="txn-f-casa" onchange="renderTxnHistory()" style="min-width:140px">
+            <option value="">Todas as casas</option>
+          </select>
+          <select class="fsl" id="txn-f-tipo" onchange="renderTxnHistory()">
+            <option value="">Todos tipos</option>
+            <option value="deposito">Depósitos</option>
+            <option value="saque">Saques</option>
+          </select>
+          <span id="txn-totals" style="font-size:.78rem;color:var(--mu);margin-left:auto"></span>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:.75rem">
+            <thead>
+              <tr>
+                <th style="padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor);white-space:nowrap">Data</th>
+                <th style="padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">Casa</th>
+                <th style="padding:.5rem .75rem;text-align:center;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">Tipo</th>
+                <th style="padding:.5rem .75rem;text-align:right;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">Valor</th>
+                <th style="padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">Obs</th>
+                <th style="padding:.5rem .75rem;background:var(--sur2);border-bottom:1px solid var(--bor);width:40px"></th>
+              </tr>
+            </thead>
+            <tbody id="txn-hist-body"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="txn-hist-empty" style="display:none">Nenhuma movimentação registrada</div>
+      </div>
 
       <!-- Histórico por casa -->
       <div class="card">
@@ -2105,14 +2156,18 @@ function renderCasas(){
   // ── KPIs globais ──
   var kpiEl=document.getElementById('casas-kpis');
   if(kpiEl){
-    var totIni=0,totAtual=0,totPL=0,totPend=0;
+    var totIni=0,totAtual=0,totPL=0,totPend=0,totSaques=0;
     bks.forEach(function(bk){
       var r=bkPL(bk.nome);
-      totIni+=bk.saldoInicial||0;
-      totAtual+=(bk.saldoInicial||0)+r.pl;
-      totPL+=r.pl; totPend+=r.pendStk;
+      var txn=bkTxnTotals(bk.id);
+      var saldoIniEf=(bk.saldoInicial||0)+txn.depositos;
+      totIni+=saldoIniEf;
+      totAtual+=saldoIniEf+r.pl;
+      totPL+=r.pl;
+      totPend+=r.pendStk;
+      totSaques+=(txn.saques||0);
     });
-    var totDisp=totAtual-totPend;
+    var totDisp=totAtual-totPend-totSaques;
     function k2(lbl,val,sub,col){
       return '<div class="dkpi"><div class="dkpi-lbl">'+lbl+'</div>'
         +'<div class="dkpi-val" style="color:'+col+'">'+val+'</div>'
@@ -2131,14 +2186,19 @@ function renderCasas(){
   var html='';
   bks.forEach(function(bk){
     var r=bkPL(bk.nome);
-    var sAtual=(bk.saldoInicial||0)+r.pl;
-    var sDisp=sAtual-r.pendStk;
-    var varPct=bk.saldoInicial?((sAtual-bk.saldoInicial)/bk.saldoInicial)*100:0;
+    var txn=bkTxnTotals(bk.id);
+    // Depósito aumenta o saldo inicial efetivo
+    var saldoIniEfetivo=(bk.saldoInicial||0)+txn.depositos;
+    // Saldo atual = inicial efetivo + P/L das apostas
+    var sAtual=saldoIniEfetivo+r.pl;
+    // Disponível = saldo atual - stakes pendentes - saques realizados
+    var sDisp=sAtual-r.pendStk-txn.saques;
+    var varPct=saldoIniEfetivo?((sAtual-saldoIniEfetivo)/saldoIniEfetivo)*100:0;
     var dispPct=sAtual>0?(sDisp/sAtual)*100:100;
     var roi=r.stk?(r.pl/r.stk)*100:0;
     var cls=r.pl>=0?'bk-pos':'bk-neg';
     var plC=r.pl>=0?'var(--ok)':'var(--er)';
-    var dispC=sDisp<0?'var(--er)':sDisp<(bk.saldoInicial||0)*0.15?'var(--wa)':'var(--tx)';
+    var dispC=sDisp<0?'var(--er)':sDisp<saldoIniEfetivo*0.15?'var(--wa)':'var(--tx)';
     html+=
       '<div class="bk-card '+cls+'">'
         +'<div class="bk-name">'
@@ -2165,15 +2225,24 @@ function renderCasas(){
         // Barra progresso
         +'<div class="dkpi-bar" style="margin-top:.5rem"><span style="width:'+Math.min(100,Math.max(0,Math.abs(varPct)))+'%;background:'+plC+'"></span></div>'
         +'<div style="font-size:.63rem;color:var(--mu);margin-top:.2rem;display:flex;justify-content:space-between">'
-          +'<span>'+sg(varPct)+varPct.toFixed(1)+'% vs inicial</span>'
+          +'<span>'+sg(varPct)+varPct.toFixed(1)+'% vs inicial'+(txn.depositos?'  (+R$'+txn.depositos.toFixed(2)+' dep.)':'')+'</span>'
           +'<span class="bk-pill '+(r.pl>=0?'bk-pill-g':'bk-pill-r')+'">'+r.t+' resolvidas</span>'
         +'</div>'
+        // Button saque/depósito — data attrs avoid quote escaping
+        +'<button class="bk-txn-btn" data-bkid="'+bk.id+'" data-bknome="'+bk.nome+'" onclick="bkTxnClick(this)" '
+        +'style="width:100%;margin-top:.625rem;padding:.4rem;border-radius:.45rem;border:1px solid var(--bor);background:var(--sur2);color:var(--tx);font-size:.78rem;font-weight:600;cursor:pointer;transition:border-color .15s">'
+        +'💸 Saque / 💰 Depósito'
+        +'</button>'
+        // Mini histórico de transações
+        +(txn.txns.length
+          ? '<div class="bk-hist-mini">'+bkHistMiniHtml(bk.id)+'</div>'
+          : '')
       +'</div>';
   });
   html+='<div class="bk-add-card" onclick="openBkModal(null)">+ Adicionar Casa</div>';
   grid.innerHTML=html;
 
-  // ── Atualizar filtro ──
+  // ── Atualizar filtros ──
   var fEl=document.getElementById('bk-f-casa');
   if(fEl){
     var cur=fEl.value;
@@ -2181,7 +2250,16 @@ function renderCasas(){
       +bks.map(function(b){return '<option>'+b.nome+'</option>';}).join('');
     fEl.value=cur;
   }
+  // Sync txn casa filter
+  var txnFEl=document.getElementById('txn-f-casa');
+  if(txnFEl){
+    var curT=txnFEl.value;
+    txnFEl.innerHTML='<option value="">Todas as casas</option>'
+      +bks.map(function(b){return '<option>'+b.nome+'</option>';}).join('');
+    txnFEl.value=curT;
+  }
   renderBkHistory();
+  renderTxnHistory();
 }
 
 function renderBkHistory(){
@@ -2219,6 +2297,185 @@ function renderBkHistory(){
       +'<td style="padding:.45rem .75rem;font-size:.75rem;text-align:right;font-family:var(--mono);color:'+(isPend?'var(--mu)':pl>=0?'var(--ok)':'var(--er)')+'">'+
         (isPend?'—':sg(pl)+'R$'+Math.abs(pl).toFixed(2))+'</td>'
       +'<td style="padding:.45rem .75rem;text-align:center;font-size:.72rem;font-weight:600;color:'+(rc[a.res]||'var(--mu)')+'">'+a.res+'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// TRANSAÇÕES: SAQUE / DEPÓSITO
+// ══════════════════════════════════════════════════════
+var TXN_KEY = 'clv_transactions'; // [{id, bkId, bkNome, tipo:'deposito'|'saque', valor, data, obs}]
+
+function getTXNs() {
+  try { return JSON.parse(localStorage.getItem(TXN_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveTXNs(arr) { localStorage.setItem(TXN_KEY, JSON.stringify(arr)); }
+
+// ── Modal ────────────────────────────────────────────
+var _txnBkId   = null;
+var _txnBkNome = '';
+var _txnTipo   = 'deposito';
+
+function delTxnClick(btn) {
+  var txnId = btn.getAttribute('data-txnid');
+  deleteTxn(txnId);
+}
+
+function bkTxnClick(btn) {
+  var bkId   = btn.getAttribute('data-bkid');
+  var bkNome = btn.getAttribute('data-bknome');
+  openTxnModal(bkId, bkNome);
+}
+
+function openTxnModal(bkId, bkNome) {
+  _txnBkId   = bkId;
+  _txnBkNome = bkNome;
+  _txnTipo   = 'deposito';
+  // Reset fields
+  var v = document.getElementById('txn-valor'); if(v) v.value = '';
+  var d = document.getElementById('txn-data');
+  if(d) d.value = new Date().toISOString().slice(0,10);
+  var o = document.getElementById('txn-obs'); if(o) o.value = '';
+  // Reset tabs
+  setTxnTab('deposito');
+  // Title
+  var t = document.getElementById('bk-txn-title');
+  if(t) t.textContent = 'Movimentação — ' + bkNome;
+  // Show
+  var bg = document.getElementById('bk-txn-bg');
+  if(bg) bg.classList.add('on');
+  setTimeout(function(){ var v=document.getElementById('txn-valor'); if(v) v.focus(); }, 80);
+}
+
+function closeTxnModal() {
+  var bg = document.getElementById('bk-txn-bg');
+  if(bg) bg.classList.remove('on');
+}
+
+function setTxnTab(tipo) {
+  _txnTipo = tipo;
+  var tabDep = document.getElementById('txn-tab-dep');
+  var tabSaq = document.getElementById('txn-tab-saq');
+  var lbl    = document.getElementById('txn-val-lbl');
+  var btn    = document.getElementById('txn-save-btn');
+  var aviso  = document.getElementById('txn-aviso');
+  if(tabDep) tabDep.classList.toggle('on', tipo === 'deposito');
+  if(tabSaq) tabSaq.classList.toggle('on', tipo === 'saque');
+  if(lbl)    lbl.textContent = tipo === 'deposito' ? 'Valor do Depósito (R$)' : 'Valor do Saque (R$)';
+  if(btn)    btn.textContent = tipo === 'deposito' ? 'Confirmar Depósito' : 'Confirmar Saque';
+  if(aviso) {
+    if(tipo === 'deposito') {
+      aviso.style.display = 'block';
+      aviso.style.background = 'rgba(109,170,69,.1)';
+      aviso.style.border = '1px solid rgba(109,170,69,.25)';
+      aviso.style.color  = 'var(--ok)';
+      aviso.textContent  = '💰 Depósito aumenta o saldo inicial e recalcula ROI e variação %.';
+    } else {
+      aviso.style.display = 'block';
+      aviso.style.background = 'rgba(209,99,167,.1)';
+      aviso.style.border = '1px solid rgba(209,99,167,.25)';
+      aviso.style.color  = 'var(--er)';
+      aviso.textContent  = '💸 Saque reduz o saldo disponível. Saldo inicial e P/L permanecem intocados.';
+    }
+  }
+}
+
+function saveTxn() {
+  var valor = parseFloat((document.getElementById('txn-valor') || {}).value) || 0;
+  var data  = (document.getElementById('txn-data')  || {}).value || new Date().toISOString().slice(0,10);
+  var obs   = (document.getElementById('txn-obs')   || {}).value || '';
+  if(valor <= 0) { alert('Informe um valor maior que zero.'); return; }
+
+  var txns = getTXNs();
+  txns.push({
+    id:     'txn_' + Date.now(),
+    bkId:   _txnBkId,
+    bkNome: _txnBkNome,
+    tipo:   _txnTipo,
+    valor:  valor,
+    data:   data,
+    obs:    obs
+  });
+  saveTXNs(txns);
+  closeTxnModal();
+  renderCasas();
+}
+
+function deleteTxn(txnId) {
+  if(!confirm('Remover esta movimentação?')) return;
+  saveTXNs(getTXNs().filter(function(t){ return t.id !== txnId; }));
+  renderCasas();
+}
+
+// ── Helpers ──────────────────────────────────────────
+// Returns {saldoInicial, saques, depositos} for a bookmaker
+function bkTxnTotals(bkId) {
+  var txns = getTXNs().filter(function(t){ return t.bkId === bkId; });
+  var saques    = txns.filter(function(t){ return t.tipo === 'saque'; })
+                      .reduce(function(a,t){ return a + t.valor; }, 0);
+  var depositos = txns.filter(function(t){ return t.tipo === 'deposito'; })
+                      .reduce(function(a,t){ return a + t.valor; }, 0);
+  return { saques: saques, depositos: depositos, txns: txns };
+}
+
+// ── Mini histórico para o card ────────────────────────
+function bkHistMiniHtml(bkId) {
+  var txns = getTXNs().filter(function(t){ return t.bkId === bkId; })
+    .slice().sort(function(a,b){ return b.data.localeCompare(a.data); })
+    .slice(0, 5); // show last 5
+  if(!txns.length) return '<div style="color:var(--mu);font-size:.72rem;padding:.375rem 0">Sem movimentações</div>';
+  return txns.map(function(t){
+    var isSq = t.tipo === 'saque';
+    return '<div class="bk-hist-mini-row">'
+      + '<span style="color:var(--mu)">' + (t.data ? t.data.split('-').reverse().join('/') : '—') + '</span>'
+      + '<span style="flex:1;margin:0 .5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mu)">' + (t.obs||'') + '</span>'
+      + '<span class="txn-pill ' + (isSq?'txn-saque':'txn-dep') + '">' + (isSq?'Saque':'Depósito') + '</span>'
+      + '<span style="font-family:var(--mono);font-weight:700;color:' + (isSq?'#d163a7':'#6daa45') + ';margin-left:.5rem">'
+        + (isSq?'−':'+') + 'R$' + t.valor.toFixed(2)
+      + '</span>'
+      + '<button class="ab d" data-txnid="' + t.id + '" onclick="delTxnClick(this)" style="margin-left:.35rem;opacity:.6" title="Remover">✕</button>'
+      + '</div>';
+  }).join('');
+}
+
+// ── Tabela completa de transações ────────────────────
+function renderTxnHistory() {
+  var fCasa = (document.getElementById('txn-f-casa') || {}).value || '';
+  var fTipo = (document.getElementById('txn-f-tipo') || {}).value || '';
+  var txns  = getTXNs().filter(function(t){
+    if(fCasa && t.bkNome !== fCasa) return false;
+    if(fTipo && t.tipo  !== fTipo)  return false;
+    return true;
+  }).slice().sort(function(a,b){ return b.data.localeCompare(a.data); });
+
+  var tbody = document.getElementById('txn-hist-body');
+  var empty  = document.getElementById('txn-hist-empty');
+  var totEl  = document.getElementById('txn-totals');
+
+  if(totEl) {
+    var totDep = txns.filter(function(t){return t.tipo==='deposito';}).reduce(function(a,t){return a+t.valor;},0);
+    var totSaq = txns.filter(function(t){return t.tipo==='saque';}).reduce(function(a,t){return a+t.valor;},0);
+    totEl.innerHTML = '<span style="color:#6daa45">+R$'+totDep.toFixed(2)+' dep.</span>'
+      + ' &nbsp; <span style="color:#d163a7">−R$'+totSaq.toFixed(2)+' saques</span>';
+  }
+  if(!tbody) return;
+  if(!txns.length) { tbody.innerHTML=''; if(empty) empty.style.display='flex'; return; }
+  if(empty) empty.style.display='none';
+  tbody.innerHTML = txns.map(function(t){
+    var isSq = t.tipo === 'saque';
+    return '<tr style="border-bottom:1px solid var(--bor)">'
+      +'<td style="padding:.45rem .75rem;white-space:nowrap">' + (t.data ? t.data.split('-').reverse().join('/') : '—') + '</td>'
+      +'<td style="padding:.45rem .75rem">' + t.bkNome + '</td>'
+      +'<td style="padding:.45rem .75rem;text-align:center">'
+        +'<span class="txn-pill '+(isSq?'txn-saque':'txn-dep')+'">'+(isSq?'💸 Saque':'💰 Depósito')+'</span>'
+      +'</td>'
+      +'<td style="padding:.45rem .75rem;text-align:right;font-family:var(--mono);font-weight:700;color:'+(isSq?'#d163a7':'#6daa45')+'">'
+        +(isSq?'−':'+')+'R$'+t.valor.toFixed(2)
+      +'</td>'
+      +'<td style="padding:.45rem .75rem;color:var(--mu);font-size:.72rem">'+(t.obs||'—')+'</td>'
+      +'<td style="padding:.45rem .75rem;text-align:center">'
+        +'<button class="ab d" data-txnid="'+t.id+'" onclick="delTxnClick(this)" title="Remover">🗑</button>'
+      +'</td>'
       +'</tr>';
   }).join('');
 }
@@ -2791,6 +3048,37 @@ setInterval(doSync, 5000);
   <div id="scanForm"></div><div id="progBox"><div id="progBar"></div><div id="progLbl"></div></div>
   <div id="prevBox"><img id="prevImg"></div><div id="ocrBox"></div><input id="fi"><input id="geminiKey">
   <div id="sclvBox"><span id="sclvVal"></span></div>
+</div>
+
+<!-- MODAL SAQUE / DEPÓSITO -->
+<div class="bk-txn-modal-bg" id="bk-txn-bg" onclick="if(event.target===this)closeTxnModal()">
+  <div class="bk-txn-modal">
+    <h2 style="font-size:1rem;font-weight:700;margin-bottom:.875rem" id="bk-txn-title">Movimentação</h2>
+    <!-- Tabs saque/depósito -->
+    <div class="txn-type-tabs">
+      <div class="txn-tab on" id="txn-tab-dep" onclick="setTxnTab('deposito')">💰 Depósito</div>
+      <div class="txn-tab"    id="txn-tab-saq" onclick="setTxnTab('saque')">💸 Saque</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.75rem">
+      <div class="fg">
+        <label id="txn-val-lbl">Valor do Depósito (R$)</label>
+        <input type="number" id="txn-valor" placeholder="Ex: 500.00" min="0.01" step="0.01">
+      </div>
+      <div class="fg">
+        <label>Data</label>
+        <input type="date" id="txn-data">
+      </div>
+      <div class="fg">
+        <label>Observação (opcional)</label>
+        <input type="text" id="txn-obs" placeholder="Ex: reinvestimento mensal">
+      </div>
+      <div id="txn-aviso" style="font-size:.75rem;padding:.5rem .75rem;border-radius:.5rem;display:none"></div>
+    </div>
+    <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.125rem;padding-top:.875rem;border-top:1px solid var(--bor)">
+      <button class="btn btn-s" onclick="closeTxnModal()">Cancelar</button>
+      <button class="btn btn-p" id="txn-save-btn" onclick="saveTxn()">Confirmar Depósito</button>
+    </div>
+  </div>
 </div>
 </body>
 </html>

@@ -195,6 +195,67 @@ tr:hover td.col-act .ra{opacity:1}
 .rtab:hover,.rtab.on{background:var(--pri);color:#fff;border-color:var(--pri);}
 .rtab .rcnt{background:rgba(255,255,255,.22);border-radius:999px;padding:0 6px;font-size:.68rem;font-weight:700;min-width:18px;text-align:center;}
 .rtab:not(.on) .rcnt{background:var(--sur2);color:var(--mu);}
+
+/* ── DASHBOARD NOVO ─── */
+.dash-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-bottom:1.25rem}
+.dash-kpi-grid.row2{grid-template-columns:repeat(3,1fr);margin-bottom:1.25rem}
+.dkpi{background:var(--sur);border:1px solid var(--bor);border-radius:.875rem;padding:1.125rem 1.25rem;display:flex;flex-direction:column;gap:.25rem;position:relative;overflow:hidden}
+.dkpi-icon{position:absolute;right:1rem;top:1rem;font-size:1.1rem;opacity:.35}
+.dkpi-lbl{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mu)}
+.dkpi-val{font-size:1.5rem;font-weight:700;font-family:var(--mono);letter-spacing:-.02em;line-height:1.1}
+.dkpi-sub{font-size:.72rem;color:var(--mu);margin-top:.1rem}
+.dkpi-bar-bg{height:5px;background:var(--sur2);border-radius:9px;margin-top:.5rem;overflow:hidden}
+.dkpi-bar-fill{height:5px;border-radius:9px;transition:width .6s ease}
+.dash-2col{display:grid;grid-template-columns:3fr 2fr;gap:1rem;margin-bottom:1rem}
+.dash-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem}
+.dash-full{margin-bottom:1rem}
+.section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);margin-bottom:.875rem;display:flex;align-items:center;gap:.5rem}
+.section-title::after{content:'';flex:1;height:1px;background:var(--bor)}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--bor)}
+.summary-row:last-child{border-bottom:none}
+.summary-label{font-size:.8rem;color:var(--tx);display:flex;align-items:center;gap:.5rem}
+.summary-badge{font-size:.65rem;padding:.1rem .4rem;border-radius:4px;background:var(--sur2);color:var(--mu)}
+.summary-stats{display:flex;gap:1rem;align-items:center}
+.summary-roi{font-size:.75rem;font-family:var(--mono);font-weight:600;min-width:55px;text-align:right}
+.summary-lucro{font-size:.75rem;font-family:var(--mono);color:var(--mu);min-width:70px;text-align:right}
+.tip-card{background:var(--sur2);border:1px solid var(--bor);border-radius:.625rem;overflow:hidden;margin-bottom:.5rem;transition:border-color .15s}
+.tip-card:last-child{margin-bottom:0}
+.tip-card.open{border-color:var(--pri)}
+.tip-head{display:flex;justify-content:space-between;align-items:center;padding:.75rem;cursor:pointer;gap:.5rem;user-select:none}
+.tip-head:hover{background:rgba(79,152,163,.06)}
+.tip-arrow{font-size:.7rem;color:var(--mu);transition:transform .2s;flex-shrink:0}
+.tip-card.open .tip-arrow{transform:rotate(180deg)}
+.tip-body{max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .25s}
+.tip-card.open .tip-body{max-height:500px;opacity:1}
+.tip-body{opacity:0}
+.tip-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;padding:.125rem .75rem .5rem}
+.tip-stat{background:var(--sur);border:1px solid var(--bor);border-radius:.5rem;padding:.45rem .6rem;text-align:center}
+.tip-stat-lbl{font-size:.61rem;color:var(--mu);text-transform:uppercase;letter-spacing:.05em}
+.tip-stat-val{font-size:.875rem;font-weight:700;font-family:var(--mono);margin-top:.15rem}
+.tip-bets{font-size:.72rem;color:var(--mu);border-top:1px solid var(--bor);padding:.5rem .75rem .625rem;margin-top:.25rem}
+.tip-bet-row{display:grid;grid-template-columns:55px 1fr 70px 65px;gap:.25rem;align-items:center;padding:.22rem 0;border-bottom:1px solid rgba(128,128,128,.07)}
+.tip-bet-row:last-child{border-bottom:none}
+.tip-pend-banner{background:rgba(232,175,52,.1);border:1px solid rgba(232,175,52,.2);border-radius:.375rem;padding:.3rem .75rem;font-size:.72rem;color:var(--wa);margin:.25rem .75rem .5rem;display:flex;justify-content:space-between}
+
+/* ── CASAS DE APOSTAS ─── */
+.bk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+@media(max-width:900px){.bk-grid{grid-template-columns:1fr 1fr}}
+.bk-card{background:var(--sur);border:1px solid var(--bor);border-radius:.875rem;padding:1.125rem 1.25rem;position:relative}
+.bk-card.pos-card{border-color:rgba(109,170,69,.25)}
+.bk-card.neg-card{border-color:rgba(209,99,167,.25)}
+.bk-name{font-size:.9rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between}
+.bk-saldo{font-size:1.4rem;font-weight:700;font-family:var(--mono)}
+.bk-row{display:flex;justify-content:space-between;font-size:.72rem;color:var(--mu);margin-top:.35rem}
+.bk-pill{display:inline-flex;align-items:center;gap:.25rem;padding:.1rem .5rem;border-radius:999px;font-size:.65rem;font-weight:600}
+.bk-pill.pend{background:rgba(232,175,52,.15);color:var(--wa)}
+.bk-pill.pos{background:rgba(109,170,69,.15);color:var(--ok)}
+.bk-pill.neg{background:rgba(209,99,167,.15);color:var(--er)}
+.bk-add{background:var(--sur);border:2px dashed var(--bor);border-radius:.875rem;padding:1.125rem;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);font-size:.8rem;gap:.5rem;transition:border-color .15s,color .15s}
+.bk-add:hover{border-color:var(--pri);color:var(--pri)}
+.bk-modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:998;opacity:0;pointer-events:none;transition:opacity .18s}
+.bk-modal-ov.on{opacity:1;pointer-events:all}
+.bk-mo{background:var(--sur);border:1px solid var(--bor);border-radius:.875rem;padding:1.5rem;width:100%;max-width:420px}
+@media(max-width:768px){.dash-kpi-grid{grid-template-columns:1fr 1fr}.dash-kpi-grid.row2{grid-template-columns:1fr 1fr}.dash-2col{grid-template-columns:1fr}.dash-3col{grid-template-columns:1fr}.bk-grid{grid-template-columns:1fr}}
 </style>
 
 <!-- goTo carregado ANTES de tudo: navegação nunca falha -->
@@ -212,12 +273,13 @@ function goTo(p) {
   if (p === 'banca') renderBanca();
   var bs = document.querySelectorAll('.nb');
   for (var j=0;j<bs.length;j++) bs[j].classList.toggle('on', bs[j].dataset.p===p);
-  var ts={dashboard:'Dashboard',apostas:'Apostas',analytics:'Analytics',config:'Configurações',csv:'Importar CSV'};
+  var ts={dashboard:'Dashboard',apostas:'Apostas',analytics:'Analytics',casas:'Casas de Apostas',config:'Configurações',csv:'Importar CSV'};
   var te = document.getElementById('ptitle');
   if (te) te.textContent = ts[p]||p;
   if (p==='dashboard'  && typeof renderDash==='function')     renderDash();
   if (p==='apostas'    && typeof renderTabela==='function')   { fillFilters(); renderTabela(); }
   if (p==='analytics'  && typeof renderAnalytics==='function') renderAnalytics();
+  if (p==='casas'      && typeof renderCasas==='function')    renderCasas();
 }
 </script>
 </head>
@@ -240,6 +302,7 @@ function goTo(p) {
     <button class="nb"    data-p="apostas"   onclick="goTo('apostas')">📋 Apostas</button>
     <button class="nb"    data-p="analytics" onclick="goTo('analytics')">📈 Analytics</button>
     <button class="nb"    data-p="banca"     onclick="goTo('banca')">💰 Banca</button>
+    <button class="nb"    data-p="casas"     onclick="goTo('casas')">🏦 Casas de Apostas</button>
     <button class="nb"    data-p="config"    onclick="goTo('config')">⚙️ Configurações</button>
     <button class="nb"    data-p="csv"       onclick="goTo('csv')">⬆ Importar CSV</button>
   </nav>
@@ -261,21 +324,79 @@ function goTo(p) {
 
     <!-- DASHBOARD -->
     <section class="pg on" id="pg-dashboard">
-      <div class="kgrid" id="kgrid"></div>
-      <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;gap:.5rem">
-        <button id="btnAutoRes" class="btn btn-s" onclick="autoResultados()" style="font-size:.8rem;display:flex;align-items:center;gap:.4rem">
-          🔄 Atualizar Resultados
-        </button>
+
+      <!-- ROW 1: 4 KPIs principais -->
+      <div class="dash-kpi-grid" id="dash-row1"></div>
+
+      <!-- ROW 2: 3 KPIs secundários -->
+      <div class="dash-kpi-grid row2" id="dash-row2"></div>
+
+      <!-- Taxa de Acerto -->
+      <div class="card dash-full" id="dash-taxa-card">
+        <div class="section-title">🏆 Taxa de Acerto</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+          <span style="font-size:.8rem;color:var(--mu)" id="dash-taxa-lbl">Taxa atual</span>
+          <span style="font-size:.8rem;font-weight:700;font-family:var(--mono)" id="dash-taxa-pct">0.0%</span>
+        </div>
+        <div class="dkpi-bar-bg"><div class="dkpi-bar-fill" id="dash-taxa-bar" style="background:var(--ok)"></div></div>
+        <div style="font-size:.72rem;color:var(--mu);margin-top:.5rem" id="dash-taxa-sub"></div>
       </div>
-      <div class="cgrid">
-        <div class="card"><div class="ct">CLV médio ao longo do tempo</div><div class="cw"><canvas id="c1"></canvas></div></div>
-        <div class="card"><div class="ct">CLV médio por esporte</div><div class="cw"><canvas id="c2"></canvas></div></div>
-        <div class="card"><div class="ct">Distribuição de CLV</div><div class="cw"><canvas id="c3"></canvas></div></div>
-        
+
+      <!-- ROW 3: Lucro Diário + Tipsters -->
+      <div class="dash-2col">
+        <div class="card">
+          <div class="section-title" style="justify-content:space-between">
+            <span>📈 Lucro Diário e Acumulado</span>
+            <div style="display:flex;gap:4px">
+              <button class="rtab on" id="btn-lucro-ambos" onclick="setLucroMode('ambos')" style="font-size:.65rem;padding:3px 8px">Ambos</button>
+              <button class="rtab" id="btn-lucro-linha" onclick="setLucroMode('linha')" style="font-size:.65rem;padding:3px 8px">Linha</button>
+              <button class="rtab" id="btn-lucro-barras" onclick="setLucroMode('barras')" style="font-size:.65rem;padding:3px 8px">Barras</button>
+            </div>
+          </div>
+          <div id="lucro-charts-wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+            <div>
+              <div style="font-size:.65rem;color:var(--mu);margin-bottom:.35rem;text-align:center">Lucro Acumulado</div>
+              <div style="position:relative;height:180px"><canvas id="c-lucro"></canvas></div>
+            </div>
+            <div>
+              <div style="font-size:.65rem;color:var(--mu);margin-bottom:.35rem;text-align:center">Lucro por Dia</div>
+              <div style="position:relative;height:180px"><canvas id="c-lucro-bar"></canvas></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">👤 Lucro por Tipster</div>
+          <div id="dash-tipsters" style="overflow-y:auto;max-height:200px"></div>
+        </div>
+      </div>
+
+      <!-- ROW 4: Por Esporte + Por Casa + CLV -->
+      <div class="dash-3col">
+        <div class="card">
+          <div class="section-title">⚽ Resumo por Esporte</div>
+          <div id="dash-esportes"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">🏠 Resumo por Casa</div>
+          <div id="dash-casas"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">📊 CLV Médio por Esporte</div>
+          <div style="position:relative;height:180px"><canvas id="c2"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ROW 5: CLV ao longo do tempo -->
+      <div class="card dash-full">
+        <div class="section-title" style="display:flex;justify-content:space-between">
+          <span>📉 CLV Médio ao Longo do Tempo</span>
+          <button id="btnAutoRes" class="btn btn-s" onclick="autoResultados()" style="font-size:.75rem;padding:.3rem .7rem">🔄 Atualizar Resultados</button>
+        </div>
+        <div style="position:relative;height:180px"><canvas id="c1"></canvas></div>
       </div>
 
       <!-- CALENDÁRIO MENSAL -->
-      <div class="card" style="margin-top:1.5rem">
+      <div class="card dash-full">
         <div class="ct" style="display:flex;align-items:center;justify-content:space-between">
           <span>📅 Acompanhamento Mensal</span>
           <div style="display:flex;align-items:center;gap:.5rem">
@@ -400,6 +521,76 @@ function goTo(p) {
         </div>
       </div>
     </section>
+    <!-- CASAS DE APOSTAS -->
+    <section class="pg" id="pg-casas" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
+        <div>
+          <div style="font-size:.8rem;color:var(--mu)">Gerencie o saldo de cada casa de apostas separadamente</div>
+        </div>
+        <button class="btn btn-p" onclick="openBkModal()">+ Adicionar Casa</button>
+      </div>
+
+      <!-- KPIs globais das casas -->
+      <div class="dash-kpi-grid" style="margin-bottom:1.25rem" id="casas-kpis"></div>
+
+      <!-- Grid de cards das casas -->
+      <div class="bk-grid" id="bk-grid"></div>
+
+      <!-- Tabela de histórico -->
+      <div class="card" style="margin-top:.5rem">
+        <div class="section-title">📋 Apostas por Casa</div>
+        <div style="display:flex;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap">
+          <select class="fsl" id="bk-filter-casa" onchange="renderCasaHistory()" style="min-width:140px">
+            <option value="">Todas as casas</option>
+          </select>
+          <select class="fsl" id="bk-filter-res" onchange="renderCasaHistory()">
+            <option value="">Todos resultados</option>
+            <option>Pendente</option><option>Win</option><option>Loss</option>
+            <option>Meia Ganha</option><option>Meia Perdida</option><option>Cashout</option><option>Anulada</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:.75rem;table-layout:fixed">
+            <thead>
+              <tr>
+                <th style="width:90px;padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">Data</th>
+                <th style="padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">Jogo / Mercado</th>
+                <th style="width:90px;padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">Casa</th>
+                <th style="width:60px;padding:.5rem .75rem;text-align:right;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">Stake</th>
+                <th style="width:70px;padding:.5rem .75rem;text-align:right;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">P/L</th>
+                <th style="width:90px;padding:.5rem .75rem;text-align:center;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">Resultado</th>
+              </tr>
+            </thead>
+            <tbody id="bk-history-body"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="bk-empty" style="display:none">Nenhuma aposta encontrada</div>
+      </div>
+    </section>
+
+    <!-- MODAL NOVA CASA -->
+    <div class="bk-modal-ov" id="bk-ov" onclick="if(event.target===this)closeBkModal()">
+      <div class="bk-mo">
+        <h2 style="font-size:1rem;font-weight:700;margin-bottom:1.125rem" id="bk-mo-title">Nova Casa de Apostas</h2>
+        <div style="display:flex;flex-direction:column;gap:.75rem">
+          <div class="fg"><label>Nome da Casa</label>
+            <input type="text" id="bk-nome" placeholder="Ex: Bet365" list="dcasa2">
+            <datalist id="dcasa2"><option>Bet365</option><option>Betano</option><option>Pinnacle</option><option>Betfair</option><option>1xBet</option><option>KTO</option><option>Sportingbet</option><option>betnacional</option><option>bet365</option></datalist>
+          </div>
+          <div class="fg"><label>Saldo Inicial (R$)</label>
+            <input type="number" id="bk-saldo" placeholder="Ex: 300.00" min="0" step="0.01">
+          </div>
+          <div class="fg"><label>Observação (opcional)</label>
+            <input type="text" id="bk-obs" placeholder="Ex: conta principal">
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.125rem;padding-top:.875rem;border-top:1px solid var(--bor)">
+          <button class="btn btn-s" onclick="closeBkModal()">Cancelar</button>
+          <button class="btn btn-p" onclick="saveBkModal()">Salvar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- BANCA -->
     <section class="pg" id="pg-banca" style="display:none">
       <div class="card" style="max-width:580px;margin:0 auto">
@@ -689,27 +880,224 @@ function kch(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
 var GO={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(128,128,128,.1)'}},x:{grid:{display:false}}}};
 var GOY={responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(128,128,128,.1)'}},y:{grid:{display:false}}}};
 
+function calcStats() {
+  var resolved = D.filter(function(a){return a.res!=='Pendente';});
+  var wins  = D.filter(function(a){return a.res==='Win';}).length +
+              D.filter(function(a){return a.res==='Meia Ganha';}).length*0.5;
+  var tot   = resolved.length;
+  var luc=0, stk=0;
+  resolved.forEach(function(a){
+    stk+=a.stk||0;
+    if(a.res==='Win')          luc+=(a.oe-1)*(a.stk||0);
+    else if(a.res==='Loss')    luc-=(a.stk||0);
+    else if(a.res==='Meia Ganha')  luc+=((a.oe-1)*(a.stk||0))/2;
+    else if(a.res==='Meia Perdida') luc-=(a.stk||0)/2;
+    else if(a.res==='Cashout'&&a.co) luc+=a.co-(a.stk||0);
+  });
+  var wr  = tot?(wins/tot)*100:0;
+  var roi = stk?(luc/stk)*100:0;
+  var unit = getUnit();
+  var vClv = D.filter(function(a){return a.oe&&a.of;});
+  var cs   = vClv.map(function(a){return clv(a.oe,a.of);});
+  var avgClv= cs.length?cs.reduce(function(a,b){return a+b;},0)/cs.length:0;
+  var stkPend=0;
+  D.filter(function(a){return a.res==='Pendente';}).forEach(function(a){stkPend+=a.stk||0;});
+  return {wins:wins,tot:tot,luc:luc,stk:stk,wr:wr,roi:roi,unit:unit,avgClv:avgClv,
+    clvPct:cs.length?(cs.filter(function(c){return c>0;}).length/cs.length)*100:0,
+    stkPend:stkPend, pending:D.filter(function(a){return a.res==='Pendente';}).length};
+}
+
 function renderDash() {
-  kpis('kgrid');
-  renderCal();
-  // c1: CLV ao longo do tempo
-  kch('c1');
-  var s=D.filter(function(a){return a.oe&&a.of;}).slice().sort(function(a,b){return a.dt.localeCompare(b.dt);});
-  if(s.length){var acc=0,lb=[],dt=[];s.forEach(function(a,i){acc+=clv(a.oe,a.of);lb.push(a.dt.slice(5));dt.push((acc/(i+1)).toFixed(2));});
-    CH['c1']=new Chart(document.getElementById('c1'),{type:'line',data:{labels:lb,datasets:[{data:dt,borderColor:'#4f98a3',backgroundColor:'rgba(79,152,163,.15)',fill:true,tension:.4,pointRadius:3}]},options:GO});}
-  // c2: por esporte
+  var st = calcStats();
+  var unit = getUnit();
+  function sg(v){return v>=0?'+':'';}
+  function monRed(v,r){ return '<span style="color:'+(v>=0?'var(--ok)':'var(--er)')+';font-family:var(--mono)">'+sg(v)+(r!==undefined?v.toFixed(r):v)+'</span>';}
+
+  // ── ROW 1: 4 KPIs principais ──
+  var bi = getBanca();
+  var bancaAtual = bi + st.luc;
+  var varPct = bi ? ((bancaAtual-bi)/bi)*100 : 0;
+  function dkpi(icon,lbl,val,sub,col,barPct){
+    var bar = barPct!==undefined?('<div class="dkpi-bar-bg"><div class="dkpi-bar-fill" style="width:'+Math.min(100,Math.max(0,barPct))+'%;background:'+(barPct>=50?'var(--ok)':'var(--wa)')+'"></div></div>'):'';
+    return '<div class="dkpi"><div class="dkpi-icon">'+icon+'</div><div class="dkpi-lbl">'+lbl+'</div><div class="dkpi-val" style="color:'+col+'">'+val+'</div><div class="dkpi-sub">'+sub+'</div>'+bar+'</div>';
+  }
+  var r1 = document.getElementById('dash-row1');
+  if(r1) r1.innerHTML =
+    dkpi('📋','Apostas Concluídas','<span style="font-family:var(--mono);font-size:1.5rem;font-weight:700">'+st.tot+'</span>',D.length+' apostas no total · '+st.pending+' pendentes','var(--tx)')+
+    dkpi('💰','Total Investido','R$'+st.stk.toFixed(2),st.stk?((st.stk/unit).toFixed(1)+'u apostados'):'Nenhuma resolvida','var(--tx)')+
+    dkpi('📈','Lucro Total',sg(st.luc)+'R$'+Math.abs(st.luc).toFixed(2),(sg(st.luc/unit))+(st.luc/unit).toFixed(2)+'u',st.luc>=0?'var(--ok)':'var(--er)')+
+    dkpi('📊','ROI',sg(st.roi)+st.roi.toFixed(2)+'%',st.tot+' apostas resolvidas',st.roi>=0?'var(--ok)':'var(--er)');
+
+  // ── ROW 2: 3 KPIs secundários ──
+  var r2 = document.getElementById('dash-row2');
+  if(r2) r2.innerHTML =
+    dkpi('🏦','Saldo da Banca',bi?'R$'+bancaAtual.toFixed(2):'—',bi?(sg(varPct)+varPct.toFixed(2)+'% vs banca inicial'):'Configure a banca inicial',bi?(bancaAtual>=bi?'var(--ok)':'var(--er)'):'var(--mu)')+
+    dkpi('📉','CLV Médio',sg(st.avgClv)+st.avgClv.toFixed(2)+'%',st.clvPct.toFixed(0)+'% das apostas bateram o fechamento',st.avgClv>=0?'var(--ok)':'var(--er)')+
+    dkpi('⏳','Stake Pendente','R$'+st.stkPend.toFixed(2),st.pending+' apostas em aberto · reservado nas casas','var(--wa)');
+
+  // ── Taxa de Acerto ──
+  var tbar = document.getElementById('dash-taxa-bar');
+  var tpct = document.getElementById('dash-taxa-pct');
+  var tsub = document.getElementById('dash-taxa-sub');
+  var tlbl = document.getElementById('dash-taxa-lbl');
+  if(tbar){ tbar.style.width=Math.min(100,st.wr)+'%'; tbar.style.background=st.wr>=50?'var(--ok)':'var(--wa)'; }
+  if(tpct) tpct.textContent = st.wr.toFixed(1)+'%';
+  if(tsub) tsub.textContent = st.wins+' greens / '+st.tot+' resolvidas';
+  if(tlbl) tlbl.textContent = 'Taxa atual';
+
+  // ── Lucro acumulado + diário ──
+  kch('c-lucro'); kch('c-lucro-bar');
+  var ordered = D.filter(function(a){return a.res!=='Pendente';}).slice()
+    .sort(function(a,b){return (a.dt+(a.hora||'')).localeCompare(b.dt+(b.hora||''));});
+  if(ordered.length){
+    var lineVals=[],lb2=[],daily={},runAcc=0;
+    ordered.forEach(function(a){
+      var pl2=0,s2=a.stk||0;
+      if(a.res==='Win')              pl2=(a.oe-1)*s2;
+      else if(a.res==='Loss')        pl2=-s2;
+      else if(a.res==='Meia Ganha')  pl2=(a.oe-1)*s2/2;
+      else if(a.res==='Meia Perdida')pl2=-s2/2;
+      else if(a.res==='Cashout'&&a.co) pl2=a.co-s2;
+      runAcc+=pl2;
+      lineVals.push(+runAcc.toFixed(2));
+      lb2.push(a.dt.slice(5)+(a.hora?' '+a.hora.slice(0,5):''));
+      if(!daily[a.dt])daily[a.dt]=0;
+      daily[a.dt]+=pl2;
+    });
+    var dayKeys=Object.keys(daily).sort();
+    var barVals=dayKeys.map(function(k){return +daily[k].toFixed(2);});
+    var barColors=barVals.map(function(v){return v>=0?'rgba(109,170,69,.75)':'rgba(209,99,167,.75)';});
+    var chartOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return ' R$'+c.parsed.y.toFixed(2);}}}},scales:{y:{grid:{color:'rgba(128,128,128,.08)'},ticks:{color:'#888',callback:function(v){return 'R$'+v;}}},x:{grid:{display:false},ticks:{color:'#888',maxTicksLimit:10,font:{size:9}}}}};
+    var elLine=document.getElementById('c-lucro');
+    var elBar=document.getElementById('c-lucro-bar');
+    if(elLine) CH['c-lucro']=new Chart(elLine,{type:'line',data:{labels:lb2,datasets:[{label:'Acumulado',data:lineVals,borderColor:'#4f98a3',backgroundColor:'rgba(79,152,163,.12)',fill:true,tension:.4,pointRadius:ordered.length>40?0:3,borderWidth:2}]},options:chartOpts});
+    if(elBar)  CH['c-lucro-bar']=new Chart(elBar,{type:'bar',data:{labels:dayKeys.map(function(k){return k.slice(5);}),datasets:[{label:'Por dia',data:barVals,backgroundColor:barColors,borderRadius:4,borderSkipped:false}]},options:chartOpts});
+  }
+
+  // Lucro mode switcher
+  window._lucroMode = window._lucroMode || 'ambos';
+  applyLucroMode(window._lucroMode);
+
+  // ── Tipsters ──
+  var tipDiv = document.getElementById('dash-tipsters');
+  if(tipDiv){
+    var tm={};D.filter(function(a){return a.tipster&&a.res!=='Pendente';}).forEach(function(a){
+      if(!tm[a.tipster])tm[a.tipster]={luc:0,stk:0,w:0,t:0,pend:0,pendStk:0,avgClv:0,clvN:0,bets:[]};
+      tm[a.tipster].t++; tm[a.tipster].stk+=a.stk||0;
+      var pl=0,s=a.stk||0;
+      if(a.res==='Win'){pl=(a.oe-1)*s;tm[a.tipster].w++;}
+      else if(a.res==='Loss')pl=-s;
+      else if(a.res==='Meia Ganha'){pl=(a.oe-1)*s/2;tm[a.tipster].w+=0.5;}
+      else if(a.res==='Meia Perdida')pl=-s/2;
+      else if(a.res==='Cashout'&&a.co)pl=a.co-s;
+      tm[a.tipster].luc+=pl;
+    });
+    var tips=Object.keys(tm).sort(function(a,b){return tm[b].luc-tm[a].luc;});
+    tipDiv.innerHTML = tips.length ? tips.map(function(t){
+      var d=tm[t], roi2=d.stk?(d.luc/d.stk)*100:0, wr2=d.t?(d.w/d.t)*100:0;
+      var avgC=d.clvN?d.avgClv/d.clvN:0;
+      var lastBets=d.bets.filter(function(b){return b.res!=='Pendente';}).slice(-5).reverse();
+      var resC={Win:'var(--ok)',Loss:'var(--er)','Meia Ganha':'var(--ok)','Meia Perdida':'var(--er)',Cashout:'#818cf8',Anulada:'#94a3b8'};
+      var betsHtml=lastBets.map(function(b){
+        var bpl=0,bs=b.stk||0;
+        if(b.res==='Win')bpl=(b.oe-1)*bs;
+        else if(b.res==='Loss')bpl=-bs;
+        else if(b.res==='Meia Ganha')bpl=(b.oe-1)*bs/2;
+        else if(b.res==='Meia Perdida')bpl=-bs/2;
+        else if(b.res==='Cashout'&&b.co)bpl=b.co-bs;
+        return '<div class="tip-bet-row"><span style="color:var(--mu)">'+b.dt.slice(5)+'</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+b.jogo+' — '+b.mkt+'">'+b.jogo+'</span><span style="font-weight:600;color:'+(resC[b.res]||'var(--mu)')+'">'+b.res+'</span><span style="font-family:var(--mono);color:'+(bpl>=0?'var(--ok)':'var(--er)')+'">'+sg(bpl)+'R$'+Math.abs(bpl).toFixed(2)+'</span></div>';
+      }).join('');
+      return '<div class="tip-card" id="tc-'+idx+'">'+
+        '<div class="tip-head" onclick="tipToggle('+idx+')">'+
+          '<div>'+
+            '<div style="font-size:.85rem;font-weight:700">'+t+'</div>'+
+            '<div style="font-size:.7rem;color:var(--mu);margin-top:.1rem">'+d.t+' resolvidas'+(d.pend?' · ⏳ '+d.pend+' abertas':'')+' · WR '+wr2.toFixed(0)+'%</div>'+
+          '</div>'+
+          '<div style="display:flex;align-items:center;gap:.875rem">'+
+            '<div style="text-align:right">'+
+              '<div style="font-family:var(--mono);font-size:.9rem;font-weight:700;color:'+(d.luc>=0?'var(--ok)':'var(--er)')+'">'+sg(d.luc)+'R$'+Math.abs(d.luc).toFixed(2)+'</div>'+
+              '<div style="font-size:.7rem;color:var(--mu)">ROI '+sg(roi2)+roi2.toFixed(1)+'%</div>'+
+            '</div>'+
+            '<span class="tip-arrow">▼</span>'+
+          '</div>'+
+        '</div>'+
+        '<div class="tip-body">'+
+          '<div class="tip-stat-grid">'+
+            '<div class="tip-stat"><div class="tip-stat-lbl">Apostas</div><div class="tip-stat-val">'+d.t+'</div></div>'+
+            '<div class="tip-stat"><div class="tip-stat-lbl">Win Rate</div><div class="tip-stat-val" style="color:'+(wr2>=50?'var(--ok)':'var(--er)')+'">'+wr2.toFixed(1)+'%</div></div>'+
+            '<div class="tip-stat"><div class="tip-stat-lbl">ROI</div><div class="tip-stat-val" style="color:'+(roi2>=0?'var(--ok)':'var(--er)')+'">'+sg(roi2)+roi2.toFixed(1)+'%</div></div>'+
+            '<div class="tip-stat"><div class="tip-stat-lbl">Lucro</div><div class="tip-stat-val" style="color:'+(d.luc>=0?'var(--ok)':'var(--er)')+'">'+sg(d.luc)+'R$'+Math.abs(d.luc).toFixed(2)+'</div></div>'+
+            '<div class="tip-stat"><div class="tip-stat-lbl">CLV Médio</div><div class="tip-stat-val" style="color:'+(avgC>=0?'var(--ok)':'var(--er)')+'">'+sg(avgC)+avgC.toFixed(1)+'%</div></div>'+
+            '<div class="tip-stat"><div class="tip-stat-lbl">Stake Total</div><div class="tip-stat-val">R$'+d.stk.toFixed(2)+'</div></div>'+
+          '</div>'+
+          (d.pendStk?'<div class="tip-pend-banner"><span>⏳ '+d.pend+' apostas abertas</span><span style="font-family:var(--mono)">R$'+d.pendStk.toFixed(2)+'</span></div>':'')+
+          (lastBets.length?'<div class="tip-bets"><div style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-bottom:.375rem">Últimas apostas</div>'+betsHtml+'</div>':'')+
+        '</div>'+
+      '</div>';
+    }).join('') : '<div style="color:var(--mu);font-size:.8rem;text-align:center;padding:1.5rem">Nenhum tipster cadastrado ainda</div>';
+  }
+
+  // ── Por Esporte ──
+  var espDiv = document.getElementById('dash-esportes');
+  if(espDiv){
+    var em={};D.filter(function(a){return a.res!=='Pendente';}).forEach(function(a){
+      if(!em[a.esp])em[a.esp]={luc:0,stk:0,w:0,t:0};
+      em[a.esp].t++; em[a.esp].stk+=a.stk||0;
+      var pl=0,s=a.stk||0;
+      if(a.res==='Win'){pl=(a.oe-1)*s;em[a.esp].w++;}
+      else if(a.res==='Loss')pl=-s;
+      else if(a.res==='Meia Ganha'){pl=(a.oe-1)*s/2;em[a.esp].w+=0.5;}
+      else if(a.res==='Meia Perdida')pl=-s/2;
+      else if(a.res==='Cashout'&&a.co)pl=a.co-s;
+      em[a.esp].luc+=pl;
+    });
+    var esps=Object.keys(em).sort(function(a,b){return em[b].stk-em[a].stk;});
+    espDiv.innerHTML = esps.length ? esps.map(function(e){
+      var d=em[e],roi2=d.stk?(d.luc/d.stk)*100:0;
+      return '<div class="summary-row"><div class="summary-label"><span>'+e+'</span><span class="summary-badge">'+d.t+'</span></div><div class="summary-stats"><span class="summary-lucro" style="color:'+(d.luc>=0?'var(--ok)':'var(--er)')+'">'+sg(d.luc)+'R$'+Math.abs(d.luc).toFixed(2)+'</span><span class="summary-roi" style="color:'+(roi2>=0?'var(--ok)':'var(--er)')+'">'+sg(roi2)+roi2.toFixed(1)+'%</span></div></div>';
+    }).join('') : '<div style="color:var(--mu);font-size:.8rem;padding:.75rem 0">Sem dados</div>';
+  }
+
+  // ── Por Casa ──
+  var casaDiv = document.getElementById('dash-casas');
+  if(casaDiv){
+    var cm={};D.filter(function(a){return a.res!=='Pendente';}).forEach(function(a){
+      if(!cm[a.casa])cm[a.casa]={luc:0,stk:0,w:0,t:0};
+      cm[a.casa].t++; cm[a.casa].stk+=a.stk||0;
+      var pl=0,s=a.stk||0;
+      if(a.res==='Win'){pl=(a.oe-1)*s;cm[a.casa].w++;}
+      else if(a.res==='Loss')pl=-s;
+      else if(a.res==='Meia Ganha'){pl=(a.oe-1)*s/2;cm[a.casa].w+=0.5;}
+      else if(a.res==='Meia Perdida')pl=-s/2;
+      else if(a.res==='Cashout'&&a.co)pl=a.co-s;
+      cm[a.casa].luc+=pl;
+    });
+    var casas=Object.keys(cm).sort(function(a,b){return cm[b].stk-cm[a].stk;});
+    casaDiv.innerHTML = casas.length ? casas.map(function(c){
+      var d=cm[c],roi2=d.stk?(d.luc/d.stk)*100:0;
+      return '<div class="summary-row"><div class="summary-label"><span>'+c+'</span><span class="summary-badge">'+d.t+'</span></div><div class="summary-stats"><span class="summary-lucro" style="color:'+(d.luc>=0?'var(--ok)':'var(--er)')+'">'+sg(d.luc)+'R$'+Math.abs(d.luc).toFixed(2)+'</span><span class="summary-roi" style="color:'+(roi2>=0?'var(--ok)':'var(--er)')+'">'+sg(roi2)+roi2.toFixed(1)+'%</span></div></div>';
+    }).join('') : '<div style="color:var(--mu);font-size:.8rem;padding:.75rem 0">Sem dados</div>';
+  }
+
+  // ── CLV por esporte (chart) ──
   kch('c2');
   var m2={};D.filter(function(a){return a.oe&&a.of;}).forEach(function(a){if(!m2[a.esp])m2[a.esp]={s:0,n:0};m2[a.esp].s+=clv(a.oe,a.of);m2[a.esp].n++;});
   var L2=Object.keys(m2),V2=L2.map(function(l){return (m2[l].s/m2[l].n).toFixed(2);});
-  if(L2.length)CH['c2']=new Chart(document.getElementById('c2'),{type:'bar',data:{labels:L2,datasets:[{data:V2,backgroundColor:pal(L2.length),borderRadius:6,borderSkipped:false}]},options:GO});
-  // c3: distribuicao
-  kch('c3');
-  var cs3=D.filter(function(a){return a.oe&&a.of;}).map(function(a){return clv(a.oe,a.of);});
-  if(cs3.length){var mn=Math.min.apply(null,cs3),mx=Math.max.apply(null,cs3),bins=8,sz=(mx-mn)/bins||1,lb3=[],dt3=[];
-    for(var i=0;i<bins;i++){var lo=mn+i*sz,hi=lo+sz;lb3.push(lo.toFixed(1));dt3.push(cs3.filter(function(c){return c>=lo&&c<hi;}).length);}
-    CH['c3']=new Chart(document.getElementById('c3'),{type:'bar',data:{labels:lb3,datasets:[{data:dt3,backgroundColor:'rgba(79,152,163,.7)',borderRadius:4}]},options:GO});}
+  if(L2.length)CH['c2']=new Chart(document.getElementById('c2'),{type:'bar',data:{labels:L2,datasets:[{data:V2,backgroundColor:pal(L2.length),borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(128,128,128,.08)'},ticks:{color:'#888',callback:function(v){return v+'%';}}},x:{grid:{display:false},ticks:{color:'#888',font:{size:9}}}}}});
+
+  // ── CLV ao longo do tempo ──
+  kch('c1');
+  var sv2=D.filter(function(a){return a.oe&&a.of;}).slice().sort(function(a,b){return a.dt.localeCompare(b.dt);});
+  if(sv2.length){var acc3=0,lb3=[],dt3=[];sv2.forEach(function(a,i){acc3+=clv(a.oe,a.of);lb3.push(a.dt.slice(5));dt3.push((acc3/(i+1)).toFixed(2));});
+    CH['c1']=new Chart(document.getElementById('c1'),{type:'line',data:{labels:lb3,datasets:[{data:dt3,borderColor:'#4f98a3',backgroundColor:'rgba(79,152,163,.12)',fill:true,tension:.4,pointRadius:sv2.length>30?0:3,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(128,128,128,.08)'},ticks:{color:'#888',callback:function(v){return v+'%';}}},x:{grid:{display:false},ticks:{color:'#888',maxTicksLimit:12,font:{size:9}}}}}});}
+
+  renderCal();
 }
 
+function tipToggle(idx) {
+  var card = document.getElementById('tc-'+idx);
+  if(card) card.classList.toggle('open');
+}
 function renderAnalytics() {
   kpis('akgrid');
   // a1: por casa
@@ -1620,6 +2008,196 @@ function toggleCashout(id, val) {
   if (box) box.style.display = val === 'Cashout' ? 'block' : 'none';
 }
 
+// ── CASAS DE APOSTAS ───────────────────────────────────────────
+var BK_KEY = 'clv_bookmakers'; // stores: [{id, nome, saldoInicial, obs}]
+
+function getBKs() {
+  try { return JSON.parse(localStorage.getItem(BK_KEY) || '[]'); } catch(e){ return []; }
+}
+function saveBKs(arr) { localStorage.setItem(BK_KEY, JSON.stringify(arr)); }
+
+function bkPL(casa) {
+  // Calculate PL per bookmaker from resolved bets
+  var pl=0, stk=0, w=0, t=0, pend=0, pendStk=0;
+  D.forEach(function(a){
+    if((a.casa||'').toLowerCase() !== (casa||'').toLowerCase()) return;
+    if(a.res==='Pendente'){ pend++; pendStk+=a.stk||0; return; }
+    var s=a.stk||0; t++; stk+=s;
+    if(a.res==='Win')          { pl+=(a.oe-1)*s; w++; }
+    else if(a.res==='Loss')    pl-=s;
+    else if(a.res==='Meia Ganha')  { pl+=(a.oe-1)*s/2; w+=0.5; }
+    else if(a.res==='Meia Perdida') pl-=s/2;
+    else if(a.res==='Cashout'&&a.co) pl+=a.co-s;
+  });
+  return {pl:pl, stk:stk, w:w, t:t, pend:pend, pendStk:pendStk};
+}
+
+var _bkEditId = null;
+function openBkModal(id) {
+  _bkEditId = id || null;
+  var mo = document.getElementById('bk-mo-title');
+  if(mo) mo.textContent = id ? 'Editar Casa' : 'Nova Casa de Apostas';
+  if(id) {
+    var bk = getBKs().find(function(b){ return b.id===id; }) || {};
+    var n=document.getElementById('bk-nome'); if(n) n.value=bk.nome||'';
+    var s=document.getElementById('bk-saldo'); if(s) s.value=bk.saldoInicial||'';
+    var o=document.getElementById('bk-obs'); if(o) o.value=bk.obs||'';
+  } else {
+    ['bk-nome','bk-saldo','bk-obs'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  }
+  var ov=document.getElementById('bk-ov'); if(ov) ov.classList.add('on');
+}
+function closeBkModal() {
+  var ov=document.getElementById('bk-ov'); if(ov) ov.classList.remove('on');
+}
+function saveBkModal() {
+  var nome=(document.getElementById('bk-nome')||{}).value||'';
+  var saldo=parseFloat((document.getElementById('bk-saldo')||{}).value)||0;
+  var obs=(document.getElementById('bk-obs')||{}).value||'';
+  if(!nome.trim()){ alert('Informe o nome da casa.'); return; }
+  var arr=getBKs();
+  if(_bkEditId) {
+    var idx=arr.findIndex(function(b){return b.id===_bkEditId;});
+    if(idx>-1) arr[idx]={id:_bkEditId, nome:nome.trim(), saldoInicial:saldo, obs:obs};
+  } else {
+    arr.push({id: Date.now()+'_'+Math.random().toString(36).slice(2,5), nome:nome.trim(), saldoInicial:saldo, obs:obs});
+  }
+  saveBKs(arr); closeBkModal(); renderCasas();
+}
+function deleteBK(id) {
+  if(!confirm('Remover esta casa?')) return;
+  var arr=getBKs().filter(function(b){return b.id!==id;});
+  saveBKs(arr); renderCasas();
+}
+
+function renderCasas() {
+  var bks = getBKs();
+  var sg  = function(v){ return v>=0?'+':''; };
+
+  // ── KPIs globais ──
+  var kpiEl = document.getElementById('casas-kpis');
+  if(kpiEl){
+    var totalSaldoInicial=0, totalSaldoAtual=0, totalPL=0, totalPend=0;
+    bks.forEach(function(bk){
+      var r=bkPL(bk.nome);
+      totalSaldoInicial+=bk.saldoInicial||0;
+      totalSaldoAtual+=(bk.saldoInicial||0)+r.pl;
+      totalPL+=r.pl; totalPend+=r.pendStk;
+    });
+    function dkpi2(lbl,val,sub,col){
+      return '<div class="dkpi"><div class="dkpi-lbl">'+lbl+'</div><div class="dkpi-val" style="color:'+col+'">'+val+'</div><div class="dkpi-sub">'+sub+'</div></div>';
+    }
+    kpiEl.innerHTML=
+      dkpi2('Total nas Casas','R$'+totalSaldoInicial.toFixed(2),'Soma dos saldos iniciais configurados','var(--tx)')+
+      dkpi2('Saldo Disponível Total','R$'+(totalSaldoAtual-totalPend).toFixed(2),'Saldo atual menos stakes reservados',( totalSaldoAtual-totalPend)>=totalSaldoInicial?'var(--ok)':'var(--er)')+
+      dkpi2('Lucro / Perda Total',sg(totalPL)+'R$'+Math.abs(totalPL).toFixed(2),'Todas as casas resolvidas',totalPL>=0?'var(--ok)':'var(--er)')+
+      dkpi2('Reservado (Pendentes)','R$'+totalPend.toFixed(2),'Já deduzido do saldo disponível de cada casa','var(--wa)');
+  }
+
+  // ── Cards das casas ──
+  var grid = document.getElementById('bk-grid');
+  if(!grid) return;
+  var html = '';
+  bks.forEach(function(bk){
+    var r    = bkPL(bk.nome);
+    var sAtual  = (bk.saldoInicial||0) + r.pl;  // saldo contábil (apenas resolvidas)
+    var sDisp   = sAtual - r.pendStk;             // disponível = deduz pendentes
+    var varPct  = bk.saldoInicial ? ((sAtual-bk.saldoInicial)/bk.saldoInicial)*100 : 0;
+    var dispPct = sAtual > 0 ? (sDisp/sAtual)*100 : 100;
+    var roi     = r.stk ? (r.pl/r.stk)*100 : 0;
+    var cls     = r.pl>=0?'pos-card':'neg-card';
+    var plColor = r.pl>=0?'var(--ok)':'var(--er)';
+    var dispColor = sDisp<0?'var(--er)':sDisp<(bk.saldoInicial||0)*0.2?'var(--wa)':'var(--tx)';
+    html+=
+      '<div class="bk-card '+cls+'">'+
+      '<div class="bk-name">'+
+        '<span>'+bk.nome+'</span>'+
+        '<div style="display:flex;gap:.4rem">'+
+          '<button class="ab" onclick="openBkModal(''+bk.id+'')">✏</button>'+
+          '<button class="ab d" onclick="deleteBK(''+bk.id+'')">🗑</button>'+
+        '</div>'+
+      '</div>'+
+      (bk.obs?'<div style="font-size:.68rem;color:var(--mu);margin-bottom:.5rem">'+bk.obs+'</div>':'')+
+      // Saldo principal = disponível (já deduz pendentes)
+      '<div style="margin-bottom:.5rem">'+
+        '<div style="font-size:.63rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-bottom:.2rem">Disponível</div>'+
+        '<div class="bk-saldo" style="color:'+dispColor+'">R$'+sDisp.toFixed(2)+'</div>'+
+      '</div>'+
+      // Linha de progresso disponível vs total
+      (r.pend?
+        '<div class="dkpi-bar-bg" style="margin-bottom:.5rem"><div class="dkpi-bar-fill" style="width:'+Math.min(100,Math.max(0,dispPct))+'%;background:var(--pri)"></div></div>'+
+        '<div style="font-size:.65rem;color:var(--mu);margin-bottom:.5rem;display:flex;justify-content:space-between">'+
+          '<span>R$'+sDisp.toFixed(2)+' disponível</span>'+
+          '<span style="color:var(--wa)">⏳ R$'+r.pendStk.toFixed(2)+' em aberto</span>'+
+        '</div>':'')+
+      '<div style="height:1px;background:var(--bor);margin-bottom:.5rem"></div>'+
+      '<div class="bk-row"><span>Saldo c/ resolvidas</span><span style="font-family:var(--mono);color:'+plColor+'">R$'+sAtual.toFixed(2)+'</span></div>'+
+      '<div class="bk-row"><span>Saldo inicial</span><span style="font-family:var(--mono)">R$'+(bk.saldoInicial||0).toFixed(2)+'</span></div>'+
+      '<div class="bk-row"><span>P/L total</span><span style="font-family:var(--mono);color:'+plColor+'">'+sg(r.pl)+'R$'+Math.abs(r.pl).toFixed(2)+'</span></div>'+
+      '<div class="bk-row"><span>ROI</span><span style="font-family:var(--mono);color:'+plColor+'">'+sg(roi)+roi.toFixed(1)+'%</span></div>'+
+      '<div style="display:flex;gap:.4rem;margin-top:.625rem;flex-wrap:wrap">'+
+        '<span class="bk-pill '+(r.pl>=0?'pos':'neg')+'">'+r.t+' resolvidas</span>'+
+        (r.pend?'<span class="bk-pill pend">'+r.pend+' pendentes</span>':'')+
+      '</div>'+
+      '</div>';
+  });
+  // Add card button
+  html+='<div class="bk-add" onclick="openBkModal()">+ Adicionar Casa</div>';
+  grid.innerHTML = html;
+
+  // ── Update filter ──
+  var fEl = document.getElementById('bk-filter-casa');
+  if(fEl){
+    var cur=fEl.value;
+    fEl.innerHTML='<option value="">Todas as casas</option>'+
+      bks.map(function(b){return '<option>'+b.nome+'</option>';}).join('');
+    fEl.value=cur;
+  }
+
+  renderCasaHistory();
+}
+
+function renderCasaHistory() {
+  var filterCasa=(document.getElementById('bk-filter-casa')||{}).value||'';
+  var filterRes=(document.getElementById('bk-filter-res')||{}).value||'';
+  var bks=getBKs();
+  var bkNames=new Set(bks.map(function(b){return b.nome.toLowerCase();}));
+
+  // Show all apostas matching registered casas
+  var rows=D.filter(function(a){
+    var inBK = bkNames.size===0 || bkNames.has((a.casa||'').toLowerCase());
+    var matchCasa = !filterCasa || (a.casa||'').toLowerCase()===filterCasa.toLowerCase();
+    var matchRes  = !filterRes  || a.res===filterRes;
+    return inBK && matchCasa && matchRes;
+  }).slice().sort(function(a,b){ return (b.dt+(b.hora||'')).localeCompare(a.dt+(a.hora||'')); });
+
+  var tbody=document.getElementById('bk-history-body');
+  var empty=document.getElementById('bk-empty');
+  if(!tbody) return;
+  if(!rows.length){ tbody.innerHTML=''; if(empty)empty.style.display='flex'; return; }
+  if(empty) empty.style.display='none';
+  var sg=function(v){return v>=0?'+':'';};
+  var resColors={Win:'var(--ok)',Loss:'var(--er)','Meia Ganha':'var(--ok)','Meia Perdida':'var(--er)',Cashout:'#818cf8',Anulada:'#94a3b8',Pendente:'var(--wa)'};
+  tbody.innerHTML=rows.map(function(a){
+    var s=a.stk||0, pl=0;
+    if(a.res==='Win')          pl=(a.oe-1)*s;
+    else if(a.res==='Loss')    pl=-s;
+    else if(a.res==='Meia Ganha')  pl=(a.oe-1)*s/2;
+    else if(a.res==='Meia Perdida') pl=-s/2;
+    else if(a.res==='Cashout'&&a.co) pl=a.co-s;
+    var isPend=a.res==='Pendente';
+    return '<tr style="border-bottom:1px solid var(--bor)">'+
+      '<td style="padding:.45rem .75rem;font-size:.75rem;white-space:nowrap">'+(a.dt?a.dt.split('-').reverse().join('/'):'—')+(a.hora?' <span style="color:var(--mu);font-size:.65rem">'+a.hora+'</span>':'')+'</td>'+
+      '<td style="padding:.45rem .75rem;font-size:.75rem"><div style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:260px" title="'+a.jogo+' — '+a.mkt+'">'+a.jogo+' <span style="color:var(--mu)">'+a.mkt+'</span></div></td>'+
+      '<td style="padding:.45rem .75rem;font-size:.75rem">'+a.casa+'</td>'+
+      '<td style="padding:.45rem .75rem;font-size:.75rem;text-align:right;font-family:var(--mono)">R$'+s.toFixed(2)+'</td>'+
+      '<td style="padding:.45rem .75rem;font-size:.75rem;text-align:right;font-family:var(--mono);color:'+(isPend?'var(--mu)':pl>=0?'var(--ok)':'var(--er)')+'">'+
+        (isPend?'—':sg(pl)+'R$'+Math.abs(pl).toFixed(2))+'</td>'+
+      '<td style="padding:.45rem .75rem;text-align:center"><span style="font-size:.72rem;font-weight:600;color:'+(resColors[a.res]||'var(--mu)')+'">'+a.res+'</span></td>'+
+      '</tr>';
+  }).join('');
+}
+
 // ── BANCA ─────────────────────────────────────────────────────
 function saveBanca() {
   var v = parseFloat(document.getElementById('bancaInicial').value) || 0;
@@ -1760,6 +2338,35 @@ function calcUnRev() {
   calcPrev();
 }
 
+
+// ── LUCRO MODE SWITCHER ──────────────────────────────────────
+function applyLucroMode(mode) {
+  window._lucroMode = mode;
+  var wrap = document.getElementById('lucro-charts-wrap');
+  if(!wrap) return;
+  var cols = wrap.children;
+  if(mode === 'ambos') {
+    wrap.style.gridTemplateColumns = '1fr 1fr';
+    for(var i=0;i<cols.length;i++) cols[i].style.display='';
+  } else if(mode === 'linha') {
+    wrap.style.gridTemplateColumns = '1fr';
+    if(cols[0]) cols[0].style.display='';
+    if(cols[1]) cols[1].style.display='none';
+  } else {
+    wrap.style.gridTemplateColumns = '1fr';
+    if(cols[0]) cols[0].style.display='none';
+    if(cols[1]) cols[1].style.display='';
+  }
+  ['ambos','linha','barras'].forEach(function(m){
+    var btn=document.getElementById('btn-lucro-'+m);
+    if(btn) btn.classList.toggle('on', m===mode);
+  });
+  setTimeout(function(){
+    if(CH['c-lucro']&&CH['c-lucro'].resize) CH['c-lucro'].resize();
+    if(CH['c-lucro-bar']&&CH['c-lucro-bar'].resize) CH['c-lucro-bar'].resize();
+  }, 50);
+}
+function setLucroMode(mode) { applyLucroMode(mode); }
 
 // ── CALENDÁRIO MENSAL ─────────────────────────────────────────
 var _calYear  = new Date().getFullYear();
@@ -2073,6 +2680,9 @@ fillFilters();
     </button>
     <button class="bnav-btn" data-p="analytics" onclick="goTo('analytics');bnavUpdate('analytics')">
       <span class="bico">📈</span>Analytics
+    </button>
+    <button class="bnav-btn" data-p="casas" onclick="goTo('casas');bnavUpdate('casas')">
+      <span class="bico">🏦</span>Casas
     </button>
     <button class="bnav-btn" data-p="banca" onclick="goTo('banca');bnavUpdate('banca')">
       <span class="bico">💰</span>Banca

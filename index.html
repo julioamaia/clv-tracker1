@@ -276,7 +276,7 @@ function goTo(p) {
         <div class="srch">🔎 <input type="text" id="q" placeholder="Buscar jogo ou mercado..." oninput="renderTabela()"></div>
         <select class="fsl" id="fe" onchange="renderTabela()"><option value="">Todos esportes</option></select>
         <select class="fsl" id="fc" onchange="renderTabela()"><option value="">Todas as casas</option></select>
-        <select class="fsl" id="ftipster" onchange="renderTabela()"><option value="">Todos tipsters</option></select>
+        <select class="fsl" id="ft" onchange="renderTabela()"><option value="">Todos tipsters</option></select>
         <input type="date" class="fsl" id="fd1" onchange="renderTabela()" title="Data início" style="cursor:pointer">
         <input type="date" class="fsl" id="fd2" onchange="renderTabela()" title="Data fim" style="cursor:pointer">
         <button class="btn btn-s" onclick="clearDateFilters()" style="padding:.4rem .6rem;font-size:.75rem">✕ Datas</button>
@@ -286,7 +286,23 @@ function goTo(p) {
       <div class="tcard">
         <div class="tscr">
           <table>
-            <thead><tr><th id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th><th>Jogo</th><th>Mercado</th><th>Esporte</th><th>Casa</th><th>Odd Ent.</th><th>Odd Fech.</th><th>CLV</th><th>Stake</th><th>Un.</th><th>Resultado</th><th></th></tr></thead>
+            <thead><tr><th id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th><th>Jo<thead>
+  <tr>
+    <th id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th>
+    <th>Jogo</th>
+    <th>Mercado</th>
+    <th>Esporte</th>
+    <th>Casa</th>
+    <th>Tipster</th>
+    <th>Odd Ent.</th>
+    <th>Odd Fech.</th>
+    <th>CLV</th>
+    <th>Stake</th>
+    <th>Un.</th>
+    <th>Resultado</th>
+    <th></th>
+  </tr>
+</thead>
             <tbody id="tbody"></tbody>
           </table>
         </div>
@@ -427,14 +443,14 @@ function goTo(p) {
             <div class="fg"><label>Odd Entrada</label><input type="number" id="s_odd" min="1.01" step="0.01" oninput="calcSclv()"></div>
             <div class="fg"><label>Resultado</label>
               <select id="s_res" onchange="toggleCashout('s_co',this.value)">
-                <option>Pendente</option>
-<option>Win</option>
-<option>Loss</option>
-<option>HalfWin</option>
-<option>HalfLoss</option>
-<option>Cashout</option>
-<option>Anulada</option>
-              </select>
+  <option>Pendente</option>
+  <option>Win</option>
+  <option>Loss</option>
+  <option>HalfWin</option>
+  <option>HalfLoss</option>
+  <option>Cashout</option>
+  <option>Anulada</option>
+</select>
             </div>
             <div class="fg" id="s_co_box" style="display:none">
               <label>Valor Cashout (R$)</label>
@@ -533,7 +549,18 @@ function goTo(p) {
       <div class="fg"><label>Unidades <span style="font-size:.7rem;color:var(--mu)" id="unLabel">(1u = R$15)</span></label><input type="number" id="m_un" placeholder="1.00" step="0.01" oninput="calcUnRev()" style="background:var(--sur2)"></div>
       <div class="fg"><label>Odd Entrada</label><input type="number" id="m_odde" placeholder="2.05" min="1.01" step="0.01" oninput="calcPrev()"></div>
       <div class="fg"><label>Odd Fechamento</label><input type="number" id="m_oddf" placeholder="2.00" min="1.01" step="0.01" oninput="calcPrev()"></div>
-      <div class="fg"><label>Resultado</label><select id="m_res" onchange="toggleCashout('m_co',this.value)"><option>Pendente</option><option>Win</option><option>Loss</option><option>Cashout</option><option>Anulada</option></select></div>
+      <div class="fg">
+  <label>Resultado</label>
+  <select id="m_res" onchange="toggleCashout('m_co',this.value)">
+    <option>Pendente</option>
+    <option>Win</option>
+    <option>Loss</option>
+    <option>HalfWin</option>
+    <option>HalfLoss</option>
+    <option>Cashout</option>
+    <option>Anulada</option>
+  </select>
+</div>
       <div class="fg" id="m_co_box" style="display:none"><label>Valor Cashout (R$)</label><input type="number" id="m_co" placeholder="Ex: 25.00" min="0" step="0.01"></div>
       <div class="fg full"><label>Observação</label><input type="text" id="m_obs" placeholder="Opcional..."></div>
     </div>
@@ -708,24 +735,31 @@ function renderAnalytics() {
 }
 
 // ── TABELA ───────────────────────────────────────────────────
-function fillFilters() {
-  var esps=[...new Set(D.map(function(a){return a.esp;}).filter(Boolean))];
-  var css=[...new Set(D.map(function(a){return a.casa;}).filter(Boolean))];
-  var tips=[...new Set(D.map(function(a){return a.tipster;}).filter(Boolean))];
-  var fe=document.getElementById('fe'),fc=document.getElementById('fc'),ft=document.getElementById('ftipster');
-  var ve=fe?fe.value:'',vc=fc?fc.value:'',vt=ft?ft.value:'';
-  if(fe)fe.innerHTML='<option value="">Todos esportes</option>'+esps.map(function(e){return '<option>'+e+'</option>';}).join('');
-  if(fc)fc.innerHTML='<option value="">Todas as casas</option>'+css.map(function(c){return '<option>'+c+'</option>';}).join('');
-  if(ft)ft.innerHTML='<option value="">Todos tipsters</option>'+tips.map(function(t){return '<option>'+t+'</option>';}).join('');
-  if(fe)fe.value=ve;
-  if(fc)fc.value=vc;
-  if(ft)ft.value=vt;
-  var tots={all:D.length,Pendente:0,Win:0,Loss:0,Cashout:0,Anulada:0,HalfWin:0,HalfLoss:0};
-  D.forEach(function(a){if(tots[a.res]!==undefined)tots[a.res]++;});
-  var el=document.getElementById('cnt-all');if(el)el.textContent=tots.all;
-  ['Pendente','Win','Loss','Cashout','Anulada','HalfWin','HalfLoss'].forEach(function(k){
-    var el=document.getElementById('cnt-'+k);if(el)el.textContent=tots[k];
-  });
+function fillFilters(){
+  var fe = document.getElementById('fe');
+  var fc = document.getElementById('fc');
+  var ft = document.getElementById('ft');
+  if (!fe || !fc) return;
+
+  var esporteAtual = fe.value || '';
+  var casaAtual = fc.value || '';
+  var tipsterAtual = ft ? (ft.value || '') : '';
+
+  var esp = Array.from(new Set(D.map(a => (a.esp || '').trim()).filter(Boolean))).sort();
+  var casa = Array.from(new Set(D.map(a => (a.casa || '').trim()).filter(Boolean))).sort();
+  var tip = Array.from(new Set(D.map(a => (a.tipster || '').trim()).filter(Boolean))).sort();
+
+  fe.innerHTML = '<option value="">Todos esportes</option>' + esp.map(v => '<option value="'+v+'">'+v+'</option>').join('');
+  fc.innerHTML = '<option value="">Todas as casas</option>' + casa.map(v => '<option value="'+v+'">'+v+'</option>').join('');
+
+  if (ft) {
+    ft.innerHTML = '<option value="">Todos tipsters</option>' + tip.map(v => '<option value="'+v+'">'+v+'</option>').join('');
+  }
+
+  if (esporteAtual) fe.value = esporteAtual;
+  if (casaAtual) fc.value = casaAtual;
+  if (ft && tipsterAtual) ft.value = tipsterAtual;
+}
 }
 function setResTab(btn,val){
   document.querySelectorAll('.rtab').forEach(function(b){b.classList.remove('on');});
@@ -744,75 +778,157 @@ function toggleSort(){
   document.getElementById('sort-icon').textContent = SORT_ASC ? '↑' : '↓';
   renderTabela();
 }
-function renderTabela() {
-  var q=(document.getElementById('q').value||'').toLowerCase();
-  var esp=document.getElementById('fe').value, casa=document.getElementById('fc').value, tip=document.getElementById('ftipster')?document.getElementById('ftipster').value:'', res=document.getElementById('fr').value;
-  var f=D.slice().sort(function(a,b){
-  var da=(a.dt||'')+('T'+((a.hora&&a.hora.trim())?a.hora.trim():'00:00'));
-  var db=(b.dt||'')+('T'+((b.hora&&b.hora.trim())?b.hora.trim():'00:00'));
-  return SORT_ASC ? da.localeCompare(db) : db.localeCompare(da);
-});
-  if(q)f=f.filter(function(a){return (a.jogo+a.mkt).toLowerCase().indexOf(q)>=0;});
-  if(esp)f=f.filter(function(a){return a.esp===esp;});
-  if(casa)f=f.filter(function(a){return a.casa===casa;});
-  if(tip)f=f.filter(function(a){return a.tipster===tip;});
-  if(res)f=f.filter(function(a){return a.res===res;});
-  var fd1=document.getElementById('fd1')?document.getElementById('fd1').value:'';
-  var fd2=document.getElementById('fd2')?document.getElementById('fd2').value:'';
-  if(fd1)f=f.filter(function(a){return a.dt>=fd1;});
-  if(fd2)f=f.filter(function(a){return a.dt<=fd2;});
-  document.getElementById('tcnt').textContent=f.length+' apostas';
-  var tb=document.getElementById('tbody'),em=document.getElementById('tempty');
-  if(!f.length){tb.innerHTML='';em.style.display='flex';return;}
-  em.style.display='none';
-  tb.innerHTML=f.map(function(a){
-    var c=a.oe&&a.of?clv(a.oe,a.of):null;
-    var cs=c!==null?'<span class="'+(c>=0?'cp':'cn')+'">'+(c>=0?'+':'')+c.toFixed(2)+'%</span>':'<span class="cu">—</span>';
-    var b=a.res==='Win'?'<span class="bdg bw">Win</span>':a.res==='Loss'?'<span class="bdg bl">Loss</span>':a.res==='Cashout'?'<span class="bdg bc">Cashout</span>':a.res==='Anulada'?'<span class="bdg ba">Anulada</span>':'<span class="bdg bp">Pendente</span>';
-    return (function(a){
-    var c = a.oe && a.of ? clv(a.oe, a.of) : null;
-    var cs = c !== null
-      ? '<span class="'+(c>=0?'cp':'cn')+'">'+(c>=0?'+':'')+c.toFixed(2)+'%</span>'
-      : '<span class="cu">—</span>';
-    var inlineStyle = 'background:transparent;border:none;border-bottom:1px dashed var(--bor);color:var(--tx);font-family:var(--mono);font-size:.8125rem;text-align:center;outline:none;padding:2px 4px;width:';
+function renderTabela(){
+  var q = (document.getElementById('q')?.value || '').toLowerCase().trim();
+  var fe = document.getElementById('fe')?.value || '';
+  var fc = document.getElementById('fc')?.value || '';
+  var ft = document.getElementById('ft')?.value || '';
+  var fd1 = document.getElementById('fd1')?.value || '';
+  var fd2 = document.getElementById('fd2')?.value || '';
+  var tbody = document.getElementById('tbody');
+  var empty = document.getElementById('tempty');
+  if (!tbody) return;
 
-    // Input odd fechamento inline
-    var ofInput = '<input type="number" value="'+(a.of||'')+'" placeholder="—" min="1.01" step="0.01"'
-      +' style="'+inlineStyle+'62px"'
-      +' onchange="saveOf(\''+a.id+'\',this.value)"'
-      +' onfocus="this.style.borderColor=\'var(--pri)\'"'
-      +' onblur="this.style.borderColor=\'\'"/>';
+  var arr = (D || []).slice();
 
-    // Select resultado inline
-    var opts = ['Pendente','Win','Loss','Cashout','Anulada'];
-    var colors = {Win:'var(--ok)',Loss:'var(--er)',Cashout:'#818cf8',Anulada:'#94a3b8',Pendente:'var(--wa)'};
-    var selRes = '<select style="'+inlineStyle+'90px;cursor:pointer;color:'+(colors[a.res]||'var(--tx)')+';"'
-      +' onchange="saveRes(\''+a.id+'\',this.value,this)">'
-      + opts.map(function(o){ return '<option value="'+o+'"'+(a.res===o?' selected':'')+'>'+o+'</option>'; }).join('')
-      +'</select>';
+  arr = arr.filter(function(a){
+    var dt = a.dt || '';
+    if (q) {
+      var txt = [
+        a.jogo || '',
+        a.mkt || '',
+        a.esp || '',
+        a.casa || '',
+        a.tipster || '',
+        a.obs || ''
+      ].join(' ').toLowerCase();
+      if (!txt.includes(q)) return false;
+    }
+    if (fe && (a.esp || '') !== fe) return false;
+    if (fc && (a.casa || '') !== fc) return false;
+    if (ft && (a.tipster || '') !== ft) return false;
+    if (fd1 && dt < fd1) return false;
+    if (fd2 && dt > fd2) return false;
+    if (document.getElementById('fr') && document.getElementById('fr').value) {
+      if ((a.res || 'Pendente') !== document.getElementById('fr').value) return false;
+    }
+    return true;
+  });
 
-    // Input odd fechamento para cashout
-    var cashoutInput = a.res === 'Cashout'
-      ? ' <input type="number" value="'+(a.co||'')+'" placeholder="R$ CO" min="0" step="0.01"'
-        +' style="'+inlineStyle+'70px"'
-        +' onchange="saveCo(\''+a.id+'\',this.value)"/>'
-      : '';
+  arr.sort(function(a,b){
+    var da = a.dt || '';
+    var db = b.dt || '';
+    return sortAsc ? da.localeCompare(db) : db.localeCompare(da);
+  });
 
-    return '<tr data-id="'+a.id+'">'
-      +'<td style="white-space:nowrap">'+(a.dt?a.dt.split('-').reverse().join('/'):'—')+(a.hora?' <span style="font-size:.7rem;color:var(--mu)">'+a.hora+'</span>':'')+'</td>'
-      +'<td style="max-width:220px;white-space:normal;word-break:break-word;line-height:1.4" title="'+a.jogo+'">'+a.jogo+'</td>'
-      +'<td>'+a.mkt+'</td>'
-      +'<td>'+a.esp+'</td>'
-      +'<td>'+a.casa+'</td>'
-      +'<td style="font-family:var(--mono)">'+(a.oe||'—')+'</td>'
-      +'<td>'+ofInput+'</td>'
-      +'<td class="clv-cell">'+cs+'</td>'
-      +'<td style="font-family:var(--mono)">'+(a.stk?'R$'+a.stk:'—')+'</td>'
-      +'<td style="font-family:var(--mono);color:var(--mu)">'+(a.un||(a.stk?+(a.stk/getUnit()).toFixed(2):'—'))+'u</td>'
-      +'<td>'+selRes+cashoutInput+'</td>'
-      +'<td><div class="ra"><button class="ab" onclick="editA(\''+a.id+'\')">✏ Editar</button><button class="ab d" onclick="delA(\''+a.id+'\')">🗑</button></div></td>'
-      +'</tr>';
-  })(a);}).join('');
+  tbody.innerHTML = arr.map(function(a){
+    var clv = calcClvText(a.oe, a.of);
+    return `
+      <tr>
+        <td>${fmtDate(a.dt || '')}</td>
+        <td>${esc(a.jogo || '')}</td>
+        <td>${esc(a.mkt || '')}</td>
+        <td>${esc(a.esp || '')}</td>
+        <td>${esc(a.casa || '')}</td>
+        <td>${esc(a.tipster || '-')}</td>
+        <td>${fmtOdd(a.oe)}</td>
+        <td>${fmtOdd(a.of)}</td>
+        <td>${clv}</td>
+        <td>${fmtMoney(a.stk)}</td>
+        <td>${fmtUnit(a.un)}</td>
+        <td>${renderResultBadge(a.res, a.co)}</td>
+        <td>
+          <div class="ra">
+            <button class="ab" onclick="editRow('${a.id}')">✏️</button>
+            <button class="ab d" onclick="delRow('${a.id}')">🗑</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  if (empty) empty.style.display = arr.length ? 'none' : 'flex';
+
+  var tcnt = document.getElementById('tcnt');
+  if (tcnt) tcnt.textContent = arr.length + ' registros';
+
+  updateCounts();
+}
+  function renderTabela(){
+  var q = (document.getElementById('q')?.value || '').toLowerCase().trim();
+  var fe = document.getElementById('fe')?.value || '';
+  var fc = document.getElementById('fc')?.value || '';
+  var ft = document.getElementById('ft')?.value || '';
+  var fd1 = document.getElementById('fd1')?.value || '';
+  var fd2 = document.getElementById('fd2')?.value || '';
+  var tbody = document.getElementById('tbody');
+  var empty = document.getElementById('tempty');
+  if (!tbody) return;
+
+  var arr = (D || []).slice();
+
+  arr = arr.filter(function(a){
+    var dt = a.dt || '';
+    if (q) {
+      var txt = [
+        a.jogo || '',
+        a.mkt || '',
+        a.esp || '',
+        a.casa || '',
+        a.tipster || '',
+        a.obs || ''
+      ].join(' ').toLowerCase();
+      if (!txt.includes(q)) return false;
+    }
+    if (fe && (a.esp || '') !== fe) return false;
+    if (fc && (a.casa || '') !== fc) return false;
+    if (ft && (a.tipster || '') !== ft) return false;
+    if (fd1 && dt < fd1) return false;
+    if (fd2 && dt > fd2) return false;
+    if (document.getElementById('fr') && document.getElementById('fr').value) {
+      if ((a.res || 'Pendente') !== document.getElementById('fr').value) return false;
+    }
+    return true;
+  });
+
+  arr.sort(function(a,b){
+    var da = a.dt || '';
+    var db = b.dt || '';
+    return sortAsc ? da.localeCompare(db) : db.localeCompare(da);
+  });
+
+  tbody.innerHTML = arr.map(function(a){
+    var clv = calcClvText(a.oe, a.of);
+    return `
+      <tr>
+        <td>${fmtDate(a.dt || '')}</td>
+        <td>${esc(a.jogo || '')}</td>
+        <td>${esc(a.mkt || '')}</td>
+        <td>${esc(a.esp || '')}</td>
+        <td>${esc(a.casa || '')}</td>
+        <td>${esc(a.tipster || '-')}</td>
+        <td>${fmtOdd(a.oe)}</td>
+        <td>${fmtOdd(a.of)}</td>
+        <td>${clv}</td>
+        <td>${fmtMoney(a.stk)}</td>
+        <td>${fmtUnit(a.un)}</td>
+        <td>${renderResultBadge(a.res, a.co)}</td>
+        <td>
+          <div class="ra">
+            <button class="ab" onclick="editRow('${a.id}')">✏️</button>
+            <button class="ab d" onclick="delRow('${a.id}')">🗑</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  if (empty) empty.style.display = arr.length ? 'none' : 'flex';
+
+  var tcnt = document.getElementById('tcnt');
+  if (tcnt) tcnt.textContent = arr.length + ' registros';
+
+  updateCounts();
 }
 
 // ── MODAL ─────────────────────────────────────────────────────
@@ -1650,74 +1766,122 @@ function getBanca() {
 }
 var _bancaChart = null;
 function renderBanca() {
-  var bi = getBanca();
-  var unit = getUnit();
-  var biEl = document.getElementById('bancaInicial');
-  if (biEl && !biEl.value && bi) biEl.value = bi;
-  var u2El = document.getElementById('unitVal2');
-  if (u2El && !u2El.value) u2El.value = unit;
-  if (!bi) {
-    document.getElementById('bancaKpis').innerHTML =
-      '<div style="grid-column:1/-1;color:var(--mu);font-size:.875rem;text-align:center;padding:1rem">Configure sua banca inicial acima para começar.</div>';
+  var box = document.getElementById('bancaKpis');
+  var canvas = document.getElementById('bancaChart');
+  if (!box || !canvas) return;
+
+  var bancaInicial = parseFloat(localStorage.getItem('bancaInicial') || '0') || 0;
+  var unit = parseFloat(localStorage.getItem('unitVal2') || localStorage.getItem('unitVal') || '15') || 15;
+  var bets = (D || []).slice().sort(function(a,b){
+    return (a.dt || '').localeCompare(b.dt || '');
+  });
+
+  if (bancaInicial <= 0) {
+    box.innerHTML = '<div style="grid-column:1/-1;color:var(--mu);font-size:.875rem;text-align:center;padding:1.5rem">Configure sua banca inicial acima para começar.</div>';
+    if (window.bancaChartInstance) {
+      window.bancaChartInstance.destroy();
+      window.bancaChartInstance = null;
+    }
     return;
   }
-  var apostas = D.slice().filter(function(a){ return a.res !== 'Pendente'; })
-    .sort(function(a,b){ return a.dt.localeCompare(b.dt); });
+
+  var saldo = bancaInicial;
+  var serie = [bancaInicial];
+  var wins = 0, losses = 0, pend = 0, cashouts = 0, anuladas = 0, halfWins = 0, halfLosses = 0;
   var lucroTotal = 0;
-  var pontos = [{x:'Início', y:bi}];
-  apostas.forEach(function(a) {
-    var s = parseFloat(a.stk)||0, pl = 0;
-    if      (a.res==='Win')      pl = ((parseFloat(a.oe)||0) - 1) * s;
-else if (a.res==='Loss')     pl = -s;
-else if (a.res==='HalfWin')  pl = 0.5 * ((parseFloat(a.oe)||0) - 1) * s;
-else if (a.res==='HalfLoss') pl = -0.5 * s;
-else if (a.res==='Cashout')  pl = (parseFloat(a.co)||0) - s;
-    lucroTotal += pl;
-    var dtLabel = (a.dt||'').slice(0,10) + (a.hora?' '+a.hora:'');
-    pontos.push({x: dtLabel, y:+(bi+lucroTotal).toFixed(2)});
+
+  bets.forEach(function(a){
+    var res = a.res || 'Pendente';
+    var un = parseFloat(a.un || 0) || 0;
+    var stk = parseFloat(a.stk || 0) || 0;
+
+    if (res === 'Pendente') {
+      pend++;
+      serie.push(saldo);
+      return;
+    }
+
+    var lucro = 0;
+    if (res === 'Win') {
+      lucro = un * unit;
+      wins++;
+    } else if (res === 'Loss') {
+      lucro = -un * unit;
+      losses++;
+    } else if (res === 'HalfWin') {
+      lucro = (un * unit) / 2;
+      halfWins++;
+    } else if (res === 'HalfLoss') {
+      lucro = -(un * unit) / 2;
+      halfLosses++;
+    } else if (res === 'Cashout') {
+      cashouts++;
+      var co = parseFloat(a.co || 0) || 0;
+      if (co > 0) {
+        lucro = co - stk;
+      } else {
+        lucro = 0;
+      }
+    } else if (res === 'Anulada') {
+      anuladas++;
+      lucro = 0;
+    }
+
+    saldo += lucro;
+    lucroTotal += lucro;
+    serie.push(saldo);
   });
-  var bancaAtual = bi + lucroTotal;
-  var varPct = bi ? ((bancaAtual-bi)/bi)*100 : 0;
-  var unidades = unit ? lucroTotal/unit : 0;
-  var unBanca  = unit ? bancaAtual/unit : 0;
-  function sig(v){ return v>=0?'+':''; }
-  function kb(l,v,s,cor){
-    return '<div style="background:var(--sur2);border:1px solid var(--bor);border-radius:.75rem;padding:.875rem 1rem">'
-      +'<div style="font-size:.7rem;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem">'+l+'</div>'
-      +'<div style="font-size:1.25rem;font-weight:700;color:'+cor+'">'+v+'</div>'
-      +'<div style="font-size:.7rem;color:var(--mu);margin-top:.2rem">'+s+'</div></div>';
-  }
-  document.getElementById('bancaKpis').innerHTML =
-    kb('Banca Inicial',  'R$'+bi.toFixed(2),                      'R$'+unit+' = 1 unidade',                    'var(--tx)')+
-    kb('Banca Atual',    'R$'+bancaAtual.toFixed(2),              unBanca.toFixed(1)+' unidades',               bancaAtual>=bi?'var(--ok)':'var(--er)')+
-    kb('Lucro / Perda',  sig(lucroTotal)+'R$'+Math.abs(lucroTotal).toFixed(2), sig(unidades)+unidades.toFixed(2)+'u', lucroTotal>=0?'var(--ok)':'var(--er)')+
-    kb('Variação %',     sig(varPct)+varPct.toFixed(2)+'%',       apostas.length+' apostas resolvidas',         varPct>=0?'var(--ok)':'var(--er)');
-  var labels = pontos.map(function(p){return p.x;});
-  var vals   = pontos.map(function(p){return p.y;});
 
-  if (_bancaChart){_bancaChart.destroy();_bancaChart=null;}
-  var ctx = document.getElementById('bancaChart');
-  if (!ctx) return;
+  var roi = bancaInicial > 0 ? (lucroTotal / bancaInicial) * 100 : 0;
+  var drawdown = 0;
+  var pico = serie[0] || bancaInicial;
 
-  var ptColors = vals.map(function(v,i){
-    return i===0 ? '#818cf8' : v >= vals[i-1] ? '#6daa45' : '#d163a7';
+  serie.forEach(function(v){
+    if (v > pico) pico = v;
+    var dd = pico > 0 ? ((pico - v) / pico) * 100 : 0;
+    if (dd > drawdown) drawdown = dd;
   });
 
-  _bancaChart = new Chart(ctx, {
+  box.innerHTML = `
+    <div style="background:var(--sur2);border:1px solid var(--bor);border-radius:.6rem;padding:1rem">
+      <div style="font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem">Saldo Atual</div>
+      <div style="font-size:1.4rem;font-weight:700;font-family:var(--mono)">R$ ${saldo.toFixed(2)}</div>
+      <div style="font-size:.75rem;color:${lucroTotal >= 0 ? 'var(--ok)' : 'var(--er)'};margin-top:.25rem">
+        ${lucroTotal >= 0 ? '+' : ''}${lucroTotal.toFixed(2)} desde o início
+      </div>
+    </div>
+    <div style="background:var(--sur2);border:1px solid var(--bor);border-radius:.6rem;padding:1rem">
+      <div style="font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem">ROI</div>
+      <div style="font-size:1.4rem;font-weight:700;font-family:var(--mono)">${roi.toFixed(2)}%</div>
+      <div style="font-size:.75rem;color:var(--mu);margin-top:.25rem">Sobre a banca inicial</div>
+    </div>
+    <div style="background:var(--sur2);border:1px solid var(--bor);border-radius:.6rem;padding:1rem">
+      <div style="font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem">Apostas</div>
+      <div style="font-size:1.4rem;font-weight:700;font-family:var(--mono)">${bets.length}</div>
+      <div style="font-size:.75rem;color:var(--mu);margin-top:.25rem">${wins}W · ${losses}L · ${halfWins}HW · ${halfLosses}HL</div>
+    </div>
+    <div style="background:var(--sur2);border:1px solid var(--bor);border-radius:.6rem;padding:1rem">
+      <div style="font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem">Drawdown</div>
+      <div style="font-size:1.4rem;font-weight:700;font-family:var(--mono)">${drawdown.toFixed(2)}%</div>
+      <div style="font-size:.75rem;color:var(--mu);margin-top:.25rem">${pend} pendentes</div>
+    </div>
+  `;
+
+  if (window.bancaChartInstance) window.bancaChartInstance.destroy();
+
+  window.bancaChartInstance = new Chart(canvas, {
     type: 'line',
     data: {
-      labels: labels,
+      labels: serie.map(function(_, i){ return i; }),
       datasets: [{
-        label: 'Banca (R$)',
-        data: vals,
-        borderColor: '#818cf8',
-        backgroundColor: 'rgba(129,140,248,0.10)',
-        borderWidth: 2.5,
-        pointRadius: vals.length <= 40 ? 5 : 3,
-        pointBackgroundColor: ptColors,
-        pointBorderColor: 'transparent',
+        label: 'Banca',
+        data: serie,
+        borderColor: 'rgba(79,152,163,1)',
+        backgroundColor: 'rgba(79,152,163,.15)',
         fill: true,
-        tension: 0.35
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
       }]
     },
     options: {
@@ -1725,18 +1889,22 @@ else if (a.res==='Cashout')  pl = (parseFloat(a.co)||0) - s;
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: {
-          label: function(c) { return ' Banca: R$' + c.parsed.y.toFixed(2); }
-        }}
+        tooltip: {
+          callbacks: {
+            label: function(ctx){
+              return 'R$ ' + Number(ctx.parsed.y).toFixed(2);
+            }
+          }
+        }
       },
       scales: {
-        x: {
-          ticks: { maxRotation: 45, font: { size: 9 }, color: '#666', maxTicksLimit: 20 },
-          grid: { color: 'rgba(128,128,128,.07)' }
-        },
+        x: { display: false },
         y: {
-          ticks: { color: '#888', callback: function(v){ return 'R$' + v; } },
-          grid: { color: 'rgba(128,128,128,.1)' }
+          ticks: {
+            callback: function(v){
+              return 'R$ ' + v;
+            }
+          }
         }
       }
     }

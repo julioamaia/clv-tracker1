@@ -73,20 +73,30 @@ thead th{padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;l
 tbody td{padding:.5rem .75rem;border-bottom:1px solid var(--bor);vertical-align:middle;overflow:hidden}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:var(--sur2)}
-/* Column widths - fixed layout */
-.col-dt   { width:110px; }
-.col-jogo { width:160px; }
-.col-mkt  { width:140px; }
-.col-esp  { width:70px; }
-.col-casa { width:80px; }
-.col-tip  { width:90px; }
-.col-oe   { width:60px; }
-.col-of   { width:75px; }
-.col-clv  { width:68px; }
-.col-stk  { width:60px; }
-.col-un   { width:45px; }
-.col-res  { width:130px; }
-.col-act  { width:100px; }
+/* Column widths - fixed layout (overridden by JS drag) */
+.col-dt   { width:110px; min-width:80px; }
+.col-jogo { width:160px; min-width:80px; }
+.col-mkt  { width:140px; min-width:80px; }
+.col-esp  { width:70px;  min-width:50px; }
+.col-casa { width:80px;  min-width:50px; }
+.col-tip  { width:90px;  min-width:50px; }
+.col-oe   { width:60px;  min-width:45px; }
+.col-of   { width:75px;  min-width:45px; }
+.col-clv  { width:68px;  min-width:45px; }
+.col-stk  { width:60px;  min-width:45px; }
+.col-un   { width:45px;  min-width:35px; }
+.col-res  { width:130px; min-width:90px; }
+.col-act  { width:80px;  min-width:60px; }
+/* Resize handle on th */
+thead th { position:relative; }
+.col-resize-handle {
+  position:absolute; right:0; top:0; bottom:0;
+  width:5px; cursor:col-resize; z-index:10;
+  background:transparent;
+  transition: background .15s;
+}
+.col-resize-handle:hover,
+.col-resize-handle.dragging { background: var(--pri); opacity:.6; }
 .cp{color:var(--ok);font-family:var(--mono);font-weight:600}
 .cn{color:var(--er);font-family:var(--mono);font-weight:600}
 .cu{color:var(--mu);font-family:var(--mono)}
@@ -300,12 +310,13 @@ function goTo(p) {
         <input type="date" class="fsl" id="fd2" onchange="renderTabela()" title="Data fim" style="cursor:pointer">
         <button class="btn btn-s" onclick="clearDateFilters()" style="padding:.4rem .6rem;font-size:.75rem">✕ Datas</button>
         <span class="tcnt" id="tcnt"></span>
+        <button class="btn btn-g" onclick="resetColWidths()" title="Resetar largura das colunas" style="font-size:.72rem;padding:.3rem .6rem">↔ Reset cols</button>
         <button class="btn btn-s" onclick="delAll()" style="margin-left:auto;font-size:.75rem;padding:.35rem .75rem;color:var(--er);border-color:var(--er)">🗑 Excluir todas</button>
       </div>
       <div class="tcard">
         <div class="tscr">
           <table>
-            <thead><tr><th class="col-dt" id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th><th class="col-jogo">Jogo</th><th class="col-mkt">Mercado</th><th class="col-esp">Esporte</th><th class="col-casa">Casa</th><th class="col-tip">Tipster</th><th class="col-oe">Odd Ent.</th><th class="col-of">Odd Fech.</th><th class="col-clv">CLV</th><th class="col-stk">Stake</th><th class="col-un">Un.</th><th class="col-res">Resultado</th><th class="col-act"></th></tr></thead>
+            <thead><tr><th class="col-dt" data-col="dt" id="th-dt" onclick="toggleSort()" style="cursor:pointer;user-select:none">Data <span id="sort-icon">↓</span></th><th class="col-jogo" data-col="jogo">Jogo</th><th class="col-mkt" data-col="mkt">Mercado</th><th class="col-esp" data-col="esp">Esporte</th><th class="col-casa" data-col="casa">Casa</th><th class="col-tip" data-col="tip">Tipster</th><th class="col-oe" data-col="oe">Odd Ent.</th><th class="col-of" data-col="of">Odd Fech.</th><th class="col-clv" data-col="clv">CLV</th><th class="col-stk" data-col="stk">Stake</th><th class="col-un" data-col="un">Un.</th><th class="col-res" data-col="res">Resultado</th><th class="col-act" data-col="act"></th></tr></thead>
             <tbody id="tbody"></tbody>
           </table>
         </div>
@@ -376,6 +387,13 @@ function goTo(p) {
         </div>
 
         <!-- STATUS SINCRONIZACAO -->
+                <!-- DEBUG: show last record keys from Gist -->
+        <div style="background:var(--sur2);border:1px solid var(--bor);border-radius:.625rem;padding:.875rem 1rem;margin-bottom:1.25rem">
+          <div style="font-size:.75rem;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem">🔍 Debug — Campos do último registro (bot)</div>
+          <div id="debugFields" style="font-family:var(--mono);font-size:.7rem;color:var(--mu);white-space:pre-wrap;max-height:120px;overflow-y:auto">Aguardando sync...</div>
+          <div style="font-size:.7rem;color:var(--mu);margin-top:.375rem">Mostra os campos exatos que o bot enviou para o Gist</div>
+        </div>
+
         <div id="syncStatus" style="font-size:.8125rem;color:var(--mu);padding:.625rem;background:var(--sur2);border-radius:.5rem;display:flex;align-items:center;gap:.5rem">
           <span id="syncDot" style="width:8px;height:8px;border-radius:50%;background:var(--mu);display:inline-block;flex-shrink:0"></span>
           <span id="syncMsg">Aguardando configuração do Gist...</span>
@@ -526,10 +544,24 @@ var CH = {};
 
 // Normalize bet fields from bot (handles different casing/names from Telegram bot)
 function normalizeBet(a) {
-  // Tipster: bot may send as Tipster, tipster, tipsterName, tipster_name, etc.
-  if (!a.tipster) {
-    a.tipster = a.Tipster || a.tipsterName || a.tipster_name || a.TIPSTER || '';
+  // Tipster: aggressive scan — check every known variation AND full key scan
+  var tipsterVal = '';
+  // Direct known field names first
+  var tipsterKeys = ['tipster','Tipster','TIPSTER','tipsterName','tipster_name',
+    'tipper','Tipper','tip','TIP','quem','Quem','fonte','Fonte','analyst','Analyst',
+    'author','Author','picker','Picker','capper','Capper'];
+  for (var _ti = 0; _ti < tipsterKeys.length; _ti++) {
+    if (a[tipsterKeys[_ti]]) { tipsterVal = String(a[tipsterKeys[_ti]]); break; }
   }
+  // If still empty, scan ALL keys for anything tipster-like
+  if (!tipsterVal) {
+    Object.keys(a).forEach(function(k) {
+      if (!tipsterVal && /tipster|tipper|quem|fonte|picker|capper/i.test(k) && a[k]) {
+        tipsterVal = String(a[k]);
+      }
+    });
+  }
+  a.tipster = tipsterVal;
   // Odd entrada: bot may send as oe, odd, odd_entrada, oddEntrada, Odd
   if (!a.oe) {
     a.oe = a.odd || a.odd_entrada || a.oddEntrada || a.Odd || a.OE || null;
@@ -1929,6 +1961,90 @@ if (savedKey) {
 }
 renderDash();
 fillFilters();
+
+// ── COLUMN RESIZING ──────────────────────────────────────────
+(function() {
+  var COL_KEY = 'clv_col_widths';
+
+  // Save/load column widths
+  window.resetColWidths = function() {
+    localStorage.removeItem(COL_KEY);
+    var ths = document.querySelectorAll('#pg-apostas thead th');
+    ths.forEach(function(th) { th.style.width = ''; });
+  };
+
+  function saveColWidths() {
+    var ths = document.querySelectorAll('#pg-apostas thead th');
+    var widths = {};
+    ths.forEach(function(th) {
+      if (th.dataset.col) widths[th.dataset.col] = th.offsetWidth;
+    });
+    localStorage.setItem(COL_KEY, JSON.stringify(widths));
+  }
+
+  function loadColWidths() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(COL_KEY) || '{}');
+      var ths = document.querySelectorAll('#pg-apostas thead th');
+      ths.forEach(function(th) {
+        if (th.dataset.col && saved[th.dataset.col]) {
+          th.style.width = saved[th.dataset.col] + 'px';
+        }
+      });
+    } catch(e) {}
+  }
+
+  function initResizable() {
+    var ths = document.querySelectorAll('#pg-apostas thead th');
+    ths.forEach(function(th, idx) {
+      // Add data-col attribute for storage
+      th.dataset.col = th.className.replace('col-','').split(' ')[0] || idx;
+      // Skip last column (actions)
+      if (idx === ths.length - 1) return;
+      // Create handle
+      var handle = document.createElement('div');
+      handle.className = 'col-resize-handle';
+      handle.title = 'Arraste para redimensionar';
+      th.appendChild(handle);
+
+      var startX, startW;
+      handle.addEventListener('mousedown', function(e) {
+        startX = e.pageX;
+        startW = th.offsetWidth;
+        handle.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+
+        function onMove(e) {
+          var newW = Math.max(parseInt(th.style.minWidth)||35, startW + (e.pageX - startX));
+          th.style.width = newW + 'px';
+        }
+        function onUp() {
+          handle.classList.remove('dragging');
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          saveColWidths();
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+        e.preventDefault();
+      });
+    });
+    loadColWidths();
+  }
+
+  // Init after a brief delay to ensure DOM is ready
+  setTimeout(initResizable, 300);
+
+  // Re-init on tab switch to apostas
+  var _origGoTo = window.goTo;
+  window.goTo = function(p) {
+    _origGoTo(p);
+    if (p === 'apostas') setTimeout(initResizable, 100);
+  };
+})();
 </script>
   <!-- BOTTOM NAV MOBILE -->
   <div class="bnav" id="bnav">
@@ -1946,7 +2062,11 @@ fillFilters();
     </button>
   </div>
   <script>
-setInterval(async () => {
+var _syncEtag = '';
+var _syncLastUpdated = '';
+var _syncErrors = 0;
+
+async function doSync() {
   const gistId    = localStorage.getItem('gistId');
   const gistToken = localStorage.getItem('gistToken');
   const dot = document.getElementById('syncDot');
@@ -1957,32 +2077,84 @@ setInterval(async () => {
     return;
   }
   try {
-    const resp = await fetch(`https://api.github.com/gists/${gistId}`, {
-      headers: { 'Authorization': `token ${gistToken}` }
-    });
-    const data = await resp.json();
-    const file = data.files['clv-data.json'];
-    if (!file) return;
-    const remoto = JSON.parse(file.content).map(normalizeBet);
+    // Use ETag for conditional request — avoids re-parsing if nothing changed
+    const headers = { 'Authorization': 'token ' + gistToken };
+    if (_syncEtag) headers['If-None-Match'] = _syncEtag;
+    const resp = await fetch('https://api.github.com/gists/' + gistId, { headers });
     const now = new Date().toLocaleTimeString('pt-BR');
-    if (JSON.stringify(remoto) !== JSON.stringify(D)) {
+    _syncErrors = 0;
+
+    // 304 = nothing changed on Gist side
+    if (resp.status === 304) {
+      if(dot) dot.style.background = 'var(--ok)';
+      if(msg) msg.textContent = '✓ Atualizado · ' + now;
+      return;
+    }
+
+    // Save ETag for next request
+    const etag = resp.headers.get('ETag');
+    if (etag) _syncEtag = etag;
+
+    const data = await resp.json();
+    if (!data || !data.files) return;
+
+    // Check updated_at first — faster than parsing JSON
+    const gistUpdated = data.updated_at || '';
+    if (gistUpdated && gistUpdated === _syncLastUpdated) {
+      if(dot) dot.style.background = 'var(--ok)';
+      if(msg) msg.textContent = '✓ Sincronizado · ' + now;
+      return;
+    }
+
+    const file = data.files['clv-data.json'];
+    if (!file || !file.content) return;
+    const remoto = JSON.parse(file.content).map(normalizeBet);
+
+    // Compare length first (fast), then content if needed
+    const changed = remoto.length !== D.length ||
+      JSON.stringify(remoto.map(function(x){return x.id;})) !== JSON.stringify(D.map(function(x){return x.id;})) ||
+      JSON.stringify(remoto) !== JSON.stringify(D);
+
+    // Update debug panel with raw keys from the latest record
+    if (remoto.length > 0) {
+      var dbg = document.getElementById('debugFields');
+      if (dbg) {
+        // Show raw keys (before normalization) from original parsed data
+        try {
+          var rawArr = JSON.parse(file.content);
+          var lastRaw = rawArr[rawArr.length - 1] || {};
+          var lines = Object.keys(lastRaw).map(function(k) {
+            return k + ': ' + JSON.stringify(lastRaw[k]);
+          });
+          dbg.textContent = lines.join('\n');
+        } catch(e) { dbg.textContent = 'Erro ao parsear: ' + e.message; }
+      }
+    }
+
+    if (changed) {
       D = remoto;
+      _syncLastUpdated = gistUpdated;
       sv();
       fillFilters();
       renderTabela();
       renderDash();
-      if(dot) dot.style.background = 'var(--ok)';
-      if(msg) msg.textContent = '✓ Dados atualizados pelo bot às ' + now;
-      console.log('Dados sincronizados do Gist!');
+      if(dot) { dot.style.background = 'var(--ok)'; dot.style.boxShadow = '0 0 6px var(--ok)'; setTimeout(function(){ if(dot) dot.style.boxShadow=''; }, 2000); }
+      if(msg) msg.textContent = '✓ Novas apostas do bot às ' + now + ' (' + remoto.length + ' total)';
     } else {
+      _syncLastUpdated = gistUpdated;
       if(dot) dot.style.background = 'var(--ok)';
-      if(msg) msg.textContent = '✓ Sincronizado · última verificação às ' + now;
+      if(msg) msg.textContent = '✓ Sincronizado · ' + now;
     }
   } catch(e) {
-    if(dot) dot.style.background = 'var(--er)';
-    if(msg) msg.textContent = '✗ Erro de sincronização: ' + e.message;
+    _syncErrors++;
+    if(dot) dot.style.background = _syncErrors > 3 ? 'var(--er)' : 'var(--wa)';
+    if(msg) msg.textContent = '⚠ Erro de sync: ' + e.message;
   }
-}, 10000);
+}
+
+// Run immediately on page load, then every 5 seconds
+doSync();
+setInterval(doSync, 5000);
 </script>
 <!-- Hidden stubs for scanner backward-compat (scanner removed, bot handles reading) -->
 <div style="display:none" aria-hidden="true">

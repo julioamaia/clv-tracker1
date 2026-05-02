@@ -195,6 +195,73 @@ tr:hover td.col-act .ra{opacity:1}
 .rtab:hover,.rtab.on{background:var(--pri);color:#fff;border-color:var(--pri);}
 .rtab .rcnt{background:rgba(255,255,255,.22);border-radius:999px;padding:0 6px;font-size:.68rem;font-weight:700;min-width:18px;text-align:center;}
 .rtab:not(.on) .rcnt{background:var(--sur2);color:var(--mu);}
+
+/* ── DASHBOARD NOVO ───────────────────────────────── */
+.dash-row{display:grid;gap:.875rem;margin-bottom:1.125rem}
+.dash-row-4{grid-template-columns:repeat(4,1fr)}
+.dash-row-3{grid-template-columns:repeat(3,1fr)}
+.dash-row-2{grid-template-columns:1fr 1fr}
+@media(max-width:900px){.dash-row-4{grid-template-columns:1fr 1fr}.dash-row-3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.dash-row-4,.dash-row-3,.dash-row-2{grid-template-columns:1fr}}
+.dkpi{background:var(--sur);border:1px solid var(--bor);border-radius:.875rem;padding:1.125rem 1.25rem;position:relative;overflow:hidden}
+.dkpi-ico{position:absolute;right:1rem;top:1rem;font-size:1.1rem;opacity:.3;pointer-events:none}
+.dkpi-lbl{font-size:.63rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);margin-bottom:.25rem}
+.dkpi-val{font-size:1.45rem;font-weight:700;font-family:var(--mono);letter-spacing:-.02em;line-height:1.1}
+.dkpi-sub{font-size:.7rem;color:var(--mu);margin-top:.25rem}
+.dkpi-bar{height:4px;background:var(--sur2);border-radius:9px;margin-top:.625rem;overflow:hidden}
+.dkpi-bar span{display:block;height:4px;border-radius:9px;transition:width .5s ease}
+.stitle{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);margin-bottom:.875rem;display:flex;align-items:center;gap:.5rem}
+.stitle::after{content:'';flex:1;height:1px;background:var(--bor)}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--bor)}
+.sum-row:last-child{border-bottom:none}
+.sum-badge{font-size:.63rem;padding:.1rem .4rem;border-radius:4px;background:var(--sur2);color:var(--mu);margin-left:.4rem}
+.dual-chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:700px){.dual-chart-grid{grid-template-columns:1fr}}
+
+/* ── TIPSTER CARDS EXPANSÍVEIS ────────────────────── */
+.tip-card{background:var(--sur2);border:1px solid var(--bor);border-radius:.625rem;overflow:hidden;margin-bottom:.5rem;transition:border-color .15s}
+.tip-card:last-child{margin-bottom:0}
+.tip-card.open{border-color:var(--pri)}
+.tip-head{display:flex;justify-content:space-between;align-items:center;padding:.75rem;cursor:pointer;user-select:none;gap:.5rem}
+.tip-head:hover{background:rgba(79,152,163,.07)}
+.tip-arrow{font-size:.7rem;color:var(--mu);transition:transform .22s;flex-shrink:0}
+.tip-card.open .tip-arrow{transform:rotate(180deg)}
+.tip-body{max-height:0;overflow:hidden;transition:max-height .32s ease}
+.tip-card.open .tip-body{max-height:600px}
+.tip-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;padding:.125rem .75rem .625rem}
+.tip-stat{background:var(--sur);border:1px solid var(--bor);border-radius:.45rem;padding:.4rem .6rem;text-align:center}
+.tip-stat-l{font-size:.6rem;color:var(--mu);text-transform:uppercase;letter-spacing:.05em}
+.tip-stat-v{font-size:.85rem;font-weight:700;font-family:var(--mono);margin-top:.15rem}
+.tip-bets-wrap{border-top:1px solid var(--bor);padding:.5rem .75rem .625rem}
+.tip-bets-title{font-size:.63rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-bottom:.375rem}
+.tip-bet-row{display:grid;grid-template-columns:52px 1fr 72px 60px;gap:.25rem;align-items:center;padding:.2rem 0;border-bottom:1px solid rgba(128,128,128,.07);font-size:.72rem}
+.tip-bet-row:last-child{border-bottom:none}
+.tip-pend-note{background:rgba(232,175,52,.1);border:1px solid rgba(232,175,52,.2);border-radius:.375rem;padding:.3rem .75rem;font-size:.72rem;color:var(--wa);margin:.25rem .75rem .5rem;display:flex;justify-content:space-between}
+
+/* ── CASAS DE APOSTAS ─────────────────────────────── */
+.bk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+@media(max-width:960px){.bk-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.bk-grid{grid-template-columns:1fr}}
+.bk-card{background:var(--sur);border:1px solid var(--bor);border-radius:.875rem;padding:1.125rem 1.25rem}
+.bk-card.bk-pos{border-color:rgba(109,170,69,.3)}
+.bk-card.bk-neg{border-color:rgba(209,99,167,.3)}
+.bk-name{font-size:.9rem;font-weight:700;margin-bottom:.625rem;display:flex;justify-content:space-between;align-items:center}
+.bk-saldo{font-size:1.35rem;font-weight:700;font-family:var(--mono)}
+.bk-lbl{font-size:.61rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-bottom:.15rem}
+.bk-mini-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.375rem;margin:.5rem 0}
+.bk-mini{background:var(--sur2);border:1px solid var(--bor);border-radius:.4rem;padding:.325rem .5rem;text-align:center}
+.bk-mini-l{font-size:.58rem;color:var(--mu);text-transform:uppercase;letter-spacing:.04em}
+.bk-mini-v{font-size:.78rem;font-weight:700;font-family:var(--mono);margin-top:.1rem}
+.bk-pill{display:inline-flex;align-items:center;padding:.1rem .45rem;border-radius:999px;font-size:.65rem;font-weight:600;margin-right:.3rem}
+.bk-pill-g{background:rgba(109,170,69,.15);color:var(--ok)}
+.bk-pill-r{background:rgba(209,99,167,.15);color:var(--er)}
+.bk-pill-y{background:rgba(232,175,52,.15);color:var(--wa)}
+.bk-pend-row{background:rgba(232,175,52,.08);border:1px solid rgba(232,175,52,.2);border-radius:.375rem;padding:.3rem .6rem;font-size:.7rem;color:var(--wa);display:flex;justify-content:space-between;margin:.4rem 0}
+.bk-add-card{background:var(--sur);border:2px dashed var(--bor);border-radius:.875rem;padding:1.5rem;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);font-size:.82rem;gap:.5rem;transition:border-color .15s,color .15s;min-height:80px}
+.bk-add-card:hover{border-color:var(--pri);color:var(--pri)}
+.bk-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:997;opacity:0;pointer-events:none;transition:opacity .18s}
+.bk-modal-bg.on{opacity:1;pointer-events:all}
+.bk-modal{background:var(--sur);border:1px solid var(--bor);border-radius:.875rem;padding:1.5rem;width:100%;max-width:400px}
 </style>
 
 <!-- goTo carregado ANTES de tudo: navegação nunca falha -->
@@ -204,20 +271,40 @@ function bnavUpdate(p) {
   btns.forEach(function(b){ b.classList.toggle('on', b.dataset.p === p); });
 }
 function goTo(p) {
-  bnavUpdate(p);
+  // Hide all pages
   var ps = document.querySelectorAll('.pg');
-  for (var i=0;i<ps.length;i++) ps[i].style.display='none';
-  var el = document.getElementById('pg-'+p);
-  if (el) el.style.display='block';
-  if (p === 'banca') renderBanca();
+  for (var i = 0; i < ps.length; i++) {
+    ps[i].style.display = 'none';
+    ps[i].classList.remove('on');
+  }
+  // Show target
+  var el = document.getElementById('pg-' + p);
+  if (el) { el.style.display = 'block'; el.classList.add('on'); }
+
+  // Update sidebar buttons
   var bs = document.querySelectorAll('.nb');
-  for (var j=0;j<bs.length;j++) bs[j].classList.toggle('on', bs[j].dataset.p===p);
-  var ts={dashboard:'Dashboard',apostas:'Apostas',analytics:'Analytics',config:'Configurações',csv:'Importar CSV'};
+  for (var j = 0; j < bs.length; j++) {
+    bs[j].classList.toggle('on', bs[j].dataset.p === p);
+  }
+
+  // Update bottom nav
+  bnavUpdate(p);
+
+  // Update page title
+  var ts = {dashboard:'Dashboard',apostas:'Apostas',analytics:'Analytics',
+            casas:'Casas de Apostas',banca:'Banca',config:'Configurações',csv:'Importar CSV'};
   var te = document.getElementById('ptitle');
-  if (te) te.textContent = ts[p]||p;
-  if (p==='dashboard'  && typeof renderDash==='function')     renderDash();
-  if (p==='apostas'    && typeof renderTabela==='function')   { fillFilters(); renderTabela(); }
-  if (p==='analytics'  && typeof renderAnalytics==='function') renderAnalytics();
+  if (te) te.textContent = ts[p] || p;
+
+  // Run page-specific render
+  if (p === 'dashboard'  && typeof renderDash      === 'function') renderDash();
+  if (p === 'apostas'    && typeof renderTabela     === 'function') { fillFilters(); renderTabela(); }
+  if (p === 'analytics'  && typeof renderAnalytics  === 'function') renderAnalytics();
+  if (p === 'banca'      && typeof renderBanca       === 'function') renderBanca();
+  if (p === 'casas'      && typeof renderCasas       === 'function') renderCasas();
+  if (p === 'apostas'    && typeof window._initResizable === 'function') {
+    setTimeout(window._initResizable, 120);
+  }
 }
 </script>
 </head>
@@ -240,6 +327,7 @@ function goTo(p) {
     <button class="nb"    data-p="apostas"   onclick="goTo('apostas')">📋 Apostas</button>
     <button class="nb"    data-p="analytics" onclick="goTo('analytics')">📈 Analytics</button>
     <button class="nb"    data-p="banca"     onclick="goTo('banca')">💰 Banca</button>
+    <button class="nb"    data-p="casas"     onclick="goTo('casas')">🏦 Casas de Apostas</button>
     <button class="nb"    data-p="config"    onclick="goTo('config')">⚙️ Configurações</button>
     <button class="nb"    data-p="csv"       onclick="goTo('csv')">⬆ Importar CSV</button>
   </nav>
@@ -260,21 +348,69 @@ function goTo(p) {
   <div class="scroll">
 
     <!-- DASHBOARD -->
-    <section class="pg on" id="pg-dashboard">
-      <div class="kgrid" id="kgrid"></div>
-      <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;gap:.5rem">
-        <button id="btnAutoRes" class="btn btn-s" onclick="autoResultados()" style="font-size:.8rem;display:flex;align-items:center;gap:.4rem">
-          🔄 Atualizar Resultados
-        </button>
+    <section class="pg" id="pg-dashboard" style="display:block">
+
+      <!-- ROW 1: 4 KPIs principais -->
+      <div class="dash-row dash-row-4" id="dash-r1" style="margin-bottom:1rem"></div>
+
+      <!-- ROW 2: 3 KPIs secundários -->
+      <div class="dash-row dash-row-3" id="dash-r2" style="margin-bottom:1rem"></div>
+
+      <!-- Taxa de Acerto -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="stitle">🏆 Taxa de Acerto</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+          <span style="font-size:.8rem;color:var(--mu)">Taxa atual</span>
+          <span style="font-size:.85rem;font-weight:700;font-family:var(--mono)" id="d-wr-pct">0.0%</span>
+        </div>
+        <div class="dkpi-bar"><span id="d-wr-bar" style="background:var(--ok);width:0%"></span></div>
+        <div style="font-size:.72rem;color:var(--mu);margin-top:.4rem" id="d-wr-sub"></div>
+      </div>
+
+      <!-- ROW 3: Lucro acumulado (linha + barras) -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="stitle">📈 Lucro Diário e Acumulado</div>
+        <div class="dual-chart-grid">
+          <div>
+            <div style="font-size:.68rem;color:var(--mu);margin-bottom:.375rem;font-weight:600">Linha Acumulada</div>
+            <div style="position:relative;height:180px"><canvas id="c-lucro-line"></canvas></div>
+          </div>
+          <div>
+            <div style="font-size:.68rem;color:var(--mu);margin-bottom:.375rem;font-weight:600">Barras por Dia</div>
+            <div style="position:relative;height:180px"><canvas id="c-lucro-bar"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 4: Tipster expandable + Resumos -->
+      <div class="dash-row dash-row-2" style="margin-bottom:1rem">
+        <div class="card">
+          <div class="stitle">👤 Lucro por Tipster</div>
+          <div id="d-tipsters"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div class="card">
+            <div class="stitle">⚽ Por Esporte</div>
+            <div id="d-esportes"></div>
+          </div>
+          <div class="card">
+            <div class="stitle">🏠 Por Casa</div>
+            <div id="d-casas"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 5: CLV charts (mantidos do original) + botão atualizar -->
+      <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem">
+        <button id="btnAutoRes" class="btn btn-s" onclick="autoResultados()" style="font-size:.8rem">🔄 Atualizar Resultados</button>
       </div>
       <div class="cgrid">
         <div class="card"><div class="ct">CLV médio ao longo do tempo</div><div class="cw"><canvas id="c1"></canvas></div></div>
         <div class="card"><div class="ct">CLV médio por esporte</div><div class="cw"><canvas id="c2"></canvas></div></div>
         <div class="card"><div class="ct">Distribuição de CLV</div><div class="cw"><canvas id="c3"></canvas></div></div>
-        
       </div>
 
-      <!-- CALENDÁRIO MENSAL -->
+      <!-- CALENDÁRIO MENSAL (mantido do original) -->
       <div class="card" style="margin-top:1.5rem">
         <div class="ct" style="display:flex;align-items:center;justify-content:space-between">
           <span>📅 Acompanhamento Mensal</span>
@@ -400,6 +536,82 @@ function goTo(p) {
         </div>
       </div>
     </section>
+
+    <!-- CASAS DE APOSTAS -->
+    <section class="pg" id="pg-casas" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem">
+        <p style="font-size:.8rem;color:var(--mu);margin:0">Gerencie o saldo de cada casa separadamente. O stake das apostas pendentes é descontado do disponível.</p>
+        <button class="btn btn-p" onclick="openBkModal(null)">+ Adicionar Casa</button>
+      </div>
+
+      <!-- KPIs globais -->
+      <div class="dash-row dash-row-4" id="casas-kpis" style="margin-bottom:1.25rem"></div>
+
+      <!-- Cards das casas -->
+      <div class="bk-grid" id="bk-grid"></div>
+
+      <!-- Histórico por casa -->
+      <div class="card">
+        <div class="stitle">📋 Apostas por Casa</div>
+        <div style="display:flex;gap:.5rem;margin-bottom:.875rem;flex-wrap:wrap">
+          <select class="fsl" id="bk-f-casa" onchange="renderBkHistory()" style="min-width:140px">
+            <option value="">Todas as casas</option>
+          </select>
+          <select class="fsl" id="bk-f-res" onchange="renderBkHistory()">
+            <option value="">Todos resultados</option>
+            <option>Pendente</option><option>Win</option><option>Loss</option>
+            <option>Meia Ganha</option><option>Meia Perdida</option><option>Cashout</option><option>Anulada</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:.75rem">
+            <thead>
+              <tr>
+                <th style="padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor);white-space:nowrap">Data</th>
+                <th style="padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor)">Jogo / Mercado</th>
+                <th style="padding:.5rem .75rem;text-align:left;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor);white-space:nowrap">Casa</th>
+                <th style="padding:.5rem .75rem;text-align:right;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor);white-space:nowrap">Stake</th>
+                <th style="padding:.5rem .75rem;text-align:right;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor);white-space:nowrap">P/L</th>
+                <th style="padding:.5rem .75rem;text-align:center;font-size:.63rem;font-weight:600;text-transform:uppercase;color:var(--mu);background:var(--sur2);border-bottom:1px solid var(--bor);white-space:nowrap">Resultado</th>
+              </tr>
+            </thead>
+            <tbody id="bk-hist-body"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="bk-hist-empty" style="display:none">Nenhuma aposta encontrada</div>
+      </div>
+    </section>
+
+    <!-- MODAL NOVA / EDITAR CASA -->
+    <div class="bk-modal-bg" id="bk-modal-bg" onclick="if(event.target===this)closeBkModal()">
+      <div class="bk-modal">
+        <h2 style="font-size:1rem;font-weight:700;margin-bottom:1rem" id="bk-modal-title">Nova Casa de Apostas</h2>
+        <div style="display:flex;flex-direction:column;gap:.75rem">
+          <div class="fg">
+            <label>Nome da Casa</label>
+            <input type="text" id="bk-f-nome" placeholder="Ex: Bet365" list="bk-dcasa">
+            <datalist id="bk-dcasa">
+              <option>Bet365</option><option>Betano</option><option>Pinnacle</option>
+              <option>Betfair</option><option>1xBet</option><option>KTO</option>
+              <option>Sportingbet</option><option>betnacional</option><option>Blaze</option>
+            </datalist>
+          </div>
+          <div class="fg">
+            <label>Saldo Inicial (R$)</label>
+            <input type="number" id="bk-f-saldo" placeholder="Ex: 300.00" min="0" step="0.01">
+          </div>
+          <div class="fg">
+            <label>Observação (opcional)</label>
+            <input type="text" id="bk-f-obs" placeholder="Ex: conta principal">
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.125rem;padding-top:.875rem;border-top:1px solid var(--bor)">
+          <button class="btn btn-s" onclick="closeBkModal()">Cancelar</button>
+          <button class="btn btn-p" onclick="saveBkModal()">Salvar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- BANCA -->
     <section class="pg" id="pg-banca" style="display:none">
       <div class="card" style="max-width:580px;margin:0 auto">
@@ -689,9 +901,209 @@ function kch(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
 var GO={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(128,128,128,.1)'}},x:{grid:{display:false}}}};
 var GOY={responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(128,128,128,.1)'}},y:{grid:{display:false}}}};
 
+// ── HELPERS ──────────────────────────────────────────────────
+function sg(v) { return v >= 0 ? '+' : ''; }
+
+function calcPL(a) {
+  var s = parseFloat(a.stk) || 0;
+  var oe = parseFloat(a.oe) || 0;
+  var co = parseFloat(a.co) || 0;
+  if (a.res === 'Win')           return (oe - 1) * s;
+  if (a.res === 'Loss')          return -s;
+  if (a.res === 'Meia Ganha')    return (oe - 1) * s / 2;
+  if (a.res === 'Meia Perdida')  return -s / 2;
+  if (a.res === 'Cashout' && co) return co - s;
+  if (a.res === 'Anulada')       return 0;
+  return 0; // Pendente or unknown
+}
+
+
+function tipToggle(id){
+  var el=document.getElementById('tc-'+id);
+  if(el) el.classList.toggle('open');
+}
+
 function renderDash() {
-  kpis('kgrid');
-  renderCal();
+  // ── Stats ──
+  var resolved=D.filter(function(a){return a.res!=='Pendente';});
+  var wins=D.filter(function(a){return a.res==='Win';}).length+D.filter(function(a){return a.res==='Meia Ganha';}).length*0.5;
+  var tot=resolved.length;
+  var luc=0,stk=0;
+  resolved.forEach(function(a){stk+=a.stk||0;luc+=calcPL(a);});
+  var roi=stk?(luc/stk)*100:0;
+  var wr=tot?(wins/tot)*100:0;
+  var unit=getUnit();
+  var bi=getBanca(), bancaAtual=bi+luc, varPct=bi?((bancaAtual-bi)/bi)*100:0;
+  var stkPend=0, nPend=D.filter(function(a){return a.res==='Pendente';}).length;
+  D.filter(function(a){return a.res==='Pendente';}).forEach(function(a){stkPend+=a.stk||0;});
+  var vClv=D.filter(function(a){return a.oe&&a.of;});
+  var cs=vClv.map(function(a){return clv(a.oe,a.of);});
+  var avgClv=cs.length?cs.reduce(function(a,b){return a+b;},0)/cs.length:0;
+
+  // ── ROW 1: 4 KPIs ──
+  function dkpi(ico,lbl,val,sub,col,barW,barCol){
+    var bar=barW!==undefined?'<div class="dkpi-bar"><span style="width:'+Math.min(100,Math.max(0,barW))+'%;background:'+(barCol||'var(--ok)')+'"></span></div>':'';
+    return '<div class="dkpi"><div class="dkpi-ico">'+ico+'</div>'
+      +'<div class="dkpi-lbl">'+lbl+'</div>'
+      +'<div class="dkpi-val" style="color:'+col+'">'+val+'</div>'
+      +'<div class="dkpi-sub">'+sub+'</div>'+bar+'</div>';
+  }
+  var r1=document.getElementById('dash-r1');
+  if(r1) r1.innerHTML=
+    dkpi('📋','Apostas Concluídas',''+tot,D.length+' total · '+nPend+' pendentes','var(--tx)')+
+    dkpi('💰','Total Investido','R$'+stk.toFixed(2),(stk/unit).toFixed(1)+'u apostados','var(--tx)')+
+    dkpi('📈','Lucro Total',sg(luc)+'R$'+Math.abs(luc).toFixed(2),sg(luc/unit)+(luc/unit).toFixed(2)+'u',luc>=0?'var(--ok)':'var(--er)')+
+    dkpi('📊','ROI',sg(roi)+roi.toFixed(2)+'%',tot+' apostas resolvidas',roi>=0?'var(--ok)':'var(--er)');
+
+  // ── ROW 2: 3 KPIs ──
+  var r2=document.getElementById('dash-r2');
+  if(r2) r2.innerHTML=
+    dkpi('🏦','Saldo da Banca',bi?'R$'+bancaAtual.toFixed(2):'Configure →',bi?(sg(varPct)+varPct.toFixed(2)+'% vs inicial'):'Aba Banca',bi?(bancaAtual>=bi?'var(--ok)':'var(--er)'):'var(--mu)')+
+    dkpi('📉','CLV Médio',sg(avgClv)+avgClv.toFixed(2)+'%',cs.length+' apostas com fechamento',avgClv>=0?'var(--ok)':'var(--er)')+
+    dkpi('⏳','Stake Pendente','R$'+stkPend.toFixed(2),nPend+' apostas em aberto','var(--wa)',nPend>0?100:0,'var(--wa)');
+
+  // ── Taxa de Acerto ──
+  var wrBar=document.getElementById('d-wr-bar');
+  var wrPct=document.getElementById('d-wr-pct');
+  var wrSub=document.getElementById('d-wr-sub');
+  if(wrBar){wrBar.style.width=Math.min(100,wr)+'%';wrBar.style.background=wr>=50?'var(--ok)':'var(--wa)';}
+  if(wrPct) wrPct.textContent=wr.toFixed(1)+'%';
+  if(wrSub) wrSub.textContent=wins+' greens / '+tot+' resolvidas';
+
+  // ── Gráficos de lucro acumulado + barras diárias ──
+  kch('c-lucro-line'); kch('c-lucro-bar');
+  var ord=D.filter(function(a){return a.res!=='Pendente';}).slice().sort(function(a,b){
+    return (a.dt+(a.hora||'')).localeCompare(b.dt+(b.hora||''));
+  });
+  if(ord.length){
+    var lb=[],line=[],acc=0,daily={};
+    ord.forEach(function(a){
+      var pl=calcPL(a); acc+=pl;
+      lb.push(a.dt.slice(5)+(a.hora?' '+a.hora.slice(0,5):''));
+      line.push(+acc.toFixed(2));
+      daily[a.dt]=(daily[a.dt]||0)+pl;
+    });
+    var chartBase={responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return ' R$'+c.parsed.y.toFixed(2);}}}},
+      scales:{y:{grid:{color:'rgba(128,128,128,.07)'},ticks:{color:'#888',font:{size:9},callback:function(v){return 'R$'+v;}}},
+              x:{grid:{display:false},ticks:{color:'#888',maxTicksLimit:10,font:{size:9}}}}};
+    var elL=document.getElementById('c-lucro-line');
+    if(elL) CH['c-lucro-line']=new Chart(elL,{type:'line',
+      data:{labels:lb,datasets:[{data:line,borderColor:'#4f98a3',backgroundColor:'rgba(79,152,163,.1)',fill:true,tension:.4,pointRadius:ord.length>40?0:3,borderWidth:2}]},
+      options:chartBase});
+    var dk=Object.keys(daily).sort(), dv=dk.map(function(k){return +daily[k].toFixed(2);});
+    var dc=dv.map(function(v){return v>=0?'rgba(109,170,69,.7)':'rgba(209,99,167,.7)';});
+    var elB=document.getElementById('c-lucro-bar');
+    if(elB) CH['c-lucro-bar']=new Chart(elB,{type:'bar',
+      data:{labels:dk.map(function(k){return k.slice(5);}),datasets:[{data:dv,backgroundColor:dc,borderRadius:4,borderSkipped:false}]},
+      options:chartBase});
+  }
+
+  // ── Tipsters expandáveis ──
+  var tipDiv=document.getElementById('d-tipsters');
+  if(tipDiv){
+    var tm={};
+    D.forEach(function(a){
+      if(!a.tipster) return;
+      if(!tm[a.tipster]) tm[a.tipster]={luc:0,stk:0,w:0,t:0,pend:0,pendStk:0,avgClv:0,clvN:0,bets:[]};
+      var d=tm[a.tipster];
+      if(a.res==='Pendente'){d.pend++;d.pendStk+=a.stk||0;}
+      else{
+        d.t++;d.stk+=a.stk||0;
+        var pl=calcPL(a);d.luc+=pl;
+        if(a.res==='Win'||a.res==='Meia Ganha') d.w+=(a.res==='Win'?1:.5);
+        if(a.oe&&a.of){d.avgClv+=clv(a.oe,a.of);d.clvN++;}
+      }
+      d.bets.push(a);
+    });
+    var tips=Object.keys(tm).sort(function(a,b){return tm[b].luc-tm[a].luc;});
+    if(!tips.length){
+      tipDiv.innerHTML='<div style="color:var(--mu);font-size:.8rem;text-align:center;padding:1.5rem">Nenhum tipster registrado ainda</div>';
+    } else {
+      tipDiv.innerHTML=tips.map(function(t,i){
+        var d=tm[t],roi2=d.stk?(d.luc/d.stk)*100:0,wr2=d.t?(d.w/d.t)*100:0;
+        var avgC=d.clvN?d.avgClv/d.clvN:0;
+        var plC=d.luc>=0?'var(--ok)':'var(--er)';
+        var resC={Win:'var(--ok)',Loss:'var(--er)','Meia Ganha':'var(--ok)','Meia Perdida':'var(--er)',Cashout:'#818cf8',Anulada:'#94a3b8'};
+        var last=d.bets.filter(function(b){return b.res!=='Pendente';}).slice(-5).reverse();
+        var bHtml=last.map(function(b){
+          var bpl=calcPL(b);
+          return '<div class="tip-bet-row">'
+            +'<span style="color:var(--mu)">'+b.dt.slice(5)+'</span>'
+            +'<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+b.jogo+'">'+b.jogo+'</span>'
+            +'<span style="font-weight:600;color:'+(resC[b.res]||'var(--mu)')+'">'+b.res+'</span>'
+            +'<span style="font-family:var(--mono);color:'+(bpl>=0?'var(--ok)':'var(--er)')+'">'+sg(bpl)+'R$'+Math.abs(bpl).toFixed(2)+'</span>'
+            +'</div>';
+        }).join('');
+        return '<div class="tip-card" id="tc-'+i+'">'
+          +'<div class="tip-head" onclick="tipToggle('+i+')">'
+            +'<div>'
+              +'<div style="font-size:.85rem;font-weight:700">'+t+'</div>'
+              +'<div style="font-size:.7rem;color:var(--mu);margin-top:.1rem">'+d.t+' resolvidas'+(d.pend?' · ⏳ '+d.pend+' abertas':'')+' · WR '+wr2.toFixed(0)+'%</div>'
+            +'</div>'
+            +'<div style="display:flex;align-items:center;gap:.875rem">'
+              +'<div style="text-align:right">'
+                +'<div style="font-family:var(--mono);font-weight:700;color:'+plC+'">'+sg(d.luc)+'R$'+Math.abs(d.luc).toFixed(2)+'</div>'
+                +'<div style="font-size:.7rem;color:var(--mu)">ROI '+sg(roi2)+roi2.toFixed(1)+'%</div>'
+              +'</div>'
+              +'<span class="tip-arrow">▼</span>'
+            +'</div>'
+          +'</div>'
+          +'<div class="tip-body">'
+            +'<div class="tip-stats">'
+              +'<div class="tip-stat"><div class="tip-stat-l">Apostas</div><div class="tip-stat-v">'+d.t+'</div></div>'
+              +'<div class="tip-stat"><div class="tip-stat-l">Win Rate</div><div class="tip-stat-v" style="color:'+(wr2>=50?'var(--ok)':'var(--er)')+'">'+wr2.toFixed(1)+'%</div></div>'
+              +'<div class="tip-stat"><div class="tip-stat-l">ROI</div><div class="tip-stat-v" style="color:'+(roi2>=0?'var(--ok)':'var(--er)')+'">'+sg(roi2)+roi2.toFixed(1)+'%</div></div>'
+              +'<div class="tip-stat"><div class="tip-stat-l">Lucro</div><div class="tip-stat-v" style="color:'+plC+'">'+sg(d.luc)+'R$'+Math.abs(d.luc).toFixed(2)+'</div></div>'
+              +'<div class="tip-stat"><div class="tip-stat-l">CLV Médio</div><div class="tip-stat-v" style="color:'+(avgC>=0?'var(--ok)':'var(--er)')+'">'+sg(avgC)+avgC.toFixed(1)+'%</div></div>'
+              +'<div class="tip-stat"><div class="tip-stat-l">Stake</div><div class="tip-stat-v">R$'+d.stk.toFixed(2)+'</div></div>'
+            +'</div>'
+            +(d.pendStk?'<div class="tip-pend-note"><span>⏳ '+d.pend+' abertas</span><span style="font-family:var(--mono)">R$'+d.pendStk.toFixed(2)+'</span></div>':'')+
+            (last.length?'<div class="tip-bets-wrap"><div class="tip-bets-title">Últimas apostas</div>'+bHtml+'</div>':'')+
+          '</div>'
+        +'</div>';
+      }).join('');
+    }
+  }
+
+  // ── Por Esporte ──
+  var eDiv=document.getElementById('d-esportes');
+  if(eDiv){
+    var em={};resolved.forEach(function(a){
+      if(!em[a.esp])em[a.esp]={luc:0,stk:0,t:0};
+      em[a.esp].t++;em[a.esp].stk+=a.stk||0;em[a.esp].luc+=calcPL(a);
+    });
+    var esps=Object.keys(em).sort(function(a,b){return em[b].stk-em[a].stk;});
+    eDiv.innerHTML=esps.length?esps.map(function(e){
+      var d=em[e],r=d.stk?(d.luc/d.stk)*100:0;
+      return '<div class="sum-row">'
+        +'<span style="font-size:.8rem">'+e+'<span class="sum-badge">'+d.t+'</span></span>'
+        +'<span style="font-family:var(--mono);font-size:.78rem;color:'+(d.luc>=0?'var(--ok)':'var(--er)')+'">'+sg(d.luc)+'R$'+Math.abs(d.luc).toFixed(2)
+          +' <span style="color:var(--mu)">('+sg(r)+r.toFixed(1)+'%)</span></span>'
+        +'</div>';
+    }).join(''):'<div style="color:var(--mu);font-size:.8rem;padding:.5rem 0">Sem dados ainda</div>';
+  }
+
+  // ── Por Casa ──
+  var cDiv=document.getElementById('d-casas');
+  if(cDiv){
+    var cm={};resolved.forEach(function(a){
+      if(!cm[a.casa])cm[a.casa]={luc:0,stk:0,t:0};
+      cm[a.casa].t++;cm[a.casa].stk+=a.stk||0;cm[a.casa].luc+=calcPL(a);
+    });
+    var css=Object.keys(cm).sort(function(a,b){return cm[b].stk-cm[a].stk;});
+    cDiv.innerHTML=css.length?css.map(function(c){
+      var d=cm[c],r=d.stk?(d.luc/d.stk)*100:0;
+      return '<div class="sum-row">'
+        +'<span style="font-size:.8rem">'+c+'<span class="sum-badge">'+d.t+'</span></span>'
+        +'<span style="font-family:var(--mono);font-size:.78rem;color:'+(d.luc>=0?'var(--ok)':'var(--er)')+'">'+sg(d.luc)+'R$'+Math.abs(d.luc).toFixed(2)
+          +' <span style="color:var(--mu)">('+sg(r)+r.toFixed(1)+'%)</span></span>'
+        +'</div>';
+    }).join(''):'<div style="color:var(--mu);font-size:.8rem;padding:.5rem 0">Sem dados ainda</div>';
+  }
+
+  // ── Original: kpis + CLV charts + calendar ──
+  renderCal(); // kpis() now handled by new dash-r1/dash-r2 panels
   // c1: CLV ao longo do tempo
   kch('c1');
   var s=D.filter(function(a){return a.oe&&a.of;}).slice().sort(function(a,b){return a.dt.localeCompare(b.dt);});
@@ -1521,7 +1933,7 @@ function confirmScan(){
   D.unshift(a);sv();
   scanHist.unshift(a);
   var el=document.getElementById('scanHist');
-  el.innerHTML=scanHist.slice(0,5).map(function(x){
+  if(el) el.innerHTML=scanHist.slice(0,5).map(function(x){
     var b=x.res==='Win'?'bw':x.res==='Loss'?'bl':'bp';
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem;background:var(--sur2);border-radius:.375rem;margin-bottom:.375rem"><div><div style="font-weight:600;font-size:.8125rem">'+(x.jogo||'—')+'</div><div style="font-size:.7rem;color:var(--mu)">'+(x.mkt||'—')+' · '+(x.casa||'—')+' · Odd '+(x.oe||'—')+'</div></div><span class="bdg '+b+'">'+x.res+'</span></div>';
   }).join('');
@@ -1618,6 +2030,197 @@ function saveCo(id, val) {
 function toggleCashout(id, val) {
   var box = document.getElementById(id + '_box');
   if (box) box.style.display = val === 'Cashout' ? 'block' : 'none';
+}
+
+// ══════════════════════════════════════════════════════════
+// CASAS DE APOSTAS
+// ══════════════════════════════════════════════════════════
+var BK_KEY = 'clv_bookmakers';
+
+function getBKs() {
+  try { return JSON.parse(localStorage.getItem(BK_KEY)||'[]'); } catch(e){ return []; }
+}
+function saveBKs(arr) { localStorage.setItem(BK_KEY, JSON.stringify(arr)); }
+
+function bkPL(nomeCasa) {
+  var pl=0,stk=0,w=0,t=0,pend=0,pendStk=0;
+  D.forEach(function(a){
+    if((a.casa||'').toLowerCase()!==(nomeCasa||'').toLowerCase()) return;
+    if(a.res==='Pendente'){ pend++; pendStk+=parseFloat(a.stk)||0; return; }
+    var s=parseFloat(a.stk)||0; t++; stk+=s;
+    var pl2=calcPL(a); pl+=pl2;
+    if(a.res==='Win') w++;
+    else if(a.res==='Meia Ganha') w+=0.5;
+  });
+  return {pl:pl,stk:stk,w:w,t:t,pend:pend,pendStk:pendStk};
+}
+
+var _bkEditId=null;
+function openBkModal(id){
+  _bkEditId=id||null;
+  var mo=document.getElementById('bk-modal-title');
+  if(mo) mo.textContent=id?'Editar Casa':'Nova Casa de Apostas';
+  if(id){
+    var bk=getBKs().find(function(b){return b.id===id;})||{};
+    var n=document.getElementById('bk-f-nome'); if(n) n.value=bk.nome||'';
+    var s=document.getElementById('bk-f-saldo'); if(s) s.value=bk.saldoInicial||'';
+    var o=document.getElementById('bk-f-obs'); if(o) o.value=bk.obs||'';
+  } else {
+    ['bk-f-nome','bk-f-saldo','bk-f-obs'].forEach(function(eid){
+      var el=document.getElementById(eid); if(el) el.value='';
+    });
+  }
+  var bg=document.getElementById('bk-modal-bg');
+  if(bg) bg.classList.add('on');
+  setTimeout(function(){ var n=document.getElementById('bk-f-nome'); if(n) n.focus(); },80);
+}
+function closeBkModal(){
+  var bg=document.getElementById('bk-modal-bg');
+  if(bg) bg.classList.remove('on');
+}
+function saveBkModal(){
+  var nome=(document.getElementById('bk-f-nome')||{}).value||'';
+  var saldo=parseFloat((document.getElementById('bk-f-saldo')||{}).value)||0;
+  var obs=(document.getElementById('bk-f-obs')||{}).value||'';
+  if(!nome.trim()){ alert('Informe o nome da casa.'); return; }
+  var arr=getBKs();
+  if(_bkEditId){
+    var idx=arr.findIndex(function(b){return b.id===_bkEditId;});
+    if(idx>-1) arr[idx]={id:_bkEditId,nome:nome.trim(),saldoInicial:saldo,obs:obs};
+  } else {
+    arr.push({id:'bk_'+Date.now(),nome:nome.trim(),saldoInicial:saldo,obs:obs});
+  }
+  saveBKs(arr); closeBkModal(); renderCasas();
+}
+function deleteBK(id){
+  if(!confirm('Remover esta casa?')) return;
+  saveBKs(getBKs().filter(function(b){return b.id!==id;}));
+  renderCasas();
+}
+
+function renderCasas(){
+  var bks=getBKs();
+  var sg=function(v){return v>=0?'+':'';};
+
+  // ── KPIs globais ──
+  var kpiEl=document.getElementById('casas-kpis');
+  if(kpiEl){
+    var totIni=0,totAtual=0,totPL=0,totPend=0;
+    bks.forEach(function(bk){
+      var r=bkPL(bk.nome);
+      totIni+=bk.saldoInicial||0;
+      totAtual+=(bk.saldoInicial||0)+r.pl;
+      totPL+=r.pl; totPend+=r.pendStk;
+    });
+    var totDisp=totAtual-totPend;
+    function k2(lbl,val,sub,col){
+      return '<div class="dkpi"><div class="dkpi-lbl">'+lbl+'</div>'
+        +'<div class="dkpi-val" style="color:'+col+'">'+val+'</div>'
+        +'<div class="dkpi-sub">'+sub+'</div></div>';
+    }
+    kpiEl.innerHTML=
+      k2('Total Depositado','R$'+totIni.toFixed(2),bks.length+' casas cadastradas','var(--tx)')+
+      k2('Saldo Disponível','R$'+totDisp.toFixed(2),'Deduzindo stakes em aberto',totDisp>=totIni?'var(--ok)':'var(--er)')+
+      k2('P/L Total',sg(totPL)+'R$'+Math.abs(totPL).toFixed(2),'Apostas resolvidas',totPL>=0?'var(--ok)':'var(--er)')+
+      k2('Em Apostas Abertas','R$'+totPend.toFixed(2),'Stake reservado pendente','var(--wa)');
+  }
+
+  // ── Cards das casas ──
+  var grid=document.getElementById('bk-grid');
+  if(!grid) return;
+  var html='';
+  bks.forEach(function(bk){
+    var r=bkPL(bk.nome);
+    var sAtual=(bk.saldoInicial||0)+r.pl;
+    var sDisp=sAtual-r.pendStk;
+    var varPct=bk.saldoInicial?((sAtual-bk.saldoInicial)/bk.saldoInicial)*100:0;
+    var dispPct=sAtual>0?(sDisp/sAtual)*100:100;
+    var roi=r.stk?(r.pl/r.stk)*100:0;
+    var cls=r.pl>=0?'bk-pos':'bk-neg';
+    var plC=r.pl>=0?'var(--ok)':'var(--er)';
+    var dispC=sDisp<0?'var(--er)':sDisp<(bk.saldoInicial||0)*0.15?'var(--wa)':'var(--tx)';
+    html+=
+      '<div class="bk-card '+cls+'">'
+        +'<div class="bk-name">'
+          +'<span>'+bk.nome+'</span>'
+          +'<div style="display:flex;gap:.35rem">'
+            +'<button class="ab" onclick="openBkModal(\''+bk.id+'\')" >✏</button>'
+            +'<button class="ab d" onclick="deleteBK(\''+bk.id+'\')" >🗑</button>'
+          +'</div>'
+        +'</div>'
+        +(bk.obs?'<div style="font-size:.68rem;color:var(--mu);margin-bottom:.5rem">'+bk.obs+'</div>':'')
+        // Disponível (destaque principal)
+        +'<div style="margin-bottom:.375rem">'
+          +'<div class="bk-lbl">Disponível</div>'
+          +'<div class="bk-saldo" style="color:'+dispC+'">R$'+sDisp.toFixed(2)+'</div>'
+        +'</div>'
+        // Pendente banner
+        +(r.pend?'<div class="bk-pend-row"><span>⏳ '+r.pend+' apostas abertas</span><span style="font-family:var(--mono)">−R$'+r.pendStk.toFixed(2)+'</span></div>':'')
+        // Mini stats grid
+        +'<div class="bk-mini-grid">'
+          +'<div class="bk-mini"><div class="bk-mini-l">Inicial</div><div class="bk-mini-v">R$'+(bk.saldoInicial||0).toFixed(0)+'</div></div>'
+          +'<div class="bk-mini"><div class="bk-mini-l">P/L</div><div class="bk-mini-v" style="color:'+plC+'">'+sg(r.pl)+'R$'+Math.abs(r.pl).toFixed(0)+'</div></div>'
+          +'<div class="bk-mini"><div class="bk-mini-l">ROI</div><div class="bk-mini-v" style="color:'+plC+'">'+sg(roi)+roi.toFixed(1)+'%</div></div>'
+        +'</div>'
+        // Barra progresso
+        +'<div class="dkpi-bar" style="margin-top:.5rem"><span style="width:'+Math.min(100,Math.max(0,Math.abs(varPct)))+'%;background:'+plC+'"></span></div>'
+        +'<div style="font-size:.63rem;color:var(--mu);margin-top:.2rem;display:flex;justify-content:space-between">'
+          +'<span>'+sg(varPct)+varPct.toFixed(1)+'% vs inicial</span>'
+          +'<span class="bk-pill '+(r.pl>=0?'bk-pill-g':'bk-pill-r')+'">'+r.t+' resolvidas</span>'
+        +'</div>'
+      +'</div>';
+  });
+  html+='<div class="bk-add-card" onclick="openBkModal(null)">+ Adicionar Casa</div>';
+  grid.innerHTML=html;
+
+  // ── Atualizar filtro ──
+  var fEl=document.getElementById('bk-f-casa');
+  if(fEl){
+    var cur=fEl.value;
+    fEl.innerHTML='<option value="">Todas as casas</option>'
+      +bks.map(function(b){return '<option>'+b.nome+'</option>';}).join('');
+    fEl.value=cur;
+  }
+  renderBkHistory();
+}
+
+function renderBkHistory(){
+  var fCasa=(document.getElementById('bk-f-casa')||{}).value||'';
+  var fRes=(document.getElementById('bk-f-res')||{}).value||'';
+  var bks=getBKs();
+  var names=new Set(bks.map(function(b){return b.nome.toLowerCase();}));
+  var rows=D.filter(function(a){
+    if(names.size>0 && !names.has((a.casa||'').toLowerCase())) return false;
+    if(fCasa && (a.casa||'').toLowerCase()!==fCasa.toLowerCase()) return false;
+    if(fRes && a.res!==fRes) return false;
+    return true;
+  }).slice().sort(function(a,b){
+    return (b.dt+(b.hora||'')).localeCompare(a.dt+(a.hora||''));
+  });
+  var tbody=document.getElementById('bk-hist-body');
+  var empty=document.getElementById('bk-hist-empty');
+  if(!tbody) return;
+  if(!rows.length){ tbody.innerHTML=''; if(empty) empty.style.display='flex'; return; }
+  if(empty) empty.style.display='none';
+  var sg=function(v){return v>=0?'+':'';};
+  var rc={Win:'var(--ok)',Loss:'var(--er)','Meia Ganha':'var(--ok)','Meia Perdida':'var(--er)',Cashout:'#818cf8',Anulada:'#94a3b8',Pendente:'var(--wa)'};
+  tbody.innerHTML=rows.map(function(a){
+    var pl=calcPL(a), isPend=a.res==='Pendente';
+    return '<tr style="border-bottom:1px solid var(--bor)">'
+      +'<td style="padding:.45rem .75rem;font-size:.75rem;white-space:nowrap">'
+        +(a.dt?a.dt.split('-').reverse().join('/'):'—')
+        +(a.hora?' <span style="color:var(--mu);font-size:.65rem">'+a.hora+'</span>':'')
+      +'</td>'
+      +'<td style="padding:.45rem .75rem;font-size:.75rem;max-width:260px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis" title="'+a.jogo+' — '+a.mkt+'">'
+        +a.jogo+' <span style="color:var(--mu)">'+a.mkt+'</span>'
+      +'</td>'
+      +'<td style="padding:.45rem .75rem;font-size:.75rem">'+a.casa+'</td>'
+      +'<td style="padding:.45rem .75rem;font-size:.75rem;text-align:right;font-family:var(--mono)">R$'+(parseFloat(a.stk)||0).toFixed(2)+'</td>'
+      +'<td style="padding:.45rem .75rem;font-size:.75rem;text-align:right;font-family:var(--mono);color:'+(isPend?'var(--mu)':pl>=0?'var(--ok)':'var(--er)')+'">'+
+        (isPend?'—':sg(pl)+'R$'+Math.abs(pl).toFixed(2))+'</td>'
+      +'<td style="padding:.45rem .75rem;text-align:center;font-size:.72rem;font-weight:600;color:'+(rc[a.res]||'var(--mu)')+'">'+a.res+'</td>'
+      +'</tr>';
+  }).join('');
 }
 
 // ── BANCA ─────────────────────────────────────────────────────
@@ -2055,12 +2658,8 @@ fillFilters();
   // Init after a brief delay to ensure DOM is ready
   setTimeout(initResizable, 300);
 
-  // Re-init on tab switch to apostas
-  var _origGoTo = window.goTo;
-  window.goTo = function(p) {
-    _origGoTo(p);
-    if (p === 'apostas') setTimeout(initResizable, 100);
-  };
+  // expose initResizable so goTo can call it
+  window._initResizable = initResizable;
 })();
 </script>
   <!-- BOTTOM NAV MOBILE -->
@@ -2073,6 +2672,9 @@ fillFilters();
     </button>
     <button class="bnav-btn" data-p="analytics" onclick="goTo('analytics');bnavUpdate('analytics')">
       <span class="bico">📈</span>Analytics
+    </button>
+    <button class="bnav-btn" data-p="casas" onclick="goTo('casas');bnavUpdate('casas')">
+      <span class="bico">🏦</span>Casas
     </button>
     <button class="bnav-btn" data-p="banca" onclick="goTo('banca');bnavUpdate('banca')">
       <span class="bico">💰</span>Banca

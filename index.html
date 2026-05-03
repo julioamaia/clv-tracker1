@@ -2,6 +2,10 @@
 <html lang="pt-BR" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+  <!-- Cache control: força o navegador a sempre buscar versão nova -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CLV Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -281,6 +285,10 @@ tr:hover td.col-act .ra{opacity:1}
 .txn-pill{display:inline-flex;padding:.1rem .4rem;border-radius:4px;font-size:.65rem;font-weight:700}
 .txn-saque{background:rgba(209,99,167,.15);color:#d163a7}
 .txn-dep{background:rgba(109,170,69,.15);color:#6daa45}
+
+@keyframes pulse {
+  0%,100%{opacity:1} 50%{opacity:.6}
+}
 </style>
 
 <!-- goTo carregado ANTES de tudo: navegação nunca falha -->
@@ -359,8 +367,23 @@ function goTo(p) {
 <div class="main">
   <div class="topbar">
     <div class="page-title" id="ptitle">Dashboard</div>
+    <div id="update-banner" style="display:none;align-items:center;gap:.5rem;
+      background:rgba(79,152,163,.15);border:1px solid var(--pri);border-radius:.5rem;
+      padding:.3rem .75rem;font-size:.78rem;cursor:pointer;animation:pulse 2s infinite"
+      onclick="window.location.reload(true)">
+      🔄 <span>Nova versão disponível</span> <strong>Toque para atualizar</strong>
+    </div>
+    <div id="sync-badge" style="font-size:.68rem;color:var(--mu);white-space:nowrap;
+      display:flex;align-items:center;gap:.35rem">
+      <span id="sync-dot" style="width:7px;height:7px;border-radius:50%;
+        background:var(--mu);display:inline-block;flex-shrink:0"></span>
+      <span id="sync-time">Aguardando...</span>
+    </div>
     <div class="tbr">
-      <button class="btn btn-s" onclick="exportCSV()">⬇ Exportar CSV</button>
+      <button class="btn btn-s" onclick="window.location.reload(true)"
+      title="Forçar atualização — busca versão mais recente do GitHub"
+      style="font-size:.75rem;padding:.35rem .65rem">🔄</button>
+    <button class="btn btn-s" onclick="exportCSV()">⬇ Exportar CSV</button>
       <button class="btn btn-p" onclick="openModal()">+ Nova Aposta</button>
     </div>
   </div>
@@ -2942,98 +2965,101 @@ var _syncEtag = '';
 var _syncLastUpdated = '';
 var _syncErrors = 0;
 
+function updateSyncBadge(ok, text) {
+  var dot = document.getElementById('syncDot');
+  var msg = document.getElementById('syncMsg');
+  if(dot) dot.style.background = ok ? 'var(--ok)' : 'var(--er)';
+  if(msg) msg.textContent = text;
+  var tbDot  = document.getElementById('sync-dot');
+  var tbTime = document.getElementById('sync-time');
+  if(tbDot)  tbDot.style.background = ok ? 'var(--ok)' : 'var(--er)';
+  if(tbTime) tbTime.textContent = text;
+}
+
 async function doSync() {
   const gistId    = localStorage.getItem('gistId');
   const gistToken = localStorage.getItem('gistToken');
-  const dot = document.getElementById('syncDot');
-  const msg = document.getElementById('syncMsg');
   if (!gistId || !gistToken) {
-    if(dot) dot.style.background = 'var(--mu)';
-    if(msg) msg.textContent = 'Gist não configurado — vá em Configurações';
+    updateSyncBadge(false, 'Gist não configurado');
     return;
   }
   try {
-    // Use ETag for conditional request — avoids re-parsing if nothing changed
     const headers = { 'Authorization': 'token ' + gistToken };
     if (_syncEtag) headers['If-None-Match'] = _syncEtag;
-    const resp = await fetch('https://api.github.com/gists/' + gistId, { headers });
+    // cache:'no-store' garante bypass de cache no mobile (Safari/Chrome)
+    const resp = await fetch('https://api.github.com/gists/' + gistId, {
+      headers: headers,
+      cache: 'no-store'
+    });
     const now = new Date().toLocaleTimeString('pt-BR');
     _syncErrors = 0;
 
-    // 304 = nothing changed on Gist side
     if (resp.status === 304) {
-      if(dot) dot.style.background = 'var(--ok)';
-      if(msg) msg.textContent = '✓ Atualizado · ' + now;
+      updateSyncBadge(true, '✓ ' + now);
       return;
     }
 
-    // Save ETag for next request
     const etag = resp.headers.get('ETag');
     if (etag) _syncEtag = etag;
 
     const data = await resp.json();
     if (!data || !data.files) return;
 
-    // Check updated_at first — faster than parsing JSON
     const gistUpdated = data.updated_at || '';
+    const file = data.files['clv-data.json'];
+    if (!file || !file.content) return;
+
+    // Update debug panel
+    try {
+      var rawArr = JSON.parse(file.content);
+      var dbg = document.getElementById('debugFields');
+      if (dbg && rawArr.length) {
+        var lastRaw  = rawArr[rawArr.length - 1] || {};
+        var lastNorm = normalizeBet(Object.assign({}, lastRaw));
+        var lines = ['── CAMPOS BRUTOS (do bot) ──'];
+        Object.keys(lastRaw).forEach(function(k){ lines.push(k + ': ' + JSON.stringify(lastRaw[k])); });
+        lines.push('\n── APÓS NORMALIZAÇÃO ──');
+        lines.push('tipster: ' + JSON.stringify(lastNorm.tipster || ''));
+        lines.push('obs: '     + JSON.stringify(lastNorm.obs     || ''));
+        lines.push('res: '     + JSON.stringify(lastNorm.res     || ''));
+        dbg.textContent = lines.join('\n');
+      }
+    } catch(e2) {}
+
     if (gistUpdated && gistUpdated === _syncLastUpdated) {
-      if(dot) dot.style.background = 'var(--ok)';
-      if(msg) msg.textContent = '✓ Sincronizado · ' + now;
+      updateSyncBadge(true, '✓ ' + now);
       return;
     }
 
-    const file = data.files['clv-data.json'];
-    if (!file || !file.content) return;
     const remoto = JSON.parse(file.content).map(normalizeBet);
-
-    // Compare length first (fast), then content if needed
     const changed = remoto.length !== D.length ||
-      JSON.stringify(remoto.map(function(x){return x.id;})) !== JSON.stringify(D.map(function(x){return x.id;})) ||
+      JSON.stringify(remoto.map(function(x){return x.id;})) !==
+      JSON.stringify(D.map(function(x){return x.id;})) ||
       JSON.stringify(remoto) !== JSON.stringify(D);
-
-    // Update debug panel with raw keys from the latest record
-    if (remoto.length > 0) {
-      var dbg = document.getElementById('debugFields');
-      if (dbg) {
-        try {
-          var rawArr = JSON.parse(file.content);
-          var lastRaw = rawArr[rawArr.length - 1] || {};
-          var lastNorm = remoto[remoto.length - 1] || {};
-          var lines = ['── CAMPOS BRUTOS (do bot) ──'];
-          Object.keys(lastRaw).forEach(function(k) {
-            lines.push(k + ': ' + JSON.stringify(lastRaw[k]));
-          });
-          lines.push('');
-          lines.push('── APÓS NORMALIZAÇÃO ──');
-          lines.push('tipster: ' + JSON.stringify(lastNorm.tipster || ''));
-          lines.push('obs: ' + JSON.stringify(lastNorm.obs || ''));
-          lines.push('res: ' + JSON.stringify(lastNorm.res || ''));
-          dbg.textContent = lines.join('\n');
-        } catch(e) { dbg.textContent = 'Erro: ' + e.message; }
-      }
-    }
 
     if (changed) {
       D = remoto;
       _syncLastUpdated = gistUpdated;
       sv();
       fillFilters();
-      renderTabela();
-      renderDash();
-      if(dot) { dot.style.background = 'var(--ok)'; dot.style.boxShadow = '0 0 6px var(--ok)'; setTimeout(function(){ if(dot) dot.style.boxShadow=''; }, 2000); }
-      if(msg) msg.textContent = '✓ Novas apostas do bot às ' + now + ' (' + remoto.length + ' total)';
+      // Re-render whichever page is active
+      var activePg = document.querySelector('.pg[style*="display: block"], .pg[style*="display:block"]');
+      var pid = activePg ? activePg.id.replace('pg-','') : 'dashboard';
+      if(pid==='dashboard') renderDash();
+      if(pid==='apostas')   { fillFilters(); renderTabela(); }
+      if(pid==='casas')     renderCasas();
+      updateSyncBadge(true, '✓ ' + now + ' · ' + remoto.length + ' apostas');
+      var tbDot = document.getElementById('sync-dot');
+      if(tbDot){ tbDot.style.boxShadow='0 0 8px var(--ok)'; setTimeout(function(){ if(tbDot) tbDot.style.boxShadow=''; }, 2500); }
     } else {
       _syncLastUpdated = gistUpdated;
-      if(dot) dot.style.background = 'var(--ok)';
-      if(msg) msg.textContent = '✓ Sincronizado · ' + now;
+      updateSyncBadge(true, '✓ ' + now);
     }
   } catch(e) {
     _syncErrors++;
-    if(dot) dot.style.background = _syncErrors > 3 ? 'var(--er)' : 'var(--wa)';
-    if(msg) msg.textContent = '⚠ Erro de sync: ' + e.message;
+    updateSyncBadge(false, (_syncErrors > 3 ? '✗ ' : '⚠ ') + e.message);
   }
 }
-
 // Run immediately on page load, then every 5 seconds
 doSync();
 setInterval(doSync, 5000);

@@ -289,6 +289,16 @@ tr:hover td.col-act .ra{opacity:1}
 @keyframes pulse {
   0%,100%{opacity:1} 50%{opacity:.6}
 }
+
+/* ── CONFIG LINK / QR ─────────────────────────────── */
+.config-link-box{background:var(--sur2);border:1px solid var(--bor);border-radius:.625rem;
+  padding:.875rem 1rem;margin-top:1rem}
+.config-link-url{font-family:var(--mono);font-size:.68rem;word-break:break-all;
+  background:var(--bg);border:1px solid var(--bor);border-radius:.375rem;
+  padding:.5rem .625rem;margin:.5rem 0;color:var(--mu);user-select:all}
+.sync-warning{background:rgba(232,175,52,.12);border:1px solid rgba(232,175,52,.3);
+  border-radius:.625rem;padding:.75rem 1rem;margin-bottom:1rem;
+  font-size:.8rem;color:var(--wa);display:flex;align-items:center;gap:.625rem}
 </style>
 
 <!-- goTo carregado ANTES de tudo: navegação nunca falha -->
@@ -329,6 +339,7 @@ function goTo(p) {
   if (p === 'analytics'  && typeof renderAnalytics  === 'function') renderAnalytics();
   if (p === 'banca'      && typeof renderBanca       === 'function') renderBanca();
   if (p === 'casas'      && typeof renderCasas       === 'function') renderCasas();
+  if (p === 'config'     && typeof preencherConfigFields === 'function') preencherConfigFields();
   if (p === 'apostas'    && typeof window._initResizable === 'function') {
     setTimeout(window._initResizable, 120);
   }
@@ -520,6 +531,10 @@ function goTo(p) {
         <p style="font-size:.8125rem;color:var(--mu)">Configure as integrações e preferências do seu tracker.</p>
       </div>
 
+      <div class="sync-warning" id="config-not-setup-warn" style="display:none;max-width:640px">
+        ⚠ <span><strong>Gist não configurado.</strong> Este dispositivo não tem as configurações de sync. 
+        Se você já configurou em outro dispositivo, use o botão "Gerar Link para Celular" lá e abra o link aqui.</span>
+      </div>
       <div class="card" style="max-width:640px">
         <!-- CONFIG API-FOOTBALL -->
         <div style="background:var(--sur2);border:1px solid var(--bor);border-radius:.625rem;padding:.875rem 1rem;margin-bottom:1.25rem">
@@ -539,17 +554,38 @@ function goTo(p) {
             <label style="font-size:.75rem;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.06em">🔄 Sincronização (Bot Telegram ↔ Tracker)</label>
             <a href="https://github.com/settings/tokens/new?scopes=gist&description=CLV+Tracker+Sync" target="_blank" style="font-size:.7rem;color:var(--pri);text-decoration:none">→ Criar token gratuito</a>
           </div>
-          <p style="font-size:.75rem;color:var(--mu);margin-bottom:.625rem">O bot do Telegram grava as apostas no GitHub Gist. Este tracker sincroniza automaticamente a cada 10 segundos.</p>
+          <p style="font-size:.75rem;color:var(--mu);margin-bottom:.625rem">O bot do Telegram grava as apostas no GitHub Gist. Este tracker sincroniza automaticamente a cada 5 segundos.</p>
           <input type="password" id="gistToken" placeholder="GitHub Token (ghp_...)"
             style="width:100%;background:var(--bg);border:1px solid var(--bor);border-radius:.5rem;padding:.45rem .75rem;color:var(--tx);font-family:var(--mono);font-size:.8125rem;outline:none;box-sizing:border-box;margin-bottom:.5rem">
           <input type="text" id="gistId" placeholder="Gist ID (preenchido automaticamente após 1º envio)"
             style="width:100%;background:var(--bg);border:1px solid var(--bor);border-radius:.5rem;padding:.45rem .75rem;color:var(--tx);font-family:var(--mono);font-size:.8125rem;outline:none;box-sizing:border-box;margin-bottom:.5rem">
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem">
             <button class="btn btn-s" onclick="saveGistConfig()" style="font-size:.75rem">💾 Salvar config</button>
             <button class="btn btn-p" onclick="syncUpload()" style="font-size:.75rem">☁️ Enviar dados</button>
             <button class="btn btn-s" onclick="syncDownload()" style="font-size:.75rem">⬇️ Baixar dados</button>
           </div>
-          <div style="font-size:.7rem;color:var(--mu);margin-top:.5rem">✓ Gratuito · O bot registra, o tracker sincroniza em até 10 segundos</div>
+          <div style="font-size:.7rem;color:var(--mu);margin-bottom:.875rem">✓ Gratuito · O bot registra, o tracker sincroniza em até 5 segundos</div>
+
+          <!-- LINK PARA CELULAR -->
+          <div style="border-top:1px solid var(--bor);padding-top:.875rem">
+            <div style="font-size:.75rem;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem">📱 Abrir no Celular</div>
+            <p style="font-size:.75rem;color:var(--mu);margin-bottom:.625rem">Gera um link especial com suas configurações embutidas. Abra no celular e tudo será configurado automaticamente — sem digitar nada.</p>
+            <button class="btn btn-p" onclick="gerarLinkCelular()" style="font-size:.75rem;width:100%;justify-content:center;margin-bottom:.625rem">
+              📱 Gerar Link para Celular
+            </button>
+            <div id="link-celular-box" style="display:none">
+              <div class="config-link-url" id="link-celular-url"></div>
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                <button class="btn btn-s" onclick="copiarLinkCelular()" style="font-size:.75rem;flex:1">📋 Copiar Link</button>
+                <button class="btn btn-s" onclick="abrirWhatsApp()" style="font-size:.75rem;flex:1">💬 Enviar via WhatsApp</button>
+              </div>
+              <div style="font-size:.68rem;color:var(--er);margin-top:.5rem">
+                ⚠ Este link contém seu token GitHub. Não compartilhe publicamente. Use apenas para seu próprio celular.
+              </div>
+              <!-- QR Code -->
+              <div id="qr-container" style="margin-top:.75rem;text-align:center"></div>
+            </div>
+          </div>
         </div>
 
         <!-- CONFIG UNIDADE -->
@@ -796,6 +832,22 @@ function goTo(p) {
 
 <!-- APP -->
 <script>
+// ── LEITURA DE CONFIGURAÇÃO VIA URL ─────────────────────────
+// Permite abrir no celular com ?gist=ID&token=TOKEN para configurar automaticamente
+(function() {
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var urlGist  = params.get('gist');
+    var urlToken = params.get('token');
+    if (urlGist)  localStorage.setItem('gistId',    urlGist);
+    if (urlToken) localStorage.setItem('gistToken', urlToken);
+    // Limpar da URL por segurança (token não fica exposto)
+    if (urlGist || urlToken) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  } catch(e) {}
+})();
+
 // ── DADOS ────────────────────────────────────────────────────
 var D = [];
 var EID = null;
@@ -826,6 +878,8 @@ var CH = {};
   fillFilters();
   renderTabela();
   renderDash();
+  // Preencher campos de config com valores salvos
+  setTimeout(preencherConfigFields, 200);
 })();
 
 // Normalize bet fields from bot (handles different casing/names from Telegram bot)
@@ -2501,6 +2555,73 @@ function renderTxnHistory() {
       +'</td>'
       +'</tr>';
   }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// CONFIGURAÇÃO MOBILE — Link com QR Code
+// ══════════════════════════════════════════════════════
+function gerarLinkCelular() {
+  var gistId    = localStorage.getItem('gistId')    || (document.getElementById('gistId')    ||{}).value    || '';
+  var gistToken = localStorage.getItem('gistToken') || (document.getElementById('gistToken') ||{}).value || '';
+  if (!gistId || !gistToken) {
+    alert('Configure o Gist ID e o Token antes de gerar o link.');
+    return;
+  }
+  var base = window.location.origin + window.location.pathname;
+  var link = base + '?gist=' + encodeURIComponent(gistId) + '&token=' + encodeURIComponent(gistToken);
+  var urlEl = document.getElementById('link-celular-url');
+  var box   = document.getElementById('link-celular-box');
+  if(urlEl) urlEl.textContent = link;
+  if(box)   box.style.display = 'block';
+  // Gerar QR Code usando API gratuita
+  var qrContainer = document.getElementById('qr-container');
+  if(qrContainer) {
+    var encoded = encodeURIComponent(link);
+    qrContainer.innerHTML =
+      '<div style="font-size:.72rem;color:var(--mu);margin-bottom:.5rem">Escaneie com a câmera do celular:</div>' +
+      '<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encoded + '" ' +
+      'style="border-radius:.5rem;border:4px solid var(--sur);width:180px;height:180px" ' +
+      'alt="QR Code">';
+  }
+}
+
+function copiarLinkCelular() {
+  var url = (document.getElementById('link-celular-url') || {}).textContent || '';
+  if(!url) return;
+  navigator.clipboard.writeText(url).then(function() {
+    alert('Link copiado! Cole no navegador do celular.');
+  }).catch(function() {
+    // Fallback para mobile
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.position = 'fixed';
+    ta.style.opacity  = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('Link copiado!');
+  });
+}
+
+function abrirWhatsApp() {
+  var url = (document.getElementById('link-celular-url') || {}).textContent || '';
+  if(!url) return;
+  var msg = 'Abra este link no celular para configurar o CLV Tracker automaticamente:\n\n' + url;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// Preencher campos de config com valores do localStorage ao abrir a aba
+function preencherConfigFields() {
+  var gistId    = localStorage.getItem('gistId')    || '';
+  var gistToken = localStorage.getItem('gistToken') || '';
+  var elId  = document.getElementById('gistId');
+  var elTok = document.getElementById('gistToken');
+  if(elId  && !elId.value)  elId.value  = gistId;
+  if(elTok && !elTok.value) elTok.value = gistToken;
+  // Mostrar aviso se não configurado
+  var warn = document.getElementById('config-not-setup-warn');
+  if(warn) warn.style.display = (!gistId || !gistToken) ? 'flex' : 'none';
 }
 
 // ── BANCA ─────────────────────────────────────────────────────

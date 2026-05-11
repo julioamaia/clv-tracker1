@@ -299,6 +299,15 @@ tr:hover td.col-act .ra{opacity:1}
 .sync-warning{background:rgba(232,175,52,.12);border:1px solid rgba(232,175,52,.3);
   border-radius:.625rem;padding:.75rem 1rem;margin-bottom:1rem;
   font-size:.8rem;color:var(--wa);display:flex;align-items:center;gap:.625rem}
+
+/* ── FLASHSCORE LINK BUTTON ──────────────────────── */
+.fs-link{display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:3px;
+  background:transparent;border:none;cursor:pointer;
+  color:var(--mu);opacity:0;transition:opacity .15s,color .15s;
+  flex-shrink:0;padding:0;text-decoration:none;font-size:11px;vertical-align:middle}
+tr:hover .fs-link{opacity:.55}
+.fs-link:hover{opacity:1 !important;color:var(--pri)}
 </style>
 
 <!-- goTo carregado ANTES de tudo: navegação nunca falha -->
@@ -1373,7 +1382,10 @@ function renderTabela() {
     var tipTitle  = (a.tipster||'');
     return '<tr data-id="'+a.id+'">'
       +'<td class="col-dt" title="'+(a.dt||'')+(a.hora?' '+a.hora:'')+'">'+(a.dt?a.dt.split('-').reverse().join('/'):'—')+(a.hora?' <span style="font-size:.65rem;color:var(--mu)">'+a.hora+'</span>':'')+'</td>'
-      +'<td class="col-jogo" title="'+jogoTitle+'"><span class="cell-txt">'+jogoTitle+'</span></td>'
+      +'<td class="col-jogo" title="'+jogoTitle+'" style="display:flex;align-items:center;gap:4px">'
+      +'<span class="cell-txt" style="flex:1;min-width:0">'+jogoTitle+'</span>'
+      +'<a class="fs-link" href="https://www.flashscore.com.br/busca/?q='+encodeURIComponent(a.jogo)+'" target="_blank" rel="noopener" title="Ver no Flashscore">&#x2197;</a>'
+      +'</td>'
       +'<td class="col-mkt"  title="'+mktTitle+'"><span class="cell-txt">'+mktTitle+'</span></td>'
       +'<td class="col-esp"  title="'+(a.esp||'')+'"><span class="cell-txt">'+(a.esp||'—')+'</span></td>'
       +'<td class="col-casa" title="'+(a.casa||'')+'"><span class="cell-txt">'+(a.casa||'—')+'</span></td>'

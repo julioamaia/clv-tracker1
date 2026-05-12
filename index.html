@@ -78,19 +78,19 @@ tbody td{padding:.5rem .75rem;border-bottom:1px solid var(--bor);vertical-align:
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:var(--sur2)}
 /* Column widths - fixed layout (overridden by JS drag) */
-.col-dt   { width:110px; min-width:80px; }
-.col-jogo { width:160px; min-width:80px; }
-.col-mkt  { width:140px; min-width:80px; }
-.col-esp  { width:70px;  min-width:50px; }
-.col-casa { width:80px;  min-width:50px; }
-.col-tip  { width:90px;  min-width:50px; }
-.col-oe   { width:60px;  min-width:45px; }
-.col-of   { width:75px;  min-width:45px; }
-.col-clv  { width:68px;  min-width:45px; }
-.col-stk  { width:60px;  min-width:45px; }
-.col-un   { width:45px;  min-width:35px; }
-.col-res  { width:130px; min-width:90px; }
-.col-act  { width:80px;  min-width:60px; }
+.col-dt   { width:120px; min-width:90px; }
+.col-jogo { width:200px; min-width:100px; }
+.col-mkt  { width:170px; min-width:100px; }
+.col-esp  { width:75px;  min-width:55px; }
+.col-casa { width:90px;  min-width:60px; }
+.col-tip  { width:100px; min-width:60px; }
+.col-oe   { width:62px;  min-width:50px; }
+.col-of   { width:75px;  min-width:50px; }
+.col-clv  { width:65px;  min-width:50px; }
+.col-stk  { width:65px;  min-width:50px; }
+.col-un   { width:48px;  min-width:38px; }
+.col-res  { width:120px; min-width:95px; }
+.col-act  { width:75px;  min-width:55px; }
 /* Resize handle on th */
 thead th { position:relative; }
 .col-resize-handle {
@@ -308,6 +308,42 @@ tr:hover td.col-act .ra{opacity:1}
   flex-shrink:0;padding:0;text-decoration:none;font-size:11px;vertical-align:middle}
 tr:hover .fs-link{opacity:.55}
 .fs-link:hover{opacity:1 !important;color:var(--pri)}
+
+/* ── MULTI-SELECT DROPDOWN ───────────────────────────── */
+.ms-wrap{position:relative;display:inline-block;min-width:130px}
+.ms-btn{display:flex;align-items:center;justify-content:space-between;gap:.375rem;
+  padding:.38rem .65rem;border:1px solid var(--bor);border-radius:.5rem;
+  background:var(--sur2);color:var(--tx);font-size:.78rem;cursor:pointer;
+  white-space:nowrap;min-width:130px;user-select:none;transition:border-color .15s}
+.ms-btn:hover,.ms-btn.open{border-color:var(--pri)}
+.ms-btn .ms-caret{font-size:.6rem;color:var(--mu);transition:transform .18s;flex-shrink:0}
+.ms-btn.open .ms-caret{transform:rotate(180deg)}
+.ms-count{background:var(--pri);color:#fff;border-radius:999px;
+  padding:0 5px;font-size:.62rem;font-weight:700;margin-left:2px}
+.ms-dropdown{position:absolute;top:calc(100% + 4px);left:0;min-width:100%;max-width:260px;
+  background:var(--sur);border:1px solid var(--bor);border-radius:.625rem;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:200;overflow:hidden;
+  opacity:0;pointer-events:none;transform:translateY(-6px);
+  transition:opacity .15s,transform .15s}
+.ms-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0)}
+.ms-search{padding:.5rem .625rem;border-bottom:1px solid var(--bor)}
+.ms-search input{width:100%;background:var(--sur2);border:1px solid var(--bor);
+  border-radius:.375rem;padding:.3rem .5rem;color:var(--tx);font-size:.75rem;outline:none;
+  box-sizing:border-box}
+.ms-opts{max-height:200px;overflow-y:auto}
+.ms-opt{display:flex;align-items:center;gap:.5rem;padding:.4rem .625rem;
+  cursor:pointer;font-size:.78rem;transition:background .1s}
+.ms-opt:hover{background:var(--sur2)}
+.ms-opt input[type=checkbox]{width:14px;height:14px;accent-color:var(--pri);
+  flex-shrink:0;cursor:pointer}
+.ms-opt label{flex:1;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-footer{padding:.4rem .625rem;border-top:1px solid var(--bor);
+  display:flex;justify-content:space-between;align-items:center}
+.ms-clear{font-size:.7rem;color:var(--mu);cursor:pointer;padding:.2rem .3rem;
+  border-radius:.25rem;border:none;background:none}
+.ms-clear:hover{color:var(--er)}
+.ms-all{font-size:.7rem;color:var(--pri);cursor:pointer;padding:.2rem .3rem;
+  border-radius:.25rem;border:none;background:none}
 </style>
 
 <!-- goTo carregado ANTES de tudo: navegação nunca falha -->
@@ -344,7 +380,14 @@ function goTo(p) {
 
   // Run page-specific render
   if (p === 'dashboard'  && typeof renderDash      === 'function') renderDash();
-  if (p === 'apostas'    && typeof renderTabela     === 'function') { fillFilters(); renderTabela(); }
+  if (p === 'apostas'    && typeof renderTabela     === 'function') {
+    // Sempre abrir em Pendentes, data mais recente primeiro
+    var frEl = document.getElementById('fr');
+    if (frEl && frEl.value === '') { frEl.value = 'Pendente'; setResTabSilent('Pendente'); }
+    SORT_ASC = false; // mais recente primeiro
+    var si = document.getElementById('sort-icon'); if(si) si.textContent = '↓';
+    fillFilters(); renderTabela();
+  }
   if (p === 'analytics'  && typeof renderAnalytics  === 'function') renderAnalytics();
   if (p === 'banca'      && typeof renderBanca       === 'function') renderBanca();
   if (p === 'casas'      && typeof renderCasas       === 'function') renderCasas();
@@ -501,16 +544,62 @@ function goTo(p) {
       </div>
       <div class="tb">
         <div class="srch">🔎 <input type="text" id="q" placeholder="Buscar jogo ou mercado..." oninput="renderTabela()"></div>
-        <select class="fsl" id="fe" onchange="renderTabela()"><option value="">Todos esportes</option></select>
-        <select class="fsl" id="fc" onchange="renderTabela()"><option value="">Todas as casas</option></select>
-        <select class="fsl" id="ft" onchange="renderTabela()"><option value="">Todos tipsters</option></select>
+        <!-- Multi-select: Esporte -->
+        <div class="ms-wrap" id="ms-esp-wrap">
+          <div class="ms-btn" id="ms-esp-btn" onclick="msToggle('esp')">
+            <span id="ms-esp-label">Todos esportes</span>
+            <span class="ms-caret">▼</span>
+          </div>
+          <div class="ms-dropdown" id="ms-esp-drop">
+            <div class="ms-search"><input type="text" placeholder="Buscar..." oninput="msSearch('esp',this.value)" id="ms-esp-search"></div>
+            <div class="ms-opts" id="ms-esp-opts"></div>
+            <div class="ms-footer">
+              <button class="ms-clear" onclick="msClear('esp')">Limpar</button>
+              <button class="ms-all"   onclick="msAll('esp')">Todos</button>
+            </div>
+          </div>
+        </div>
+        <!-- Multi-select: Casa -->
+        <div class="ms-wrap" id="ms-fc-wrap">
+          <div class="ms-btn" id="ms-fc-btn" onclick="msToggle('fc')">
+            <span id="ms-fc-label">Todas as casas</span>
+            <span class="ms-caret">▼</span>
+          </div>
+          <div class="ms-dropdown" id="ms-fc-drop">
+            <div class="ms-search"><input type="text" placeholder="Buscar..." oninput="msSearch('fc',this.value)" id="ms-fc-search"></div>
+            <div class="ms-opts" id="ms-fc-opts"></div>
+            <div class="ms-footer">
+              <button class="ms-clear" onclick="msClear('fc')">Limpar</button>
+              <button class="ms-all"   onclick="msAll('fc')">Todas</button>
+            </div>
+          </div>
+        </div>
+        <!-- Multi-select: Tipster -->
+        <div class="ms-wrap" id="ms-ft-wrap">
+          <div class="ms-btn" id="ms-ft-btn" onclick="msToggle('ft')">
+            <span id="ms-ft-label">Todos tipsters</span>
+            <span class="ms-caret">▼</span>
+          </div>
+          <div class="ms-dropdown" id="ms-ft-drop">
+            <div class="ms-search"><input type="text" placeholder="Buscar..." oninput="msSearch('ft',this.value)" id="ms-ft-search"></div>
+            <div class="ms-opts" id="ms-ft-opts"></div>
+            <div class="ms-footer">
+              <button class="ms-clear" onclick="msClear('ft')">Limpar</button>
+              <button class="ms-all"   onclick="msAll('ft')">Todos</button>
+            </div>
+          </div>
+        </div>
+        <!-- Datas -->
         <input type="date" class="fsl" id="fd1" onchange="renderTabela()" title="Data início" style="cursor:pointer">
         <input type="date" class="fsl" id="fd2" onchange="renderTabela()" title="Data fim" style="cursor:pointer">
         <button class="btn btn-s" onclick="clearDateFilters()" style="padding:.4rem .6rem;font-size:.75rem">✕ Datas</button>
         <span class="tcnt" id="tcnt"></span>
-        <button class="btn btn-g" onclick="resetColWidths()" title="Resetar largura das colunas" style="font-size:.72rem;padding:.3rem .6rem">↔ Reset cols</button>
         <button class="btn btn-s" onclick="delAll()" style="margin-left:auto;font-size:.75rem;padding:.35rem .75rem;color:var(--er);border-color:var(--er)">🗑 Excluir todas</button>
       </div>
+      <!-- Hidden inputs mantidos para compatibilidade com fillFilters/renderTabela -->
+      <input type="hidden" id="fe" value="">
+      <input type="hidden" id="fc" value="">
+      <input type="hidden" id="ft" value="">
       <div class="tcard">
         <div class="tscr">
           <table>
@@ -892,6 +981,51 @@ var CH = {};
 })();
 
 // Normalize bet fields from bot (handles different casing/names from Telegram bot)
+
+// ── NORMALIZAÇÃO DE CASAS DE APOSTAS ─────────────────
+var CASA_MAP = [
+  // [regex, nome canônico]
+  [/betano/i,           'Betano'],
+  [/bet365/i,           'Bet365'],
+  [/betnacional/i,      'Betnacional'],
+  [/betboo|bet\.boo/i, 'Betboo'],
+  [/betbonus/i,         'Betbonus'],
+  [/pinnacle/i,         'Pinnacle'],
+  [/betfair/i,          'Betfair'],
+  [/1xbet/i,            '1xBet'],
+  [/kto/i,              'KTO'],
+  [/sportingbet/i,      'Sportingbet'],
+  [/novibet/i,          'Novibet'],
+  [/vaidebet/i,         'Vaidebet'],
+  [/superbet/i,         'Superbet'],
+  [/superBet/i,         'Superbet'],
+  [/esportivabet|esportiva\.bet/i, 'Esportivabet'],
+  [/esportes\s*da\s*sorte/i,      'Esportes da Sorte'],
+  [/blaze/i,            'Blaze'],
+  [/betmotion/i,        'Betmotion'],
+  [/rivalo/i,           'Rivalo'],
+  [/mr\.?jack/i,       'MrJack'],
+  [/pokerstars/i,       'PokerStars'],
+  [/22bet/i,            '22Bet'],
+  [/betsson/i,          'Betsson'],
+  [/unibet/i,           'Unibet'],
+  [/melbet/i,           'Melbet'],
+  [/betway/i,           'Betway'],
+  [/bwin/i,             'Bwin'],
+  [/william\s*hill/i,  'William Hill'],
+];
+
+function normalizaCasa(raw) {
+  if (!raw) return raw;
+  var s = String(raw).trim();
+  // Remove sufixos de domínio como .com, .com.br, .bet
+  s = s.replace(/\.com(\.br)?$/i, '').replace(/\.bet$/i, '').trim();
+  for (var i = 0; i < CASA_MAP.length; i++) {
+    if (CASA_MAP[i][0].test(s)) return CASA_MAP[i][1];
+  }
+  // Capitalizar primeira letra de cada palavra se não encontrou match
+  return s.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+}
 function normalizeBet(a) {
   // Tipster: check known fields AND extract from obs field if format is [tipster]
   var tipsterVal = '';
@@ -967,6 +1101,8 @@ function normalizeBet(a) {
   if (!a.casa) {
     a.casa = a.Casa || a.house || '';
   }
+  // Normalizar nome da casa para forma canônica
+  if (a.casa) a.casa = normalizaCasa(a.casa);
   // Hora: bot may send as hora, Hora, time, horario
   if (!a.hora) {
     a.hora = a.Hora || a.horario || a.time || '';
@@ -1285,25 +1421,175 @@ function renderAnalytics() {
 }
 
 // ── TABELA ───────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════
+// MULTI-SELECT COMPONENT
+// ══════════════════════════════════════════════════════
+var MS_STATE = {
+  esp: { selected: new Set(), options: [] },
+  fc:  { selected: new Set(), options: [] },
+  ft:  { selected: new Set(), options: [] },
+};
+
+// Fechar todos os dropdowns ao clicar fora
+document.addEventListener('click', function(e) {
+  var wraps = document.querySelectorAll('.ms-wrap');
+  wraps.forEach(function(w) {
+    if (!w.contains(e.target)) {
+      var drop = w.querySelector('.ms-dropdown');
+      var btn  = w.querySelector('.ms-btn');
+      if (drop) drop.classList.remove('open');
+      if (btn)  btn.classList.remove('open');
+    }
+  });
+});
+
+function msToggle(key) {
+  var drop = document.getElementById('ms-'+key+'-drop');
+  var btn  = document.getElementById('ms-'+key+'-btn');
+  if (!drop) return;
+  var isOpen = drop.classList.contains('open');
+  // Fechar todos primeiro
+  document.querySelectorAll('.ms-dropdown').forEach(function(d){ d.classList.remove('open'); });
+  document.querySelectorAll('.ms-btn').forEach(function(b){ b.classList.remove('open'); });
+  if (!isOpen) {
+    drop.classList.add('open');
+    btn.classList.add('open');
+    var srch = document.getElementById('ms-'+key+'-search');
+    if (srch) { srch.value = ''; msSearch(key, ''); srch.focus(); }
+  }
+}
+
+function msRenderOpts(key, filter) {
+  var state = MS_STATE[key];
+  var opts  = state.options;
+  var flt   = (filter || '').toLowerCase();
+  var el    = document.getElementById('ms-'+key+'-opts');
+  if (!el) return;
+  var filtered = flt ? opts.filter(function(o){ return o.toLowerCase().indexOf(flt) >= 0; }) : opts;
+  el.innerHTML = filtered.map(function(o) {
+    var chk = state.selected.has(o) ? 'checked' : '';
+    var esc = o.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+    return '<div class="ms-opt">'
+      + '<input type="checkbox" data-key="' + key + '" data-val="' + esc + '" ' + chk + ' onchange="msChangeEl(this)">'
+      + '<label title="' + esc + '">' + o + '</label>'
+      + '</div>';
+  }).join('');
+}
+
+function msSearch(key, val) {
+  msRenderOpts(key, val);
+}
+
+function msChangeEl(el) {
+  var key = el.getAttribute('data-key');
+  var val = el.getAttribute('data-val')
+    .replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&lt;/g,'<');
+  msChange(key, val);
+}
+
+function msChange(key, val) {
+  var state = MS_STATE[key];
+  if (state.selected.has(val)) state.selected.delete(val);
+  else state.selected.add(val);
+  msUpdateLabel(key);
+  renderTabela();
+}
+
+function msClear(key) {
+  MS_STATE[key].selected.clear();
+  msRenderOpts(key, '');
+  msUpdateLabel(key);
+  renderTabela();
+}
+
+function msAll(key) {
+  var state = MS_STATE[key];
+  state.options.forEach(function(o){ state.selected.add(o); });
+  msRenderOpts(key, '');
+  msUpdateLabel(key);
+  renderTabela();
+}
+
+var MS_LABELS = {
+  esp: ['Todos esportes', 'esporte', 'esportes'],
+  fc:  ['Todas as casas', 'casa', 'casas'],
+  ft:  ['Todos tipsters', 'tipster', 'tipsters'],
+};
+
+function msUpdateLabel(key) {
+  var state = MS_STATE[key];
+  var lbl   = document.getElementById('ms-'+key+'-label');
+  var btn   = document.getElementById('ms-'+key+'-btn');
+  if (!lbl) return;
+  var n = state.selected.size;
+  var info = MS_LABELS[key];
+  if (n === 0) {
+    lbl.textContent = info[0];
+    // remove count badge
+    var badge = btn ? btn.querySelector('.ms-count') : null;
+    if (badge) badge.remove();
+  } else if (n === 1) {
+    lbl.textContent = [...state.selected][0];
+    msSetBadge(btn, n);
+  } else {
+    lbl.textContent = n + ' ' + info[2];
+    msSetBadge(btn, n);
+  }
+}
+
+function msSetBadge(btn, n) {
+  if (!btn) return;
+  var badge = btn.querySelector('.ms-count');
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.className = 'ms-count';
+    var caret = btn.querySelector('.ms-caret');
+    if (caret) btn.insertBefore(badge, caret);
+    else btn.appendChild(badge);
+  }
+  badge.textContent = n;
+}
+
+function msPopulate(key, opts) {
+  var state = MS_STATE[key];
+  // Manter seleções que ainda existem
+  var newOpts = opts.slice().sort();
+  state.options = newOpts;
+  // Remover seleções que não existem mais
+  state.selected.forEach(function(s){ if (!newOpts.includes(s)) state.selected.delete(s); });
+  msUpdateLabel(key);
+  msRenderOpts(key, '');
+}
+
 function fillFilters() {
-  var esps=[...new Set(D.map(function(a){return a.esp;}).filter(Boolean))];
-  var css=[...new Set(D.map(function(a){return a.casa;}).filter(Boolean))];
-  var tips=[...new Set(D.map(function(a){return a.tipster;}).filter(Boolean))];
-  var fe=document.getElementById('fe'),fc=document.getElementById('fc'),ft=document.getElementById('ft');
-  var ve=fe?fe.value:'',vc=fc?fc.value:'',vt=ft?ft.value:'';
-  if(fe)fe.innerHTML='<option value="">Todos esportes</option>'+esps.map(function(e){return '<option>'+e+'</option>';}).join('');
-  if(fc)fc.innerHTML='<option value="">Todas as casas</option>'+css.map(function(c){return '<option>'+c+'</option>';}).join('');
-  if(ft)ft.innerHTML='<option value="">Todos tipsters</option>'+tips.map(function(t){return '<option>'+t+'</option>';}).join('');
+  // Normalizar casas antes de tudo
+  D.forEach(function(a){ if(a.casa) a.casa = normalizaCasa(a.casa); });
+  var esps=[...new Set(D.map(function(a){return a.esp;}).filter(Boolean))].sort();
+  var css=[...new Set(D.map(function(a){return a.casa;}).filter(Boolean))].sort();
+  var tips=[...new Set(D.map(function(a){return a.tipster;}).filter(Boolean))].sort();
+  // Popular multi-selects
+  if(typeof msPopulate==='function'){
+    msPopulate('esp', esps);
+    msPopulate('fc',  css);
+    msPopulate('ft',  tips);
+  }
   // Update datalist for tipster in modal
   var dtipster=document.getElementById('dtipster');
   if(dtipster)dtipster.innerHTML=tips.map(function(t){return '<option>'+t+'</option>';}).join('');
-  if(fe)fe.value=ve; if(fc)fc.value=vc; if(ft)ft.value=vt;
+  // Contadores das tabs
   var tots={all:D.length,Pendente:0,Win:0,Loss:0,'Meia Ganha':0,'Meia Perdida':0,Cashout:0,Anulada:0};
   D.forEach(function(a){if(tots[a.res]!==undefined)tots[a.res]++;});
   var el=document.getElementById('cnt-all');if(el)el.textContent=tots.all;
   ['Pendente','Win','Loss','Meia Ganha','Meia Perdida','Cashout','Anulada'].forEach(function(k){
     var el=document.getElementById('cnt-'+k);if(el)el.textContent=tots[k]||0;
   });
+}
+function setResTabSilent(v) {
+  document.querySelectorAll('.rtab').forEach(function(b){
+    b.classList.toggle('on', b.dataset.v === v);
+  });
+  var fr = document.getElementById('fr'); if(fr) fr.value = v;
 }
 function setResTab(btn,val){
   document.querySelectorAll('.rtab').forEach(function(b){b.classList.remove('on');});
@@ -1324,18 +1610,21 @@ function toggleSort(){
 }
 function renderTabela() {
   var q=(document.getElementById('q').value||'').toLowerCase();
-  var esp=document.getElementById('fe').value, casa=document.getElementById('fc').value, res=document.getElementById('fr').value;
-  var tip=document.getElementById('ft')?document.getElementById('ft').value:'';
+  var res=document.getElementById('fr')?document.getElementById('fr').value:'';
+  // Ler seleções dos multi-selects
+  var selEsp  = typeof MS_STATE!=='undefined' ? MS_STATE.esp.selected : new Set();
+  var selCasa = typeof MS_STATE!=='undefined' ? MS_STATE.fc.selected  : new Set();
+  var selTip  = typeof MS_STATE!=='undefined' ? MS_STATE.ft.selected  : new Set();
   var f=D.slice().sort(function(a,b){
   var da=(a.dt||'')+('T'+((a.hora&&a.hora.trim())?a.hora.trim():'00:00'));
   var db=(b.dt||'')+('T'+((b.hora&&b.hora.trim())?b.hora.trim():'00:00'));
   return SORT_ASC ? da.localeCompare(db) : db.localeCompare(da);
 });
   if(q)f=f.filter(function(a){return (a.jogo+a.mkt+(a.tipster||'')).toLowerCase().indexOf(q)>=0;});
-  if(esp)f=f.filter(function(a){return a.esp===esp;});
-  if(casa)f=f.filter(function(a){return a.casa===casa;});
-  if(tip)f=f.filter(function(a){return a.tipster===tip;});
-  if(res)f=f.filter(function(a){return a.res===res;});
+  if(selEsp.size >0) f=f.filter(function(a){return selEsp.has(a.esp);});
+  if(selCasa.size>0) f=f.filter(function(a){return selCasa.has(normalizaCasa(a.casa));});
+  if(selTip.size >0) f=f.filter(function(a){return selTip.has(a.tipster);});
+  if(res)            f=f.filter(function(a){return a.res===res;});
   var fd1=document.getElementById('fd1')?document.getElementById('fd1').value:'';
   var fd2=document.getElementById('fd2')?document.getElementById('fd2').value:'';
   if(fd1)f=f.filter(function(a){return a.dt>=fd1;});
@@ -1382,10 +1671,7 @@ function renderTabela() {
     var tipTitle  = (a.tipster||'');
     return '<tr data-id="'+a.id+'">'
       +'<td class="col-dt" title="'+(a.dt||'')+(a.hora?' '+a.hora:'')+'">'+(a.dt?a.dt.split('-').reverse().join('/'):'—')+(a.hora?' <span style="font-size:.65rem;color:var(--mu)">'+a.hora+'</span>':'')+'</td>'
-      +'<td class="col-jogo" title="'+jogoTitle+'" style="display:flex;align-items:center;gap:4px">'
-      +'<span class="cell-txt" style="flex:1;min-width:0">'+jogoTitle+'</span>'
-      +'<a class="fs-link" href="https://www.flashscore.com.br/busca/?q='+encodeURIComponent(a.jogo)+'" target="_blank" rel="noopener" title="Ver no Flashscore">&#x2197;</a>'
-      +'</td>'
+      +'<td class="col-jogo" title="'+jogoTitle+'"><span class="cell-txt">'+jogoTitle+'</span></td>'
       +'<td class="col-mkt"  title="'+mktTitle+'"><span class="cell-txt">'+mktTitle+'</span></td>'
       +'<td class="col-esp"  title="'+(a.esp||'')+'"><span class="cell-txt">'+(a.esp||'—')+'</span></td>'
       +'<td class="col-casa" title="'+(a.casa||'')+'"><span class="cell-txt">'+(a.casa||'—')+'</span></td>'
